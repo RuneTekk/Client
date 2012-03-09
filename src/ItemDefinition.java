@@ -14,7 +14,7 @@ public class ItemDefinition {
         info_buffer = null;
     }
 
-    public boolean method192(int i, int j) {
+    public boolean hasModels(int i, int j) {
         if(i != -2836)
             aBoolean186 = !aBoolean186;
         int k = anInt175;
@@ -38,10 +38,10 @@ public class ItemDefinition {
     {
         info_buffer = new ByteBuffer(class44.getArchive("obj.dat", null));
         ByteBuffer buffer0 = new ByteBuffer(class44.getArchive("obj.idx", null));
-        anInt203 = buffer0.getUword();
-        offsets = new int[anInt203];
+        maximumId = buffer0.getUword();
+        offsets = new int[maximumId];
         int i = 2;
-        for(int j = 0; j < anInt203; j++)
+        for(int j = 0; j < maximumId; j++)
         {
             offsets[j] = i;
             i += buffer0.getUword();
@@ -64,10 +64,10 @@ public class ItemDefinition {
         }
         if(k == -1)
             return null;
-        Model class30_sub2_sub4_sub6 = Model.getModel(anInt171, k);
+        Model class30_sub2_sub4_sub6 = Model.getModel(k);
         if(l != -1)
         {
-            Model class30_sub2_sub4_sub6_1 = Model.getModel(anInt171, l);
+            Model class30_sub2_sub4_sub6_1 = Model.getModel(l);
             Model aclass30_sub2_sub4_sub6[] = {
                 class30_sub2_sub4_sub6, class30_sub2_sub4_sub6_1
             };
@@ -119,28 +119,28 @@ public class ItemDefinition {
         }
         if(j == -1)
             return null;
-        Model class30_sub2_sub4_sub6 = Model.getModel(anInt171, j);
+        Model class30_sub2_sub4_sub6 = Model.getModel(j);
         if(k != -1)
             if(l != -1)
             {
-                Model class30_sub2_sub4_sub6_1 = Model.getModel(anInt171, k);
-                Model class30_sub2_sub4_sub6_3 = Model.getModel(anInt171, l);
+                Model class30_sub2_sub4_sub6_1 = Model.getModel(k);
+                Model class30_sub2_sub4_sub6_3 = Model.getModel(l);
                 Model aclass30_sub2_sub4_sub6_1[] = {
                     class30_sub2_sub4_sub6, class30_sub2_sub4_sub6_1, class30_sub2_sub4_sub6_3
                 };
                 class30_sub2_sub4_sub6 = new Model(aclass30_sub2_sub4_sub6_1, 3);
             } else
             {
-                Model class30_sub2_sub4_sub6_2 = Model.getModel(anInt171, k);
+                Model class30_sub2_sub4_sub6_2 = Model.getModel(k);
                 Model aclass30_sub2_sub4_sub6[] = {
                     class30_sub2_sub4_sub6, class30_sub2_sub4_sub6_2
                 };
                 class30_sub2_sub4_sub6 = new Model(aclass30_sub2_sub4_sub6, 2);
             }
         if(gender == 0 && male_moveverticies != 0)
-            class30_sub2_sub4_sub6.moveVertices(0, male_moveverticies, 16384, 0);
+            class30_sub2_sub4_sub6.moveVertices(0, male_moveverticies, 0);
         if(gender == 1 && female_moveverticies != 0)
-            class30_sub2_sub4_sub6.moveVertices(0, female_moveverticies, 16384, 0);
+            class30_sub2_sub4_sub6.moveVertices(0, female_moveverticies, 0);
         if(trianglecolors != null)
         {
             for(int i1 = 0; i1 < trianglecolors.length; i1++)
@@ -151,7 +151,7 @@ public class ItemDefinition {
 
     public void setDefaults() {
         modelid = 0;
-        name = null;
+        withItemName = null;
         examine = null;
         trianglecolors = null;
         trianglecolorvalues = null;
@@ -188,7 +188,7 @@ public class ItemDefinition {
         scalez = 128;
         lightvectorx = 0;
         lightvectory = 0;
-        anInt202 = 0;
+        modelId = 0;
     }
 
     public static ItemDefinition getItemDefinition(int i) {
@@ -204,11 +204,11 @@ public class ItemDefinition {
         if(class8.anInt163 != -1)
             class8.method199((byte)61);
         if(!aBoolean182 && class8.aBoolean161) {
-            class8.name = "Members Object";
+            class8.withItemName = "Members Object";
             class8.examine = "Login to a members' server to use this object.".getBytes();
             class8.ground_options = null;
             class8.inventory_options = null;
-            class8.anInt202 = 0;
+            class8.modelId = 0;
         }
         return class8;
     }
@@ -228,14 +228,14 @@ public class ItemDefinition {
         trianglecolors = class8.trianglecolors;
         trianglecolorvalues = class8.trianglecolorvalues;
         ItemDefinition class8_1 = getItemDefinition(anInt179);
-        name = class8_1.name;
+        withItemName = class8_1.withItemName;
         aBoolean161 = class8_1.aBoolean161;
         anInt155 = class8_1.anInt155;
         String s = "a";
-        char c = class8_1.name.charAt(0);
+        char c = class8_1.withItemName.charAt(0);
         if(c == 'A' || c == 'E' || c == 'I' || c == 'O' || c == 'U')
             s = "an";
-        examine = ("Swap this note at any bank for " + s + " " + class8_1.name + ".").getBytes();
+        examine = ("Swap this note at any bank for " + s + " " + class8_1.withItemName + ".").getBytes();
         aBoolean176 = true;
     }
 
@@ -276,8 +276,8 @@ public class ItemDefinition {
                 return null;
         }
         DirectColorSprite sprite1 = new DirectColorSprite(32, 32);
-        int k1 = TriangleRasterizer.midwidth;
-        int l1 = TriangleRasterizer.midheight;
+        int k1 = TriangleRasterizer.centerWidth;
+        int l1 = TriangleRasterizer.centerHeight;
         int heightoffsets[] = TriangleRasterizer.heightoffsets;
         int output[] = BasicRasterizer.pixelBuffer;
         int outwidth = BasicRasterizer.bufferWidth;
@@ -362,8 +362,8 @@ public class ItemDefinition {
             aClass12_158.put(sprite1, id);
         BasicRasterizer.initialize(outheight, outwidth, output);
         BasicRasterizer.setDimensions(rasterwidth, offsetwidth, rasterheight, offsetheight);
-        TriangleRasterizer.midwidth = k1;
-        TriangleRasterizer.midheight = l1;
+        TriangleRasterizer.centerWidth = k1;
+        TriangleRasterizer.centerHeight = l1;
         TriangleRasterizer.heightoffsets = heightoffsets;
         TriangleRasterizer.aBoolean1464 = true;
         if(l < 9 || l > 9)
@@ -390,7 +390,7 @@ public class ItemDefinition {
         Model class30_sub2_sub4_sub6 = (Model) item_modelstorage.get(id);
         if(class30_sub2_sub4_sub6 != null)
             return class30_sub2_sub4_sub6;
-        class30_sub2_sub4_sub6 = Model.getModel(anInt171, modelid);
+        class30_sub2_sub4_sub6 = Model.getModel(modelid);
         if(class30_sub2_sub4_sub6 == null)
             return null;
         if(scalex != 128 || scaley != 128 || scalez != 128)
@@ -417,7 +417,7 @@ public class ItemDefinition {
             if(j != -1)
                 return getItemDefinition(j).method202(1, true);
         }
-        Model class30_sub2_sub4_sub6 = Model.getModel(anInt171, modelid);
+        Model class30_sub2_sub4_sub6 = Model.getModel(modelid);
         if(!flag)
             throw new NullPointerException();
         if(class30_sub2_sub4_sub6 == null)
@@ -444,7 +444,7 @@ public class ItemDefinition {
                 modelid = buffer0.getUword();
             else
             if(i == 2)
-                name = buffer0.getString();
+                withItemName = buffer0.getString();
             else
             if(i == 3)
                 examine = buffer0.getStringBytes();
@@ -577,7 +577,7 @@ public class ItemDefinition {
                 lightvectory = buffer0.getByte() * 5;
             else
             if(i == 115)
-                anInt202 = buffer0.getUbyte();
+                modelId = buffer0.getUbyte();
         } while(true);
     }
 
@@ -605,7 +605,7 @@ public class ItemDefinition {
     public int scalex;
     public String ground_options[];
     public int anInt169;
-    public String name;
+    public String withItemName;
     public int anInt171;
     public static ItemDefinition definition_stack[];
     public int anInt173;
@@ -637,8 +637,8 @@ public class ItemDefinition {
     public int anInt199;
     public int female_model1;
     public int amountmodels_ptrs[];
-    public int anInt202;
-    public static int anInt203;
+    public int modelId;
+    public static int maximumId;
     public int anInt204;
     public byte male_moveverticies;
     public boolean aBoolean206;

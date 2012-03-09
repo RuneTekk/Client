@@ -193,13 +193,13 @@ public class ByteBuffer extends SubNode {
             return getUword() - 32768;
     }
 
-    public void applyRsa(BigInteger biginteger, BigInteger biginteger1) {
+    public void applyRsa(BigInteger exponent, BigInteger modulus) {
         int i = offset;
         offset = 0;
         byte src[] = new byte[i];
         get(src, 0, i);
         BigInteger biginteger2 = new BigInteger(src);
-        BigInteger biginteger3 = biginteger2; //.modPow(biginteger, biginteger1);
+        BigInteger biginteger3 = biginteger2.modPow(exponent, modulus);
         byte bytes[] = biginteger3.toByteArray();
         offset = 0;
         put(bytes.length);

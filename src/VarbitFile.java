@@ -7,19 +7,19 @@ import sign.Signlink;
 
 public class VarbitFile {
 
-    public static void method533(int i, ArchivePackage class44) {
+    public static void unpackArchives(int i, ArchivePackage class44) {
         if(i != 0)
             anInt644 = 91;
         ByteBuffer buffer0 = new ByteBuffer(class44.getArchive("varbit.dat", null));
         anInt645 = buffer0.getUword();
-        if(aClass37Array646 == null)
-            aClass37Array646 = new VarbitFile[anInt645];
+        if(varbitArray == null)
+            varbitArray = new VarbitFile[anInt645];
         for(int j = 0; j < anInt645; j++) {
-            if(aClass37Array646[j] == null)
-                aClass37Array646[j] = new VarbitFile();
-            aClass37Array646[j].method534(buffer0, false, j);
-            if(aClass37Array646[j].aBoolean651)
-                VarpFile.aClass41Array701[aClass37Array646[j].config_num].aBoolean713 = true;
+            if(varbitArray[j] == null)
+                varbitArray[j] = new VarbitFile();
+            varbitArray[j].method534(buffer0, false, j);
+            if(varbitArray[j].aBoolean651)
+                VarpFile.aClass41Array701[varbitArray[j].config_num].aBoolean713 = true;
         }
 
         if(buffer0.offset != buffer0.payload.length)
@@ -65,7 +65,7 @@ public class VarbitFile {
 
     public static int anInt644;
     public static int anInt645;
-    public static VarbitFile aClass37Array646[];
+    public static VarbitFile varbitArray[];
     public String aString647;
     public int config_num;
     public int anInt649;

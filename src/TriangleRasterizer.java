@@ -24,16 +24,16 @@ public class TriangleRasterizer extends BasicRasterizer {
         heightoffsets = new int[BasicRasterizer.bufferHeight];
         for(int j = 0; j < BasicRasterizer.bufferHeight; j++)
             heightoffsets[j] = BasicRasterizer.bufferWidth * j;
-        midwidth = BasicRasterizer.bufferWidth / 2;
-        midheight = BasicRasterizer.bufferHeight / 2;
+        centerWidth = BasicRasterizer.bufferWidth / 2;
+        centerHeight = BasicRasterizer.bufferHeight / 2;
     }
 
     public static void setDimensions(int junk, int width, int height) {
 	heightoffsets = new int[height];
         for(int h = 0; h < height; h++)
             heightoffsets[h] = width * h;
-        midwidth = width / 2;
-        midheight = height / 2;
+        centerWidth = width / 2;
+        centerHeight = height / 2;
     }
 
     public static void resetCaches(int junk) {
@@ -61,10 +61,10 @@ public class TriangleRasterizer extends BasicRasterizer {
         for(int j = 0; j < 50; j++)
             try {
                 textures[j] = new IndexedColorSprite(archive, String.valueOf(j), 0);
-                if(lowmemory && textures[j].width_idk1 == 128)
-                    textures[j].shrink(false);
+                if(lowmemory && textures[j].spriteWidth == 128)
+                    textures[j].compressUnpack();
                 else
-                    textures[j].method357(false);
+                    textures[j].unpack();
                 anInt1473++;
             } catch(Exception _ex) { 
 	}
@@ -131,7 +131,7 @@ public class TriangleRasterizer extends BasicRasterizer {
             aBooleanArray1475[i] = false;
             for(int i1 = 0; i1 < 4096; i1++) 
             {
-                int i2 = ai[i1] = ai1[class30_sub2_sub1_sub2.colorindex[i1]] & 0xf8f8ff;
+                int i2 = ai[i1] = ai1[class30_sub2_sub1_sub2.buffer[i1]] & 0xf8f8ff;
                 if(i2 == 0)
                     aBooleanArray1475[i] = true;
                 ai[4096 + i1] = i2 - (i2 >>> 3) & 0xf8f8ff;
@@ -141,19 +141,19 @@ public class TriangleRasterizer extends BasicRasterizer {
 
         } else
         {
-            if(class30_sub2_sub1_sub2.indexwidth_ == 64)
+            if(class30_sub2_sub1_sub2.indexWidth == 64)
             {
                 for(int j1 = 0; j1 < 128; j1++)
                 {
                     for(int j2 = 0; j2 < 128; j2++)
-                        ai[j2 + (j1 << 7)] = ai1[class30_sub2_sub1_sub2.colorindex[(j2 >> 1) + ((j1 >> 1) << 6)]];
+                        ai[j2 + (j1 << 7)] = ai1[class30_sub2_sub1_sub2.buffer[(j2 >> 1) + ((j1 >> 1) << 6)]];
 
                 }
 
             } else
             {
                 for(int k1 = 0; k1 < 16384; k1++)
-                    ai[k1] = ai1[class30_sub2_sub1_sub2.colorindex[k1]];
+                    ai[k1] = ai1[class30_sub2_sub1_sub2.buffer[k1]];
 
             }
             aBooleanArray1475[i] = false;
@@ -247,7 +247,7 @@ public class TriangleRasterizer extends BasicRasterizer {
         for(int l = 0; l < 50; l++)
             if(textures[l] != null)
             {
-                int ai[] = textures[l].icolors;
+                int ai[] = textures[l].colorRef;
                 r3d_colorindexes[l] = new int[ai.length];
                 for(int j1 = 0; j1 < ai.length; j1++)
                 {
@@ -1283,7 +1283,7 @@ public class TriangleRasterizer extends BasicRasterizer {
                     l1 -= l7 * j;
                     j = 0;
                 }
-                int k8 = i - midheight;
+                int k8 = i - centerHeight;
                 l4 += j5 * k8;
                 k5 += i6 * k8;
                 j6 += l6 * k8;
@@ -1365,7 +1365,7 @@ public class TriangleRasterizer extends BasicRasterizer {
                 i2 -= l7 * k;
                 k = 0;
             }
-            int l8 = i - midheight;
+            int l8 = i - centerHeight;
             l4 += j5 * l8;
             k5 += i6 * l8;
             j6 += l6 * l8;
@@ -1457,7 +1457,7 @@ public class TriangleRasterizer extends BasicRasterizer {
                     i2 -= j8 * k;
                     k = 0;
                 }
-                int i9 = j - midheight;
+                int i9 = j - centerHeight;
                 l4 += j5 * i9;
                 k5 += i6 * i9;
                 j6 += l6 * i9;
@@ -1539,7 +1539,7 @@ public class TriangleRasterizer extends BasicRasterizer {
                 k1 -= j8 * i;
                 i = 0;
             }
-            int j9 = j - midheight;
+            int j9 = j - centerHeight;
             l4 += j5 * j9;
             k5 += i6 * j9;
             j6 += l6 * j9;
@@ -1629,7 +1629,7 @@ public class TriangleRasterizer extends BasicRasterizer {
                 k1 -= j7 * i;
                 i = 0;
             }
-            int k9 = k - midheight;
+            int k9 = k - centerHeight;
             l4 += j5 * k9;
             k5 += i6 * k9;
             j6 += l6 * k9;
@@ -1711,7 +1711,7 @@ public class TriangleRasterizer extends BasicRasterizer {
             l1 -= j7 * j;
             j = 0;
         }
-        int l9 = k - midheight;
+        int l9 = k - centerHeight;
         l4 += j5 * l9;
         k5 += i6 * l9;
         j6 += l6 * l9;
@@ -1815,7 +1815,7 @@ public class TriangleRasterizer extends BasicRasterizer {
         {
             int i4 = 0;
             int k4 = 0;
-            int k6 = x - midwidth;
+            int k6 = x - centerWidth;
             l1 += (k2 >> 3) * k6;
             i2 += (l2 >> 3) * k6;
             j2 += (i3 >> 3) * k6;
@@ -1981,7 +1981,7 @@ public class TriangleRasterizer extends BasicRasterizer {
         }
         int j4 = 0;
         int l4 = 0;
-        int l6 = x - midwidth;
+        int l6 = x - centerWidth;
         l1 += (k2 >> 3) * l6;
         i2 += (l2 >> 3) * l6;
         j2 += (i3 >> 3) * l6;
@@ -2154,8 +2154,8 @@ public class TriangleRasterizer extends BasicRasterizer {
     public static boolean aBoolean1463;
     public static boolean aBoolean1464 = true;
     public static int alpha$;
-    public static int midwidth;
-    public static int midheight;
+    public static int centerWidth;
+    public static int centerHeight;
     public static int GRADIENTTABLE[];
     public static int SHADINGTABLE[];
     public static int SINE_TABLE[];

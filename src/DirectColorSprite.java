@@ -14,9 +14,9 @@ public class DirectColorSprite extends BasicRasterizer {
         offsetX = offsetY = 0;
     }
 
-    public DirectColorSprite(Component component, byte[] abyte0) {
+    public DirectColorSprite(Component component, byte[] src) {
         try {
-            Image image = Toolkit.getDefaultToolkit().createImage(abyte0);
+            Image image = Toolkit.getDefaultToolkit().createImage(src);
             MediaTracker mediatracker = new MediaTracker(component);
             mediatracker.addImage(image, 0);
             mediatracker.waitForAll();
@@ -471,7 +471,7 @@ public class DirectColorSprite extends BasicRasterizer {
             return;
         } else
         {
-            draw(buffer, j1, class30_sub2_sub1_sub2.colorindex, i1, BasicRasterizer.pixelBuffer, 0, k1, k, l1, l);
+            draw(buffer, j1, class30_sub2_sub1_sub2.buffer, i1, BasicRasterizer.pixelBuffer, 0, k1, k, l1, l);
             return;
         }
     }

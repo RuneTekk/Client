@@ -2,315 +2,301 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
-import sign.Signlink;
-
 public class Widget {
 
-    public void initializeWidgets(int i, byte byte0, int j) {
-        int k = itemarray[i];
-        itemarray[i] = itemarray[j];
-        itemarray[j] = k;
-        k = itemamounts[i];
-        itemamounts[i] = itemamounts[j];
-        itemamounts[j] = k;
+    public void swapItem(int id0, int id1) {
+        int id = itemIds[id0];
+        itemIds[id0] = itemIds[id1];
+        itemIds[id1] = id;
+        id = itemAmounts[id0];
+        itemAmounts[id0] = itemAmounts[id1];
+        itemAmounts[id1] = id;
     }
 
-    public static void unpackWidgets(ArchivePackage widgetarchive, BitmapFont fonts[], ArchivePackage spritearchive)
+    public static void loadWidgets(ArchivePackage widgetarchive, BitmapFont fonts[], ArchivePackage spritearchive)
     {
-        aClass12_238 = new Cache(50000);
-        ByteBuffer buffer0 = new ByteBuffer(widgetarchive.getArchive("data", null));
-        int i = -1;
-        int j = buffer0.getUword();
-        widgets = new Widget[j];	
-        while(buffer0.offset < buffer0.payload.length) 
-        {
-            int k = buffer0.getUword();
-            if(k == 65535)
-            {
-                i = buffer0.getUword();
-                k = buffer0.getUword();
+        spriteCache = new Cache(50000);
+        ByteBuffer dataBuffer = new ByteBuffer(widgetarchive.getArchive("data", null));
+        int parentId = -1;
+        int amountWidgets = dataBuffer.getUword();
+        widgets = new Widget[amountWidgets];	
+        while(dataBuffer.offset < dataBuffer.payload.length) {
+            int widgetId = dataBuffer.getUword();
+            if(widgetId == 65535) {
+                parentId = dataBuffer.getUword();
+                widgetId = dataBuffer.getUword();
             }
-            Widget widget = widgets[k] = new Widget();
-            widget.widgetid = k;
-            widget.parentid = i;
-            widget.widgettype = buffer0.getUbyte();
-            widget.textfieldtype = buffer0.getUbyte();
-            widget.actioncode = buffer0.getUword();
-            widget.width = buffer0.getUword();
-            widget.height = buffer0.getUword();
-            widget.oalpha = (byte)buffer0.getUbyte();
-            widget.anInt230 = buffer0.getUbyte();
-            if(widget.anInt230 != 0)
-                widget.anInt230 = (widget.anInt230 - 1 << 8) + buffer0.getUbyte();
+            Widget widget = widgets[widgetId] = new Widget();
+            widget.widgetId = widgetId;
+            widget.parentId = parentId;
+            widget.type = dataBuffer.getUbyte();
+            widget.fieldType = dataBuffer.getUbyte();
+            widget.actionCode = dataBuffer.getUword();
+            widget.width = dataBuffer.getUword();
+            widget.height = dataBuffer.getUword();
+            widget.alpha = (byte)dataBuffer.getUbyte();
+            widget.childId = dataBuffer.getUbyte();
+            if(widget.childId != 0)
+                widget.childId = (widget.childId - 1 << 8) + dataBuffer.getUbyte();
             else
-                widget.anInt230 = -1;
-            int i1 = buffer0.getUbyte();
-            if(i1 > 0)
-            {
-                widget.updateconditions = new int[i1];
-                widget.updatestates = new int[i1];
-                for(int j1 = 0; j1 < i1; j1++)
-                {
-                    widget.updateconditions[j1] = buffer0.getUbyte();
-                    widget.updatestates[j1] = buffer0.getUword();
+                widget.childId = -1;
+            int amountScriptInstructions = dataBuffer.getUbyte();
+            if(amountScriptInstructions > 0) {
+                widget.scriptInstructions = new int[amountScriptInstructions];
+                widget.scriptConditions = new int[amountScriptInstructions];
+                for(int j1 = 0; j1 < amountScriptInstructions; j1++) {
+                    widget.scriptInstructions[j1] = dataBuffer.getUbyte();
+                    widget.scriptConditions[j1] = dataBuffer.getUword();
                 }
-
             }
-            int k1 = buffer0.getUbyte();
-            if(k1 > 0)
+            int amountScripts = dataBuffer.getUbyte();
+            if(amountScripts > 0)
             {
-                widget.anIntArrayArray226 = new int[k1][];
-                for(int l1 = 0; l1 < k1; l1++)
-                {
-                    int i3 = buffer0.getUword();
-                    widget.anIntArrayArray226[l1] = new int[i3];
-                    for(int l4 = 0; l4 < i3; l4++)
-                        widget.anIntArrayArray226[l1][l4] = buffer0.getUword();
-
+                widget.scriptOpcodes = new int[amountScripts][];
+                for(int l1 = 0; l1 < amountScripts; l1++) {
+                    int scriptSize = dataBuffer.getUword();
+                    widget.scriptOpcodes[l1] = new int[scriptSize];
+                    for(int l4 = 0; l4 < scriptSize; l4++)
+                        widget.scriptOpcodes[l1][l4] = dataBuffer.getUword();
                 }
-
             }
-            if(widget.widgettype == 0)
+            if(widget.type == 0)
             {
-                widget.anInt261 = buffer0.getUword();
-                widget.aBoolean266 = buffer0.getUbyte() == 1;
-                int amountchildren = buffer0.getUword();
-                widget.childrenwidgets = new int[amountchildren];
-                widget.positionx = new int[amountchildren];
-                widget.positiony = new int[amountchildren];
+                widget.currentHeight = dataBuffer.getUword();
+                widget.isActive = dataBuffer.getUbyte() == 1;
+                int amountchildren = dataBuffer.getUword();
+                widget.childrenIds = new int[amountchildren];
+                widget.childrenOffX = new int[amountchildren];
+                widget.childrenOffY = new int[amountchildren];
                 for(int g = 0; g < amountchildren; g++)
                 {
-                    widget.childrenwidgets[g] = buffer0.getUword();
-                    widget.positionx[g] = buffer0.getWord();
-                    widget.positiony[g] = buffer0.getWord();
+                    widget.childrenIds[g] = dataBuffer.getUword();
+                    widget.childrenOffX[g] = dataBuffer.getWord();
+                    widget.childrenOffY[g] = dataBuffer.getWord();
                 }
 
             }
-            /* Dummy widget */
-            if(widget.widgettype == 1)
+            if(widget.type == 1)
             {
-                widget.anInt211 = buffer0.getUword();
-                widget.aBoolean251 = buffer0.getUbyte() == 1;
+                widget.unusedInt = dataBuffer.getUword();
+                widget.unusedBool = dataBuffer.getUbyte() == 1;
             }
-            if(widget.widgettype == 2)
+            if(widget.type == 2)
             {
-                widget.itemarray = new int[widget.width * widget.height];
-                widget.itemamounts = new int[widget.width * widget.height];
-                widget.aBoolean259 = buffer0.getUbyte() == 1;
-                widget.aBoolean249 = buffer0.getUbyte() == 1;
-                widget.aBoolean242 = buffer0.getUbyte() == 1;
-                widget.aBoolean235 = buffer0.getUbyte() == 1;
-                widget.anInt231 = buffer0.getUbyte();
-                widget.anInt244 = buffer0.getUbyte();
+                widget.itemIds = new int[widget.width * widget.height];
+                widget.itemAmounts = new int[widget.width * widget.height];
+                widget.aBoolean259 = dataBuffer.getUbyte() == 1;
+                widget.aBoolean249 = dataBuffer.getUbyte() == 1;
+                widget.aBoolean242 = dataBuffer.getUbyte() == 1;
+                widget.aBoolean235 = dataBuffer.getUbyte() == 1;
+                widget.xOff = dataBuffer.getUbyte();
+                widget.yOff = dataBuffer.getUbyte();
                 widget.anIntArray215 = new int[20];
                 widget.anIntArray247 = new int[20];
                 widget.sprites = new DirectColorSprite[20];
                 for(int j2 = 0; j2 < 20; j2++)
                 {
-                    int k3 = buffer0.getUbyte();
+                    int k3 = dataBuffer.getUbyte();
                     if(k3 == 1)
                     {
-                        widget.anIntArray215[j2] = buffer0.getWord();
-                        widget.anIntArray247[j2] = buffer0.getWord();
-                        String s1 = buffer0.getString();
+                        widget.anIntArray215[j2] = dataBuffer.getWord();
+                        widget.anIntArray247[j2] = dataBuffer.getWord();
+                        String s1 = dataBuffer.getString();
                         if(spritearchive != null && s1.length() > 0)
                         {
                             int i5 = s1.lastIndexOf(",");
-                            widget.sprites[j2] = getInterfaceSprite(Integer.parseInt(s1.substring(i5 + 1)), spritearchive, s1.substring(0, i5));
+                            widget.sprites[j2] = getSprite(spritearchive, s1.substring(0, i5), Integer.parseInt(s1.substring(i5 + 1)));
                         }
                     }
                 }
 
-                widget.itemoptions = new String[5];
+                widget.itemOptions = new String[5];
                 for(int l3 = 0; l3 < 5; l3++)
                 {
-                    widget.itemoptions[l3] = buffer0.getString();
-                    if(widget.itemoptions[l3].length() == 0)
-                        widget.itemoptions[l3] = null;
+                    widget.itemOptions[l3] = dataBuffer.getString();
+                    if(widget.itemOptions[l3].length() == 0)
+                        widget.itemOptions[l3] = null;
                 }
 
             }
-            if(widget.widgettype == 3)
-                widget.aBoolean227 = buffer0.getUbyte() == 1;
-            if(widget.widgettype == 4 || widget.widgettype == 1)
+            if(widget.type == 3)
+                widget.isSolidQuad = dataBuffer.getUbyte() == 1;
+            if(widget.type == 4 || widget.type == 1)
             {
-                widget.centerx = buffer0.getUbyte() == 1;
-                int k2 = buffer0.getUbyte();
+                widget.isTextCentered = dataBuffer.getUbyte() == 1;
+                int fontId = dataBuffer.getUbyte();
                 if(fonts != null)
-                    widget.itemfont = fonts[k2];
-                widget.shadowtext = buffer0.getUbyte() == 1;
+                    widget.textFont = fonts[fontId];
+                widget.drawTextShadow = dataBuffer.getUbyte() == 1;
             }
-            if(widget.widgettype == 4)
+            if(widget.type == 4)
             {
-                widget.aString248 = buffer0.getString();
-                widget.hiddentext = buffer0.getString();
+                widget.inactiveText = dataBuffer.getString();
+                widget.activeText = dataBuffer.getString();
             }
-            if(widget.widgettype == 1 || widget.widgettype == 3 || widget.widgettype == 4)
-                widget.anInt232 = buffer0.getDword();
-            if(widget.widgettype == 3 || widget.widgettype == 4)
+            if(widget.type == 1 || widget.type == 3 || widget.type == 4)
+                widget.inactiveTextColor = dataBuffer.getDword();
+            if(widget.type == 3 || widget.type == 4)
             {
-                widget.anInt219 = buffer0.getDword();
-                widget.anInt216 = buffer0.getDword();
-                widget.anInt239 = buffer0.getDword();
+                widget.activeTextColor = dataBuffer.getDword();
+                widget.anInt216 = dataBuffer.getDword();
+                widget.anInt239 = dataBuffer.getDword();
             }
-            if(widget.widgettype == 5)
+            if(widget.type == 5)
             {
-                String s = buffer0.getString();
+                String s = dataBuffer.getString();
                 if(spritearchive != null && s.length() > 0)
                 {
-                    int i4 = s.lastIndexOf(",");
-                    widget.aClass30_Sub2_Sub1_Sub1_207 = getInterfaceSprite(Integer.parseInt(s.substring(i4 + 1)), spritearchive, s.substring(0, i4));
+                    int i = s.lastIndexOf(",");
+                    widget.inactiveSprite = getSprite(spritearchive, s.substring(0, i), Integer.parseInt(s.substring(i + 1)));
                 }
-                s = buffer0.getString();
+                s = dataBuffer.getString();
                 if(spritearchive != null && s.length() > 0)
                 {
-                    int j4 = s.lastIndexOf(",");
-                    widget.aClass30_Sub2_Sub1_Sub1_260 = getInterfaceSprite(Integer.parseInt(s.substring(j4 + 1)), spritearchive, s.substring(0, j4));
+                    int i = s.lastIndexOf(",");
+                    widget.activeSprite = getSprite(spritearchive, s.substring(0, i), Integer.parseInt(s.substring(i + 1)));
                 }
             }
-            if(widget.widgettype == 6)
+            if(widget.type == 6)
             {
-                int l = buffer0.getUbyte();
-                if(l != 0)
+                int modelId = dataBuffer.getUbyte();
+                if(modelId != 0)
                 {
-                    widget.anInt233 = 1;
-                    widget.anInt234 = (l - 1 << 8) + buffer0.getUbyte();
+                    widget.unactiveAnimFetchType = 1;
+                    widget.unactiveAnimModelId = (modelId - 1 << 8) + dataBuffer.getUbyte();
                 }
-                l = buffer0.getUbyte();
-                if(l != 0)
+                modelId = dataBuffer.getUbyte();
+                if(modelId != 0)
                 {
-                    widget.anInt255 = 1;
-                    widget.anInt256 = (l - 1 << 8) + buffer0.getUbyte();
+                    widget.activeAnimFetchType = 1;
+                    widget.activeAnimModelId = (modelId - 1 << 8) + dataBuffer.getUbyte();
                 }
-                l = buffer0.getUbyte();
-                if(l != 0)
-                    widget.anInt257 = (l - 1 << 8) + buffer0.getUbyte();
+                modelId = dataBuffer.getUbyte();
+                if(modelId != 0)
+                    widget.inactiveAnimId = (modelId - 1 << 8) + dataBuffer.getUbyte();
                 else
-                    widget.anInt257 = -1;
-                l = buffer0.getUbyte();
-                if(l != 0)
-                    widget.anInt258 = (l - 1 << 8) + buffer0.getUbyte();
+                    widget.inactiveAnimId = -1;
+                modelId = dataBuffer.getUbyte();
+                if(modelId != 0)
+                    widget.activeAnimId = (modelId - 1 << 8) + dataBuffer.getUbyte();
                 else
-                    widget.anInt258 = -1;
-                widget.anInt269 = buffer0.getUword();
-                widget.anInt270 = buffer0.getUword();
-                widget.anInt271 = buffer0.getUword();
+                    widget.activeAnimId = -1;
+                widget.rotationOrigin = dataBuffer.getUword();
+                widget.rotationAngleX = dataBuffer.getUword();
+                widget.rotationAngleY = dataBuffer.getUword();
             }
-            if(widget.widgettype == 7)
+            if(widget.type == 7)
             {
-                widget.itemarray = new int[widget.width * widget.height];
-                widget.itemamounts = new int[widget.width * widget.height];
-                widget.centerx = buffer0.getUbyte() == 1;
-                int fontid = buffer0.getUbyte();
+                widget.itemIds = new int[widget.width * widget.height];
+                widget.itemAmounts = new int[widget.width * widget.height];
+                widget.isTextCentered = dataBuffer.getUbyte() == 1;
+                int fontid = dataBuffer.getUbyte();
                 if(fonts != null)
-                    widget.itemfont = fonts[fontid];
-                widget.shadowtext = buffer0.getUbyte() == 1;
-                widget.anInt232 = buffer0.getDword();
-                widget.anInt231 = buffer0.getWord();
-                widget.anInt244 = buffer0.getWord();
-                widget.aBoolean249 = buffer0.getUbyte() == 1;
-                widget.itemoptions = new String[5];
+                    widget.textFont = fonts[fontid];
+                widget.drawTextShadow = dataBuffer.getUbyte() == 1;
+                widget.inactiveTextColor = dataBuffer.getDword();
+                widget.xOff = dataBuffer.getWord();
+                widget.yOff = dataBuffer.getWord();
+                widget.aBoolean249 = dataBuffer.getUbyte() == 1;
+                widget.itemOptions = new String[5];
                 for(int k4 = 0; k4 < 5; k4++)
                 {
-                    widget.itemoptions[k4] = buffer0.getString();
-                    if(widget.itemoptions[k4].length() == 0)
-                        widget.itemoptions[k4] = null;
+                    widget.itemOptions[k4] = dataBuffer.getString();
+                    if(widget.itemOptions[k4].length() == 0)
+                        widget.itemOptions[k4] = null;
                 }
             }
-            if(widget.textfieldtype == 2 || widget.widgettype == 2)
+            if(widget.fieldType == 2 || widget.type == 2)
             {
-                widget.aString222 = buffer0.getString();
-                widget.aString218 = buffer0.getString();
-                widget.anInt237 = buffer0.getUword();
+                widget.aString222 = dataBuffer.getString();
+                widget.aString218 = dataBuffer.getString();
+                widget.anInt237 = dataBuffer.getUword();
             }
-            if(widget.textfieldtype == 1 || widget.textfieldtype == 4 || widget.textfieldtype == 5 || widget.textfieldtype == 6)
+            if(widget.type == 8)
+                dataBuffer.getString();
+            if(widget.fieldType == 1 || widget.fieldType == 4 || widget.fieldType == 5 || widget.fieldType == 6)
             {
-                widget.aString221 = buffer0.getString();
-                if(widget.aString221.length() == 0)
+                widget.optionField = dataBuffer.getString();
+                if(widget.optionField.length() == 0)
                 {
-                    if(widget.textfieldtype == 1)
-                        widget.aString221 = "Ok";
-                    if(widget.textfieldtype == 4)
-                        widget.aString221 = "Select";
-                    if(widget.textfieldtype == 5)
-                        widget.aString221 = "Select";
-                    if(widget.textfieldtype == 6)
-                        widget.aString221 = "Continue";
+                    if(widget.fieldType == 1)
+                        widget.optionField = "Ok";
+                    if(widget.fieldType == 4)
+                        widget.optionField = "Select";
+                    if(widget.fieldType == 5)
+                        widget.optionField = "Select";
+                    if(widget.fieldType == 6)
+                        widget.optionField = "Continue";
                 }
             }
         }
-        aClass12_238 = null;
+        spriteCache = null;
     }
 
-    public Model getEntityOnChild(int i, int j)
+    public Model getModel(int fetchType, int modelId)
     {
-        Model class30_sub2_sub4_sub6 = (Model)aClass12_264.get((i << 16) + j);
-        if(class30_sub2_sub4_sub6 != null)
-            return class30_sub2_sub4_sub6;
-        if(i == 1)
-            class30_sub2_sub4_sub6 = Model.getModel(anInt213, j);
-        if(i == 2)
-            class30_sub2_sub4_sub6 = NPCDefinition.getNPCDefinition(j).method160(true);
-        if(i == 3)
-            class30_sub2_sub4_sub6 = Main.localplayer.method453((byte)-41);
-        if(i == 4)
-            class30_sub2_sub4_sub6 = ItemDefinition.getItemDefinition(j).method202(50, true);
-        if(i == 5)
-            class30_sub2_sub4_sub6 = null;
-        if(class30_sub2_sub4_sub6 != null)
-            aClass12_264.put(class30_sub2_sub4_sub6, (i << 16) + j);
-        return class30_sub2_sub4_sub6;
+        Model model = (Model) modelCache.get((fetchType << 16) + modelId);
+        if(model != null)
+            return model;
+        if(fetchType == 1)
+            model = Model.getModel(modelId);
+        if(fetchType == 2)
+            model = NpcDefinition.getNPCDefinition(modelId).method160(true);
+        if(fetchType == 3)
+            model = Main.localPlayer.method453();
+        if(fetchType == 4)
+            model = ItemDefinition.getItemDefinition(modelId).method202(50, true);
+        if(fetchType == 5)
+            model = null;
+        if(model != null)
+            modelCache.put(model, (fetchType << 16) + modelId);
+        return model;
     }
 
-    public static DirectColorSprite getInterfaceSprite(int id, ArchivePackage archive, String name)
+    public static DirectColorSprite getSprite(ArchivePackage pack, String spriteName, int childId)
     {
-        long hash = (TextTools.hashString((byte)1, name) << 8) + (long) id;
-        DirectColorSprite sprite = (DirectColorSprite) aClass12_238.get(hash);
+        long hash = (TextTools.hashString((byte)1, spriteName) << 8) + (long) childId;
+        DirectColorSprite sprite = (DirectColorSprite) spriteCache.get(hash);
         if(sprite != null)
             return sprite;
         try
         {
-            sprite = new DirectColorSprite(archive, name, id);
-            aClass12_238.put(sprite, hash);
+            sprite = new DirectColorSprite(pack, spriteName, childId);
+            spriteCache.put(sprite, hash);
         }
-        catch(Exception _ex)
+        catch(Exception ex)
         {
             return null;
         }
         return sprite;
     }
 
-    public static void method208(int c, boolean flag, int a, Model model)
+    public static void cacheModel(int c, int a, Model model)
     {
-        if(flag)
-            return;
-        aClass12_264.clear();
+        modelCache.clear();
         if(model != null && a != 4)
-            aClass12_264.put(model, (a << 16) + c);
+            modelCache.put(model, (a << 16) + c);
     }
 
-    public Model method209(int i, int j, int k, boolean flag)
+    public Model getAnimatedModel(int frameId1, int frameId0, boolean isActive)
     {
-        Model model0;
-        if(flag)
-            model0 = getEntityOnChild(anInt255, anInt256);
+        Model model;
+        if(isActive)
+            model = getModel(activeAnimFetchType, activeAnimModelId);
         else
-            model0 = getEntityOnChild(anInt233, anInt234);
-        if(model0 == null)
+            model = getModel(unactiveAnimFetchType, unactiveAnimModelId);
+        if(model == null)
             return null;
-        if(k == -1 && j == -1 && model0.trianglecolors == null)
-            return model0;
-        Model model1 = new Model(model0,true, AnimFrame.method532(k, false) & AnimFrame.method532(j, false), false);
-        if(k != -1 || j != -1)
+        if(frameId0 == -1 && frameId1 == -1 && model.trianglecolors == null)
+            return model;
+        Model model1 = new Model(model,true, AnimFrame.method532(frameId0, false) & AnimFrame.method532(frameId1, false), false);
+        if(frameId0 != -1 || frameId1 != -1)
             model1.setVertexTriangleGroups();
-        if(k != -1)
-            model1.applyAnimationFrame(k);
-        if(j != -1)
-            model1.applyAnimationFrame(j);
+        if(frameId0 != -1)
+            model1.applyAnimationFrame(frameId0);
+        if(frameId1 != -1)
+            model1.applyAnimationFrame(frameId1);
         model1.setLightingVectors(64, 768, -50, -10, -50, true);
-        if(i != 0)
-            throw new NullPointerException();
-        else
             return model1;
     }
 
@@ -320,71 +306,71 @@ public class Widget {
         anInt229 = 891;
     }
 
-    public DirectColorSprite aClass30_Sub2_Sub1_Sub1_207;
+    public DirectColorSprite inactiveSprite;
     public int anInt208;
     public DirectColorSprite sprites[];
     public static Widget widgets[];
-    public int anInt211;
-    public int updatestates[];
+    public int unusedInt;
+    public int scriptConditions[];
     public int anInt213;
-    public int actioncode;
+    public int actionCode;
     public int anIntArray215[];
     public int anInt216;
-    public int textfieldtype;
+    public int fieldType;
     public String aString218;
-    public int anInt219;
+    public int activeTextColor;
     public int width;
-    public String aString221;
+    public String optionField;
     public String aString222;
-    public boolean centerx;
+    public boolean isTextCentered;
     public int anInt224;
-    public String itemoptions[];
-    public int anIntArrayArray226[][];
-    public boolean aBoolean227;
-    public String hiddentext;
+    public String itemOptions[];
+    public int scriptOpcodes[][];
+    public boolean isSolidQuad;
+    public String activeText;
     public int anInt229;
-    public int anInt230;
-    public int anInt231;
-    public int anInt232;
-    public int anInt233;
-    public int anInt234;
+    public int childId;
+    public int xOff;
+    public int inactiveTextColor;
+    public int unactiveAnimFetchType;
+    public int unactiveAnimModelId;
     public boolean aBoolean235;
-    public int parentid;
+    public int parentId;
     public int anInt237;
-    public static Cache aClass12_238;
+    public static Cache spriteCache;
     public int anInt239;
-    public int childrenwidgets[];
-    public int positionx[];
+    public int childrenIds[];
+    public int childrenOffX[];
     public boolean aBoolean242;
-    public BitmapFont itemfont;
-    public int anInt244;
-    public int updateconditions[];
+    public BitmapFont textFont;
+    public int yOff;
+    public int scriptInstructions[];
     public int anInt246;
     public int anIntArray247[];
-    public String aString248;
+    public String inactiveText;
     public boolean aBoolean249;
-    public int widgetid;
-    public boolean aBoolean251;
-    public int itemamounts[];
-    public int itemarray[];
-    public byte oalpha;
-    public int anInt255;
-    public int anInt256;
-    public int anInt257;
-    public int anInt258;
+    public int widgetId;
+    public boolean unusedBool;
+    public int itemAmounts[];
+    public int itemIds[];
+    public byte alpha;
+    public int activeAnimFetchType;
+    public int activeAnimModelId;
+    public int inactiveAnimId;
+    public int activeAnimId;
     public boolean aBoolean259;
-    public DirectColorSprite aClass30_Sub2_Sub1_Sub1_260;
-    public int anInt261;
-    public int widgettype;
-    public int anInt263;
-    public static Cache aClass12_264 = new Cache(30);
-    public int anInt265;
-    public boolean aBoolean266;
+    public DirectColorSprite activeSprite;
+    public int currentHeight;
+    public int type;
+    public int offsetX;
+    public static Cache modelCache = new Cache(30);
+    public int offsetY;
+    public boolean isActive;
     public int height;
-    public boolean shadowtext;
-    public int anInt269;
-    public int anInt270;
-    public int anInt271;
-    public int positiony[];
+    public boolean drawTextShadow;
+    public int rotationOrigin;
+    public int rotationAngleX;
+    public int rotationAngleY;
+    public int childrenOffY[];
 
 }

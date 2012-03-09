@@ -4,14 +4,14 @@
 
 import sign.Signlink;
 
-public class NPCDefinition {
+public class NpcDefinition {
 
-    public static NPCDefinition getNPCDefinition(int i) {
+    public static NpcDefinition getNPCDefinition(int i) {
         for(int j = 0; j < 20; j++)
             if(aClass5Array80[j].id == (long)i)
                 return aClass5Array80[j];
         anInt56 = (anInt56 + 1) % 20;
-        NPCDefinition class5 = aClass5Array80[anInt56] = new NPCDefinition();
+        NpcDefinition class5 = aClass5Array80[anInt56] = new NpcDefinition();
         npcbuffer.offset = anIntArray72[i];
         class5.id = i;
         class5.loadDefinition(true, npcbuffer);
@@ -21,7 +21,7 @@ public class NPCDefinition {
     public Model method160(boolean flag) {
         if(confignpcs != null)
         {
-            NPCDefinition class5 = method161(anInt64);
+            NpcDefinition class5 = method161(anInt64);
             if(class5 == null)
                 return null;
             else
@@ -40,7 +40,7 @@ public class NPCDefinition {
             return null;
         Model aclass30_sub2_sub4_sub6[] = new Model[headmodels.length];
         for(int j = 0; j < headmodels.length; j++)
-            aclass30_sub2_sub4_sub6[j] = Model.getModel(anInt69, headmodels[j]);
+            aclass30_sub2_sub4_sub6[j] = Model.getModel(headmodels[j]);
         Model class30_sub2_sub4_sub6;
         if(aclass30_sub2_sub4_sub6.length == 1)
             class30_sub2_sub4_sub6 = aclass30_sub2_sub4_sub6[0];
@@ -54,13 +54,13 @@ public class NPCDefinition {
         return class30_sub2_sub4_sub6;
     }
 
-    public NPCDefinition method161(int i)
+    public NpcDefinition method161(int i)
     {
         int j = -1;
         if(i != 1834)
             aBoolean81 = !aBoolean81;
         if(varbitid != -1) {
-            VarbitFile class37 = VarbitFile.aClass37Array646[varbitid];
+            VarbitFile class37 = VarbitFile.varbitArray[varbitid];
             int k = class37.config_num;
             int l = class37.anInt649;
             int i1 = class37.anInt650;
@@ -84,9 +84,9 @@ public class NPCDefinition {
             anIntArray72[j] = i;
             i += buffer0.getUword();
         }
-        aClass5Array80 = new NPCDefinition[20];
+        aClass5Array80 = new NpcDefinition[20];
         for(int k = 0; k < 20; k++)
-            aClass5Array80[k] = new NPCDefinition();
+            aClass5Array80[k] = new NpcDefinition();
     }
 
     public static void dystroy(int junk) {
@@ -100,7 +100,7 @@ public class NPCDefinition {
     {
         if(confignpcs != null)
         {
-            NPCDefinition class5 = method161(anInt64);
+            NpcDefinition class5 = method161(anInt64);
             if(class5 == null)
                 return null;
             else
@@ -118,7 +118,7 @@ public class NPCDefinition {
                 return null;
             Model aclass30_sub2_sub4_sub6[] = new Model[npcdef_models.length];
             for(int j1 = 0; j1 < npcdef_models.length; j1++)
-                aclass30_sub2_sub4_sub6[j1] = Model.getModel(anInt69, npcdef_models[j1]);
+                aclass30_sub2_sub4_sub6[j1] = Model.getModel(npcdef_models[j1]);
 
             if(aclass30_sub2_sub4_sub6.length == 1)
                 class30_sub2_sub4_sub6 = aclass30_sub2_sub4_sub6[0];
@@ -269,7 +269,7 @@ public class NPCDefinition {
         } while(true);
     }
 
-    public NPCDefinition() {
+    public NpcDefinition() {
         npcdef_turn90ccw = -1;
         varbitid = -1;
         npcdef_turn180anim = -1;
@@ -321,7 +321,7 @@ public class NPCDefinition {
     public int npcdef_standanim;
     public long id;
     public int spawndirection;
-    public static NPCDefinition aClass5Array80[];
+    public static NpcDefinition aClass5Array80[];
     public boolean aBoolean81;
     public static Main main;
     public int npcdef_turn90cw;

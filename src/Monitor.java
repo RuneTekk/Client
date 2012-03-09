@@ -10,8 +10,8 @@ public final class Monitor implements Runnable {
         while(running) {
             synchronized(sync) {
                 if(position < 500) {
-                    x_queue[position] = ((ApplicationApplet) (local_main)).mouse_x;
-                    y_queue[position] = ((ApplicationApplet) (local_main)).mouse_y;
+                    x_queue[position] = ((ApplicationApplet) (local_main)).newMouseX;
+                    y_queue[position] = ((ApplicationApplet) (local_main)).newMouseY;
                     position++;
                 }
             }

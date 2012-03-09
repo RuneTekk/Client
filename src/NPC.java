@@ -2,9 +2,7 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
-import sign.Signlink;
-
-public class NPC extends Mob {
+public class Npc extends Mob {
 
     public Model method450(int i)
     {
@@ -12,7 +10,7 @@ public class NPC extends Mob {
         {
             int k = AnimSequence.animationsequences[super.animid_request].anIntArray353[super.anInt1527];
             int i1 = -1;
-            if(super.anInt1517 >= 0 && super.anInt1517 != super.stand_anim)
+            if(super.anInt1517 >= 0 && super.anInt1517 != super.standAnimation)
                 i1 = AnimSequence.animationsequences[super.anInt1517].anIntArray353[super.anInt1518];
             return definition.getModel(0, i1, k, AnimSequence.animationsequences[super.animid_request].anIntArray357);
         }
@@ -38,7 +36,7 @@ public class NPC extends Mob {
             {
                 int j = class23.aClass20_407.anIntArray353[super.anInt1521];
                 Model class30_sub2_sub4_sub6_2 = new Model(class30_sub2_sub4_sub6_1,true, AnimFrame.method532(j, false), false);
-                class30_sub2_sub4_sub6_2.moveVertices(0, -super.anInt1524, 16384, 0);
+                class30_sub2_sub4_sub6_2.moveVertices(0, -super.anInt1524, 0);
                 class30_sub2_sub4_sub6_2.setVertexTriangleGroups();
                 class30_sub2_sub4_sub6_2.applyAnimationFrame(j);
                 class30_sub2_sub4_sub6_2.trianglegroups = null;
@@ -57,14 +55,14 @@ public class NPC extends Mob {
         return class30_sub2_sub4_sub6;
     }
 
-    public boolean hasDefinition(boolean junk) {
+    public boolean hasDefinition() {
         return definition != null;
     }
 
-    public NPC()
+    public Npc()
     {
         
     }
 
-    public NPCDefinition definition;
+    public NpcDefinition definition;
 }

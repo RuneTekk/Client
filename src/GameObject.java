@@ -53,7 +53,7 @@ public class GameObject extends Entity {
         }
         if(anInt1601 != -1)
         {
-            VarbitFile class37 = VarbitFile.aClass37Array646[anInt1601];
+            VarbitFile class37 = VarbitFile.varbitArray[anInt1601];
             int k = class37.config_num;
             int l = class37.anInt649;
             int i1 = class37.anInt650;

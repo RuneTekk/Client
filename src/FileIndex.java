@@ -27,7 +27,7 @@ public final class FileIndex {
             }
             int size = ((chunkBuffer[0] & 0xff) << 16) + ((chunkBuffer[1] & 0xff) << 8) + (chunkBuffer[2] & 0xff);
             int block = ((chunkBuffer[3] & 0xff) << 16) + ((chunkBuffer[4] & 0xff) << 8) + (chunkBuffer[5] & 0xff);
-            if(size < 0 || size > maxSize)
+            if(size < 0)
                 return null;
             if(block <= 0 || (long)block > mainRandomAccessFile.length() / 520L)
                 return null;

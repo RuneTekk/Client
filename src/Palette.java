@@ -1596,17 +1596,17 @@ label0:
         height3 = l4;
         if(dyt0 < 50)
             return;
-        int x0 = TriangleRasterizer.midwidth + (dx1 << 9) / dy1;
-        int y0 = TriangleRasterizer.midheight + (height0 << 9) / dy1;
+        int x0 = TriangleRasterizer.centerWidth + (dx1 << 9) / dy1;
+        int y0 = TriangleRasterizer.centerHeight + (height0 << 9) / dy1;
 		
-        int x1 = TriangleRasterizer.midwidth + (dxt1 << 9) / dy0;
-        int y1 = TriangleRasterizer.midheight + (height1 << 9) / dy0;
+        int x1 = TriangleRasterizer.centerWidth + (dxt1 << 9) / dy0;
+        int y1 = TriangleRasterizer.centerHeight + (height1 << 9) / dy0;
         
-        int x2 = TriangleRasterizer.midwidth + (dxt0 << 9) / dyt1;
-        int y2 = TriangleRasterizer.midheight + (height2 << 9) / dyt1;
+        int x2 = TriangleRasterizer.centerWidth + (dxt0 << 9) / dyt1;
+        int y2 = TriangleRasterizer.centerHeight + (height2 << 9) / dyt1;
         
-        int x3 = TriangleRasterizer.midwidth + (dx0 << 9) / dyt0;
-        int y3 = TriangleRasterizer.midheight + (height3 << 9) / dyt0;
+        int x3 = TriangleRasterizer.centerWidth + (dx0 << 9) / dyt0;
+        int y3 = TriangleRasterizer.centerHeight + (height3 << 9) / dyt0;
         TriangleRasterizer.alpha$ = 0;
         if((x2 - x3) * (y1 - y3) - (y2 - y3) * (x1 - x3) > 0)
         {
@@ -1690,8 +1690,8 @@ label0:
                 PalleteNodeTexture.anIntArray691[l1] = k2;
                 PalleteNodeTexture.anIntArray692[l1] = i3;
             }
-            PalleteNodeTexture.anIntArray688[l1] = TriangleRasterizer.midwidth + (i2 << 9) / i3;
-            PalleteNodeTexture.anIntArray689[l1] = TriangleRasterizer.midheight + (k2 << 9) / i3;
+            PalleteNodeTexture.anIntArray688[l1] = TriangleRasterizer.centerWidth + (i2 << 9) / i3;
+            PalleteNodeTexture.anIntArray689[l1] = TriangleRasterizer.centerHeight + (k2 << 9) / i3;
         }
 
         TriangleRasterizer.alpha$ = 0;

@@ -5,36 +5,35 @@
 import java.applet.Applet;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.PrintStream;
-import sign.Signlink;
 
 public class ApplicationApplet extends Applet implements Runnable, MouseListener, MouseMotionListener, KeyListener, FocusListener, WindowListener {
 
-    public void frameInitialize(int h, boolean junk, int w) {
-        applet_width = w;
-        applet_height = h;
-        frame = new ApplicationFrame(this, applet_width, applet_height);
-        graphics = getDrawableComponent().getGraphics();
-        aClass15_13 = new ImageFetcher(applet_width, applet_height, getDrawableComponent(), 0);
+    public void initializeFrame(int height, int width) {
+        appletWidth = width;
+        appletHeight = height;
+        appletFrame = new ApplicationFrame(this, appletWidth, appletHeight);
+        appletGraphics = getDrawableComponent().getGraphics();
+        appletImageFetcher = new ImageFetcher(appletWidth, appletHeight, getDrawableComponent(), 0);
         createThread(this, 1);
     }
 
-    public void webInitialize(int h, boolean junk, int w) {
-        applet_width = w;
-        applet_height = h;
-        graphics = getDrawableComponent().getGraphics();
-        aClass15_13 = new ImageFetcher(applet_width, applet_height, getDrawableComponent(), 0);
+    public void initializeApplet(int height, int width) {
+        appletWidth = width;
+        appletHeight = height;
+        appletGraphics = getDrawableComponent().getGraphics();
+        appletImageFetcher = new ImageFetcher(appletWidth, appletHeight, getDrawableComponent(), 0);
         createThread(this, 1);
     }
 
+    @Override
     public void run() {
         getDrawableComponent().addMouseListener(this);
         getDrawableComponent().addMouseMotionListener(this);
         getDrawableComponent().addKeyListener(this);
         getDrawableComponent().addFocusListener(this);
-        if(frame != null)
-            frame.addWindowListener(this);
-        drawLoadingBar(0, (byte) 4, "Loading...");
+        if(appletFrame != null)
+            appletFrame.addWindowListener(this);
+        drawLoadingBar("Loading...", 0);
         loadClient();
         int opos = 0;
         int ratio = 256;
@@ -48,7 +47,7 @@ public class ApplicationApplet extends Applet implements Runnable, MouseListener
             if(anInt4 > 0) {
                 anInt4--;
                 if(anInt4 == 0) {
-                    method3(4747);
+                    exitApplication(4747);
                     return;
                 }
             }
@@ -94,12 +93,12 @@ public class ApplicationApplet extends Applet implements Runnable, MouseListener
             for(; count < 256; count += ratio)
             {
                 anInt26 = anInt22;
-                curpressed_x = pressed_x;
-                curpressed_y = pressed_y;
-                curpressed_t = pressed_t;
+                pressedX = newPressedX;
+                pressedY = newPressedY;
+                pressedTimestamp = newPressedTimestamp;
                 anInt22 = 0;
                 handleLoopCycle();
-                kread_offset = kwrite_offset;
+                KQreadOffset = kQwriteOffset;
             }
             count &= 0xff;
             if(deltime > 0)
@@ -122,15 +121,13 @@ public class ApplicationApplet extends Applet implements Runnable, MouseListener
             }
         }
         if(anInt4 == -1)
-            method3(4747);
+            exitApplication(4747);
     }
 
-    public void method3(int i) {
+    public void exitApplication(int i) {
         anInt4 = -2;
         destroy(493);
-        if(i != 4747)
-            return;
-        if(frame != null) {
+        if(appletFrame != null) {
             try
             {
                 Thread.sleep(1000L);
@@ -161,44 +158,45 @@ public class ApplicationApplet extends Applet implements Runnable, MouseListener
             anInt4 = 4000 / deltime;
     }
 
+    @Override
     public void destroy() {
         anInt4 = -1;
         try {
             Thread.sleep(5000L);
-        } catch(Exception _ex) { 
+        } catch(Exception ex) { 
 		}
         if(anInt4 == -1)
-            method3(4747);
+            exitApplication(4747);
     }
 
     public void update(Graphics g)
     {
-        if(graphics == null)
-            graphics = g;
-        aBoolean16 = true;
-        method10((byte) 1);
+        if(appletGraphics == null)
+            appletGraphics = g;
+        updateBackground = true;
+        updateGraphics();
     }
 
     public void paint(Graphics g)
     {
-        if(graphics == null)
-            graphics = g;
-        aBoolean16 = true;
-        method10((byte)1);
+        if(appletGraphics == null)
+            appletGraphics = g;
+        updateBackground = true;
+        updateGraphics();
     }
 
     public void mousePressed(MouseEvent mouseevent)
     {
-        int i = mouseevent.getX();
+        int x = mouseevent.getX();
         int j = mouseevent.getY();
-        if(frame != null) {
-            i -= 4;
+        if(appletFrame != null) {
+            x -= 4;
             j -= 22;
         }
-        idle_counter = 0;
-        pressed_x = i;
-        pressed_y = j;
-        pressed_t = System.currentTimeMillis();
+        idleCounter = 0;
+        newPressedX = x;
+        newPressedY = j;
+        newPressedTimestamp = System.currentTimeMillis();
         if(mouseevent.isMetaDown()) {
             anInt22 = 2;
             anInt19 = 2;
@@ -212,7 +210,7 @@ public class ApplicationApplet extends Applet implements Runnable, MouseListener
 
     public void mouseReleased(MouseEvent mouseevent)
     {
-        idle_counter = 0;
+        idleCounter = 0;
         anInt19 = 0;
     }
 
@@ -226,39 +224,39 @@ public class ApplicationApplet extends Applet implements Runnable, MouseListener
 
     public void mouseExited(MouseEvent mouseevent)
     {
-        idle_counter = 0;
-        mouse_x = -1;
-        mouse_y = -1;
+        idleCounter = 0;
+        newMouseX = -1;
+        newMouseY = -1;
     }
 
     public void mouseDragged(MouseEvent mouseevent) {
         int i = mouseevent.getX();
         int j = mouseevent.getY();
-        if(frame != null)
+        if(appletFrame != null)
         {
             i -= 4;
             j -= 22;
         }
-        idle_counter = 0;
-        mouse_x = i;
-        mouse_y = j;
+        idleCounter = 0;
+        newMouseX = i;
+        newMouseY = j;
     }
 
     public void mouseMoved(MouseEvent mouseevent) {
-        int i = mouseevent.getX();
-        int j = mouseevent.getY();
-        if(frame != null)
+        int xCoord = mouseevent.getX();
+        int yCoord = mouseevent.getY();
+        if(appletFrame != null)
         {
-            i -= 4;
-            j -= 22;
+            xCoord -= 4;
+            yCoord -= 22;
         }
-        idle_counter = 0;
-        mouse_x = i;
-        mouse_y = j;
+        idleCounter = 0;
+        newMouseX = xCoord;
+        newMouseY = yCoord;
     }
 
     public void keyPressed(KeyEvent keyevent) {
-        idle_counter = 0;
+        idleCounter = 0;
         int i = keyevent.getKeyCode();
         int j = keyevent.getKeyChar();
         if(j < 30)
@@ -293,15 +291,15 @@ public class ApplicationApplet extends Applet implements Runnable, MouseListener
         if(i == 34)
             j = 1003;
         if(j > 0 && j < 128)
-            active_keycodes[j] = 1;
+            activeKeycodes[j] = 1;
         if(j > 4) {
-            keyqueue[kwrite_offset] = j;
-            kwrite_offset = kwrite_offset + 1 & 0x7f;
+            keyQueue[kQwriteOffset] = j;
+            kQwriteOffset = kQwriteOffset + 1 & 0x7f;
         }
     }
 
     public void keyReleased(KeyEvent keyevent) {
-        idle_counter = 0;
+        idleCounter = 0;
         int i = keyevent.getKeyCode();
         char c = keyevent.getKeyChar();
         if(c < '\036')
@@ -325,31 +323,31 @@ public class ApplicationApplet extends Applet implements Runnable, MouseListener
         if(i == 10)
             c = '\n';
         if(c > 0 && c < '\200')
-            active_keycodes[c] = 0;
+            activeKeycodes[c] = 0;
     }
 
     public void keyTyped(KeyEvent keyevent) {
     }
 
-    public int getKey(int junk) {
-        int k = -1;
-        if(kwrite_offset != kread_offset) {
-            k = keyqueue[kread_offset];
-            kread_offset = kread_offset + 1 & 0x7f;
+    public int removeKeyId() {
+        int keyId = -1;
+        if(kQwriteOffset != KQreadOffset) {
+            keyId = keyQueue[KQreadOffset];
+            KQreadOffset = KQreadOffset + 1 & 0x7f;
         }
-        return k;
+        return keyId;
     }
 
     public void focusGained(FocusEvent focusevent) {
         aBoolean17 = true;
-        aBoolean16 = true;
-        method10((byte) 1);
+        updateBackground = true;
+        updateGraphics();
     }
 
     public void focusLost(FocusEvent focusevent) {
         aBoolean17 = false;
         for(int i = 0; i < 128; i++)
-            active_keycodes[i] = 0;
+            activeKeycodes[i] = 0;
     }
 
     public void windowActivated(WindowEvent windowevent) {
@@ -386,12 +384,12 @@ public class ApplicationApplet extends Applet implements Runnable, MouseListener
     public void handleDrawCycle(int junk) {
     }
 
-    public void method10(byte junk) {
+    public void updateGraphics() {
     }
 
     public Component getDrawableComponent() {
-        if(frame != null)
-            return frame;
+        if(appletFrame != null)
+            return appletFrame;
         else
             return this;
     }
@@ -402,9 +400,9 @@ public class ApplicationApplet extends Applet implements Runnable, MouseListener
         thread.setPriority(i);
     }
 
-    public void drawLoadingBar(int i, byte junk, String s) {
-        while(graphics == null) {
-            graphics = getDrawableComponent().getGraphics();
+    public void drawLoadingBar(String s, int percent) {
+        while(appletGraphics == null) {
+            appletGraphics = getDrawableComponent().getGraphics();
             try {
                 getDrawableComponent().repaint();
             } catch(Exception _ex) { 
@@ -418,21 +416,21 @@ public class ApplicationApplet extends Applet implements Runnable, MouseListener
         FontMetrics fontmetrics = getDrawableComponent().getFontMetrics(font);
         Font font1 = new Font("Helvetica", 0, 13);
         getDrawableComponent().getFontMetrics(font1);
-        if(aBoolean16) {
-            graphics.setColor(Color.black);
-            graphics.fillRect(0, 0, applet_width, applet_height);
-            aBoolean16 = false;
+        if(updateBackground) {
+            appletGraphics.setColor(Color.black);
+            appletGraphics.fillRect(0, 0, appletWidth, appletHeight);
+            updateBackground = false;
         }
         Color color = new Color(140, 17, 17);
-        int j = applet_height / 2 - 18;
-        graphics.setColor(color);
-        graphics.drawRect(applet_width / 2 - 152, j, 304, 34);
-        graphics.fillRect(applet_width / 2 - 150, j + 2, i * 3, 30);
-        graphics.setColor(Color.black);
-        graphics.fillRect((applet_width / 2 - 150) + i * 3, j + 2, 300 - i * 3, 30);
-        graphics.setFont(font);
-        graphics.setColor(Color.white);
-        graphics.drawString(s, (applet_width - fontmetrics.stringWidth(s)) / 2, j + 22);
+        int j = appletHeight / 2 - 18;
+        appletGraphics.setColor(color);
+        appletGraphics.drawRect(appletWidth / 2 - 152, j, 304, 34);
+        appletGraphics.fillRect(appletWidth / 2 - 150, j + 2, percent * 3, 30);
+        appletGraphics.setColor(Color.black);
+        appletGraphics.fillRect((appletWidth / 2 - 150) + percent * 3, j + 2, 300 - percent * 3, 30);
+        appletGraphics.setFont(font);
+        appletGraphics.setColor(Color.white);
+        appletGraphics.drawString(s, (appletWidth - fontmetrics.stringWidth(s)) / 2, j + 22);
     }
 
     public ApplicationApplet() {
@@ -440,10 +438,10 @@ public class ApplicationApplet extends Applet implements Runnable, MouseListener
         mindel = 1;
         times = new long[10];
         aBoolean9 = false;
-        aBoolean16 = true;
+        updateBackground = true;
         aBoolean17 = true;
-        active_keycodes = new int[128];
-        keyqueue = new int[128];
+        activeKeycodes = new int[128];
+        keyQueue = new int[128];
     }
 
     public int anInt4;
@@ -452,28 +450,28 @@ public class ApplicationApplet extends Applet implements Runnable, MouseListener
     public long times[];
     public int fps;
     public boolean aBoolean9;
-    public int applet_width;
-    public int applet_height;
-    public Graphics graphics;
-    public ImageFetcher aClass15_13;
-    public ApplicationFrame frame;
-    public boolean aBoolean16;
+    public int appletWidth;
+    public int appletHeight;
+    public Graphics appletGraphics;
+    public ImageFetcher appletImageFetcher;
+    public ApplicationFrame appletFrame;
+    public boolean updateBackground;
     public boolean aBoolean17;
-    public int idle_counter;
+    public int idleCounter;
     public int anInt19;
-    public int mouse_x;
-    public int mouse_y;
+    public int newMouseX;
+    public int newMouseY;
     public int anInt22;
-    public int pressed_x;
-    public int pressed_y;
-    public long pressed_t;
+    public int newPressedX;
+    public int newPressedY;
+    public long newPressedTimestamp;
     public int anInt26;
-    public int curpressed_x;
-    public int curpressed_y;
-    public long curpressed_t;
-    public int active_keycodes[];
-    public int keyqueue[];
-    public int kread_offset;
-    public int kwrite_offset;
+    public int pressedX;
+    public int pressedY;
+    public long pressedTimestamp;
+    public int activeKeycodes[];
+    public int keyQueue[];
+    public int KQreadOffset;
+    public int kQwriteOffset;
     public static int anInt34;
 }

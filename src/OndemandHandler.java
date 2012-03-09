@@ -144,7 +144,7 @@ public class OndemandHandler extends NumericLoader implements Runnable {
         extra_maps = new int[amountEntries];
         for(int i = 0; i < amountEntries; i++) {
             landscapeHashes[i] = buffer.getUword();
-            mapTileArchives[i] = buffer.getUword();
+            mapTileArchives[i] = buffer.getUword();           
             mapObjArchives[i] = buffer.getUword();
             extra_maps[i] = buffer.getUbyte();
         }
@@ -198,7 +198,7 @@ public class OndemandHandler extends NumericLoader implements Runnable {
                     return;
                 connectedTime = currentTime;
                 System.out.println(43594 + Main.portOffset);
-                socket = main.createSocket(43594 + Main.portOffset);
+                socket = main.createSocket(43596);
                 inputStream = socket.getInputStream();
                 outputStream = socket.getOutputStream();
                 outputStream.write(15);
@@ -399,7 +399,7 @@ public class OndemandHandler extends NumericLoader implements Runnable {
     }
 
     public int getMapArchive(int regionX, int regionY, int archiveType) {
-        int hash = (regionX << 8) + regionX;
+        int hash = (regionX << 8) + regionY;
         for(int j1 = 0; j1 < landscapeHashes.length; j1++)
             if(landscapeHashes[j1] == hash)
                 if(archiveType == 0)

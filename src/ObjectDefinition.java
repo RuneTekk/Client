@@ -27,7 +27,7 @@ public class ObjectDefinition {
         anIntArray784 = null;
         anIntArray747 = null;
         anInt744 = 1;
-        objsize = 1;
+        size = 1;
         aBoolean767 = true;
         aBoolean757 = true;
         aBoolean778 = false;
@@ -160,7 +160,7 @@ public class ObjectDefinition {
         int i = -1;
         if(anInt774 != -1)
         {
-            VarbitFile class37 = VarbitFile.aClass37Array646[anInt774];
+            VarbitFile class37 = VarbitFile.varbitArray[anInt774];
             int j = class37.config_num;
             int k = class37.anInt649;
             int l = class37.anInt650;
@@ -199,7 +199,7 @@ public class ObjectDefinition {
                 class30_sub2_sub4_sub6 = (Model)aClass12_785.get(l2);
                 if(class30_sub2_sub4_sub6 == null)
                 {
-                    class30_sub2_sub4_sub6 = Model.getModel(anInt770, l2 & 0xffff);
+                    class30_sub2_sub4_sub6 = Model.getModel(l2 & 0xffff);
                     if(class30_sub2_sub4_sub6 == null)
                         return null;
                     if(flag1)
@@ -236,7 +236,7 @@ public class ObjectDefinition {
             class30_sub2_sub4_sub6 = (Model)aClass12_785.get(j2);
             if(class30_sub2_sub4_sub6 == null)
             {
-                class30_sub2_sub4_sub6 = Model.getModel(anInt770, j2 & 0xffff);
+                class30_sub2_sub4_sub6 = Model.getModel(j2 & 0xffff);
                 if(class30_sub2_sub4_sub6 == null)
                     return null;
                 if(flag3)
@@ -273,7 +273,7 @@ public class ObjectDefinition {
         if(flag)
             class30_sub2_sub4_sub6_3.scaleModel(anInt748, anInt772, anInt740);
         if(flag2)
-            class30_sub2_sub4_sub6_3.moveVertices(anInt738, anInt745, 16384, anInt783);
+            class30_sub2_sub4_sub6_3.moveVertices(anInt738, anInt745, anInt783);
         class30_sub2_sub4_sub6_3.setLightingVectors(64 + aByte737, 768 + aByte742 * 5, -50, -10, -50, !aBoolean769);
         if(anInt760 == 1)
             class30_sub2_sub4_sub6_3.anInt1654 = ((Entity) (class30_sub2_sub4_sub6_3)).miny;
@@ -342,7 +342,7 @@ label0:
                     anInt744 = buffer0.getUbyte();
                 else
                 if(j == 15)
-                    objsize = buffer0.getUbyte();
+                    size = buffer0.getUbyte();
                 else
                 if(j == 17)
                     aBoolean767 = false;
@@ -513,7 +513,7 @@ label0:
     public int anInt758;
     public int anIntArray759[];
     public int anInt760;
-    public int objsize;
+    public int size;
     public boolean aBoolean762;
     public boolean aBoolean763;
     public boolean aBoolean764;

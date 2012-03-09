@@ -2,177 +2,153 @@
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
-import sign.Signlink;
-
 public class IndexedColorSprite extends BasicRasterizer {
 
-    public IndexedColorSprite(ArchivePackage class44, String s, int i) {
-        aBoolean1447 = false;
-        anInt1448 = 360;
-        aByte1449 = 3;
-        ByteBuffer main = new ByteBuffer(class44.getArchive(s + ".dat", null));
-        ByteBuffer index = new ByteBuffer(class44.getArchive("index.dat", null));
-        index.offset = main.getUword();
-        width_idk1 = index.getUword();
-        height_idk1 = index.getUword();
-        int j = index.getUbyte();
-        icolors = new int[j];
-        for(int k = 0; k < j - 1; k++)
-            icolors[k + 1] = (index.getTri() & 0xFFFF00);
-        for(int l = 0; l < i; l++)
-        {
-            index.offset += 2;
-            main.offset += index.getUword() * index.getUword();
-            index.offset++;
+    public IndexedColorSprite(ArchivePackage pack, String archiveName, int childId) {
+        ByteBuffer mainBuffer = new ByteBuffer(pack.getArchive(archiveName + ".dat", null));
+        ByteBuffer indexBuffer = new ByteBuffer(pack.getArchive("index.dat", null));
+        indexBuffer.offset = mainBuffer.getUword();
+        spriteWidth = indexBuffer.getUword();
+        spriteHeight = indexBuffer.getUword();
+        int amountColors = indexBuffer.getUbyte();
+        colorRef = new int[amountColors];
+        for(int i = 0; i < amountColors - 1; i++)
+            colorRef[i + 1] = indexBuffer.getTri();
+        for(int i = 0; i < childId; i++) {
+            indexBuffer.offset += 2;
+            mainBuffer.offset += indexBuffer.getUword() * indexBuffer.getUword();
+            indexBuffer.offset++;
         }
-        anInt1454 = index.getUbyte();
-        anInt1455 = index.getUbyte();
-        indexwidth_ = index.getUword();
-        indexheight_ = index.getUword();
-        int i1 = index.getUbyte();
-        int j1 = indexwidth_ * indexheight_;
-        colorindex = new byte[j1];
-        if(i1 == 0) {
-            for(int k1 = 0; k1 < j1; k1++)
-                colorindex[k1] = main.getByte();
+        offsetX = indexBuffer.getUbyte();
+        offsetY = indexBuffer.getUbyte();
+        indexWidth = indexBuffer.getUword();
+        indexHeight = indexBuffer.getUword();
+        int indexType = indexBuffer.getUbyte();
+        int bufferSize = indexWidth * indexHeight;
+        buffer = new byte[bufferSize];
+        if(indexType == 0) {
+            for(int k1 = 0; k1 < bufferSize; k1++)
+                buffer[k1] = mainBuffer.getByte();
             return;
         }
-        if(i1 == 1)
+        if(indexType == 1)
         {
-            for(int x = 0; x < indexwidth_; x++) {
-                for(int y = 0; y < indexheight_; y++)
+            for(int x = 0; x < indexWidth; x++) {
+                for(int y = 0; y < indexHeight; y++)
 					/* index width = 5, index height = 10: 0*/
-                    colorindex[x + (y * indexwidth_)] = main.getByte();
+                    buffer[x + (y * indexWidth)] = mainBuffer.getByte();
 
             }
         }
     }
 
-    public void shrink(boolean flag)
+    public void compressUnpack()
     {
-        width_idk1 /= 2;
-        height_idk1 /= 2;
-        byte abyte0[] = new byte[width_idk1 * height_idk1];
+        spriteWidth /= 2;
+        spriteHeight /= 2;
+        byte byteArray[] = new byte[spriteWidth * spriteHeight];
         int i = 0;
-        for(int y = 0; y < indexheight_; y++)
+        for(int y = 0; y < indexHeight; y++)
         {
-            for(int x = 0; x < indexwidth_; x++)
-                abyte0[(x + anInt1454 >> 1) + (y + anInt1455 >> 1) * width_idk1] = colorindex[i++];
-
+            for(int x = 0; x < indexWidth; x++)
+                byteArray[(x + offsetX >> 1) + (y + offsetY >> 1) * spriteWidth] = buffer[i++];
         }
-
-        colorindex = abyte0;
-        indexwidth_ = width_idk1;
-        indexheight_ = height_idk1;
-        anInt1454 = 0;
-        if(flag)
-        {
-            return;
-        } else
-        {
-            anInt1455 = 0;
-            return;
-        }
+        buffer = byteArray;
+        indexWidth = spriteWidth;
+        indexHeight = spriteHeight;
+        offsetX = 0;      
+        offsetY = 0;
     }
 
-    public void method357(boolean flag)
+    public void unpack()
     {
-        if(indexwidth_ == width_idk1 && indexheight_ == height_idk1)
+        if(indexWidth == spriteWidth && indexHeight == spriteHeight)
             return;
-        byte abyte0[] = new byte[width_idk1 * height_idk1];
-        if(flag)
-            return;
+        byte pBuffer[] = new byte[spriteWidth * spriteHeight];
+        int off = 0;
+        for(int y = 0; y < indexHeight; y++)
+        {
+            for(int x = 0; x < indexWidth; x++)
+                pBuffer[x + offsetX + (y + offsetY) * spriteWidth] = buffer[off++];
+
+        }
+
+        buffer = pBuffer;
+        indexWidth = spriteWidth;
+        indexHeight = spriteHeight;
+        offsetX = 0;
+        offsetY = 0;
+    }
+
+    public void indexReflectX()
+    {
+        byte pBuffer[] = new byte[indexWidth * indexHeight];
+        int off = 0;
+        for(int y = 0; y < indexHeight; y++)
+        {
+            for(int x = indexWidth - 1; x >= 0; x--)
+                pBuffer[off++] = buffer[x + y * indexWidth];
+
+        }
+
+        buffer = pBuffer;
+        offsetX = spriteWidth - indexWidth - offsetX;
+    }
+
+    public void indexReflectY()
+    {
+        byte abyte0[] = new byte[indexWidth * indexHeight];
         int i = 0;
-        for(int j = 0; j < indexheight_; j++)
+        for(int j = indexHeight - 1; j >= 0; j--)
         {
-            for(int k = 0; k < indexwidth_; k++)
-                abyte0[k + anInt1454 + (j + anInt1455) * width_idk1] = colorindex[i++];
+            for(int k = 0; k < indexWidth; k++)
+                abyte0[i++] = buffer[k + j * indexWidth];
 
         }
 
-        colorindex = abyte0;
-        indexwidth_ = width_idk1;
-        indexheight_ = height_idk1;
-        anInt1454 = 0;
-        anInt1455 = 0;
+        buffer = abyte0;
+        offsetY = spriteHeight - indexHeight - offsetY;
     }
 
-    public void method358(int i)
+    public void intensify(int i, int j, int k, int l)
     {
-        if(i != 0)
-            return;
-        byte abyte0[] = new byte[indexwidth_ * indexheight_];
-        int j = 0;
-        for(int k = 0; k < indexheight_; k++)
+        for(int i1 = 0; i1 < colorRef.length; i1++)
         {
-            for(int l = indexwidth_ - 1; l >= 0; l--)
-                abyte0[j++] = colorindex[l + k * indexwidth_];
-
-        }
-
-        colorindex = abyte0;
-        anInt1454 = width_idk1 - indexwidth_ - anInt1454;
-    }
-
-    public void method359(boolean flag)
-    {
-        byte abyte0[] = new byte[indexwidth_ * indexheight_];
-        int i = 0;
-        for(int j = indexheight_ - 1; j >= 0; j--)
-        {
-            for(int k = 0; k < indexwidth_; k++)
-                abyte0[i++] = colorindex[k + j * indexwidth_];
-
-        }
-
-        colorindex = abyte0;
-        if(!flag)
-            anInt1446 = -48;
-        anInt1455 = height_idk1 - indexheight_ - anInt1455;
-    }
-
-    public void intensifyColorIndex(int i, int j, int k, int l)
-    {
-        for(int i1 = 0; i1 < icolors.length; i1++)
-        {
-            int j1 = icolors[i1] >> 16 & 0xff;
+            int j1 = colorRef[i1] >> 16 & 0xff;
             j1 += i;
             if(j1 < 0)
                 j1 = 0;
             else
             if(j1 > 255)
                 j1 = 255;
-            int k1 = icolors[i1] >> 8 & 0xff;
+            int k1 = colorRef[i1] >> 8 & 0xff;
             k1 += j;
             if(k1 < 0)
                 k1 = 0;
             else
             if(k1 > 255)
                 k1 = 255;
-            int l1 = icolors[i1] & 0xff;
+            int l1 = colorRef[i1] & 0xff;
             l1 += k;
             if(l1 < 0)
                 l1 = 0;
             else
             if(l1 > 255)
                 l1 = 255;
-            icolors[i1] = (j1 << 16) + (k1 << 8) + l1;
+            colorRef[i1] = (j1 << 16) + (k1 << 8) + l1;
         }
-
-        if(l != 0)
-            anInt1446 = 69;
     }
 
     public void renderImage(int i, int j, int k)
     {
-        i += anInt1454;
-        k += anInt1455;
+        i += offsetX;
+        k += offsetY;
         int l = i + k * BasicRasterizer.bufferWidth;
         int i1 = 0;
         if(j != 16083)
             return;
-        int j1 = indexheight_;
-        int k1 = indexwidth_;
+        int j1 = indexHeight;
+        int k1 = indexWidth;
         int l1 = BasicRasterizer.bufferWidth - k1;
         int i2 = 0;
         if(k < BasicRasterizer.heightOffset)
@@ -207,7 +183,7 @@ public class IndexedColorSprite extends BasicRasterizer {
             return;
         } else
         {
-            render(j1, (byte)9, BasicRasterizer.pixelBuffer, colorindex, l1, l, k1, i1, icolors, i2);
+            render(j1, (byte)9, BasicRasterizer.pixelBuffer, buffer, l1, l, k1, i1, colorRef, i2);
             return;
         }
     }
@@ -264,12 +240,12 @@ public class IndexedColorSprite extends BasicRasterizer {
     public boolean aBoolean1447;
     public int anInt1448;
     public byte aByte1449;
-    public byte colorindex[];
-    public int icolors[];
-    public int indexwidth_;
-    public int indexheight_;
-    public int anInt1454;
-    public int anInt1455;
-    public int width_idk1;
-    public int height_idk1;
+    public byte buffer[];
+    public int colorRef[];
+    public int indexWidth;
+    public int indexHeight;
+    public int offsetX;
+    public int offsetY;
+    public int spriteWidth;
+    public int spriteHeight;
 }

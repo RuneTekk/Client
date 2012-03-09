@@ -29,7 +29,7 @@ public class LandscapeLoader {
   public int ml_sizex;
   public int ml_sizey;
   public byte[][][] floortexturerotation;
-  public byte[][][] tilesettings;
+  public byte[][][] tileFlags;
   public int anInt150 = -53;
   public static boolean lowmemory = true;
   public static final int[] anIntArray152 = { 1, 2, 4, 8 };
@@ -43,7 +43,7 @@ public class LandscapeLoader {
     while (i >= 0)
       anInt153 = -320;
     heightmap = is_2_;
-    tilesettings = is;
+    tileFlags = is;
     floormap2 = new byte[4][ml_sizex][ml_sizey];
     floormap = new byte[4][ml_sizex][ml_sizey];
     floorshadingtypes = new byte[4][ml_sizex][ml_sizey];
@@ -65,13 +65,13 @@ public class LandscapeLoader {
     return i_5_ >> 19 & 0xff;
   }
   
-  public void method171 (CollisionMap[] class11s, Palette class25, int i) {
+  public void method171 (PlaneFlags[] class11s, Palette class25, int i) {
     for (int i_6_ = 0; i_6_ < 4; i_6_++) {
 		for (int i_7_ = 0; i_7_ < 104; i_7_++) {
 			for (int i_8_ = 0; i_8_ < 104; i_8_++) {
-				if ((tilesettings[i_6_][i_7_][i_8_] & 0x1) == 1) {
+				if ((tileFlags[i_6_][i_7_][i_8_] & 0x1) == 1) {
 					int i_9_ = i_6_;
-					if ((tilesettings[1][i_7_][i_8_] & 0x2) == 2)
+					if ((tileFlags[1][i_7_][i_8_] & 0x2) == 2)
 						i_9_--;
 					if (i_9_ >= 0)
 						class11s[i_9_].method213 (i_8_, i_7_);
@@ -102,10 +102,8 @@ public class LandscapeLoader {
 		int i_17_ = i_12_ * i_16_ >> 8;
 		for (int i_18_ = 1; i_18_ < ml_sizey - 1; i_18_++) {
 			for (int i_19_ = 1; i_19_ < ml_sizex - 1; i_19_++) {
-				/* Difference in the height maps */
 				int i_20_ = (heightmap[i_10_][i_19_ + 1][i_18_] - heightmap[i_10_][i_19_ - 1][i_18_]);
 				int i_21_ = (heightmap[i_10_][i_19_][i_18_ + 1] - heightmap[i_10_][i_19_][i_18_ - 1]);
-				/* C^2 = A^2 + B^2 */
 				int i_22_ = (int) Math.sqrt ((double) (i_20_ * i_20_ + 65536 + i_21_ * i_21_));
 				int i_23_ = (i_20_ << 8) / i_22_;
 				int i_24_ = 65536 / i_22_;
@@ -128,10 +126,10 @@ public class LandscapeLoader {
 				if (i_31_ >= 0 && i_31_ < ml_sizex) {
 					int i_32_ = floormap2[i_10_][i_31_][i_30_] & 0xff;
 					if (i_32_ > 0) {
-						Floor class22 = Floor.floors[i_32_ - 1];
+						FloorDefinition class22 = FloorDefinition.definitions[i_32_ - 1];
 						tile_blending1[i_30_] += class22.anInt397;
-						tile_blending2[i_30_] += class22.anInt395;
-						averageintensityfloors[i_30_] += class22.avrintensitycolor;
+						tile_blending2[i_30_] += class22.iArc;
+						averageintensityfloors[i_30_] += class22.mChannel;
 						tile_blending4[i_30_] += class22.anInt398;
 						blendingcount[i_30_]++;
 					}
@@ -140,10 +138,10 @@ public class LandscapeLoader {
 				if (i_33_ >= 0 && i_33_ < ml_sizex) {
 					int i_34_ = floormap2[i_10_][i_33_][i_30_] & 0xff;
 					if (i_34_ > 0) {
-						Floor class22 = Floor.floors[i_34_ - 1];
+						FloorDefinition class22 = FloorDefinition.definitions[i_34_ - 1];
 						tile_blending1[i_30_] -= class22.anInt397;
-						tile_blending2[i_30_] -= class22.anInt395;
-						averageintensityfloors[i_30_] -= class22.avrintensitycolor;
+						tile_blending2[i_30_] -= class22.iArc;
+						averageintensityfloors[i_30_] -= class22.mChannel;
 						tile_blending4[i_30_] -= class22.anInt398;
 						blendingcount[i_30_]--;
 					}
@@ -172,7 +170,7 @@ public class LandscapeLoader {
 					i_38_ -= tile_blending4[i_42_];
 					i_39_ -= blendingcount[i_42_];
 				}
-				if (i_40_ >= 1 && i_40_ < ml_sizey - 1 && (! lowmemory || (tilesettings[0][i_29_][i_40_] & 0x2) != 0 || ((tilesettings[i_10_][i_29_][i_40_] & 0x10) == 0 && (getHeightFromTilesettings (i_40_, i_10_, i_29_, 0) == ml_hieght)))) {
+				if (i_40_ >= 1 && i_40_ < ml_sizey - 1 && (! lowmemory || (tileFlags[0][i_29_][i_40_] & 0x2) != 0 || ((tileFlags[i_10_][i_29_][i_40_] & 0x10) == 0 && (getHeightFromTilesettings (i_40_, i_10_, i_29_, 0) == ml_hieght)))) {
 					if (i_10_ < anInt145)
 					  anInt145 = i_10_;
 				int i_43_ = (floormap2[i_10_][i_29_][i_40_] & 0xff);
@@ -207,7 +205,7 @@ public class LandscapeLoader {
 						boolean bool = true;
 						if (i_43_ == 0 && (floorshadingtypes[i_10_][i_29_][i_40_]) != 0)
 							bool = false;
-						if (i_44_ > 0 && ! (Floor.floors[i_44_ - 1].aBoolean393))
+						if (i_44_ > 0 && ! (FloorDefinition.definitions[i_44_ - 1].aBoolean393))
 							bool = false;
 						if (bool && i_45_ == i_46_ && i_45_ == i_47_ && i_45_ == i_48_)
 							tilesettings2[i_10_][i_29_][i_40_] |= 0x924;
@@ -222,8 +220,8 @@ public class LandscapeLoader {
 					else {
 						int shadingtype = ((floorshadingtypes[i_10_][i_29_][i_40_]) + 1);
 						byte i_60_ = (floortexturerotation[i_10_][i_29_][i_40_]);
-						Floor class22 = Floor.floors[i_44_ - 1];
-						int _txt = class22.floor_texture;
+						FloorDefinition class22 = FloorDefinition.definitions[i_44_ - 1];
+						int _txt = class22.textureId;
 						int i_62_;
 						int i_63_;
 						if (_txt >= 0) {
@@ -235,7 +233,7 @@ public class LandscapeLoader {
 							i_63_ = -2;
 							_txt = -1;
 						} else {
-							i_63_ = method177 (class22.anInt394, class22.anInt395, class22.avrintensitycolor);
+							i_63_ = method177 (class22.cArc, class22.iArc, class22.mChannel);
 							i_62_ = (TriangleRasterizer.shading$[method185 (class22.anInt399, 96)]);
 						}
 						class25.method279 (i_10_, i_29_, i_40_, shadingtype, i_60_, _txt, i_45_, i_46_, i_47_, i_48_, method187 (i_53_, i_49_), method187 (i_53_, i_50_), method187 (i_53_, i_51_), method187 (i_53_, i_52_), method185 (i_63_, i_49_), method185 (i_63_, i_50_), method185 (i_63_, i_51_), method185 (i_63_, i_52_), i_58_, i_62_);
@@ -255,7 +253,7 @@ public class LandscapeLoader {
       {
 	for (int i_67_ = 0; i_67_ < ml_sizey; i_67_++)
 	  {
-	    if ((tilesettings[1][i_66_][i_67_] & 0x2) == 2)
+	    if ((tileFlags[1][i_66_][i_67_] & 0x2) == 2)
 	      class25.method276 (i_67_, i_66_, -438);
 	  }
       }
@@ -453,8 +451,8 @@ public class LandscapeLoader {
 		}
   }
   
-	public void spawnObject(int spawny, Palette palette, CollisionMap collisionmap, int objtype, int spwnz, int spwnx, int objid, boolean junk, int objrotation) {
-		if (! lowmemory || (tilesettings[0][spwnx][spawny] & 0x2) != 0 || ((tilesettings[spwnz][spwnx][spawny] & 0x10) == 0 && getHeightFromTilesettings (spawny, spwnz, spwnx, 0) == ml_hieght)) {
+	public void spawnObject(int spawny, Palette palette, PlaneFlags collisionmap, int objtype, int spwnz, int spwnx, int objid, boolean junk, int objrotation) {
+		if (! lowmemory || (tileFlags[0][spwnx][spawny] & 0x2) != 0 || ((tileFlags[spwnz][spwnx][spawny] & 0x10) == 0 && getHeightFromTilesettings (spawny, spwnz, spwnx, 0) == ml_hieght)) {
 		if (spwnz < anInt145)
 		  anInt145 = spwnz;
 		/**
@@ -499,11 +497,11 @@ public class LandscapeLoader {
 					int i_132_;
 					int i_133_;
 					if (objrotation == 1 || objrotation == 3) {
-						i_132_ = class46.objsize;
+						i_132_ = class46.size;
 						i_133_ = class46.anInt744;
 					} else {
 						i_132_ = class46.anInt744;
-						i_133_ = class46.objsize;
+						i_133_ = class46.size;
 					}
 					if (palette.method284 (objhash, infohash, avrheight, i_133_, class30_sub2_sub4, i_132_, spwnz, i_131_, (byte) 110, spawny, spwnx) && class46.aBoolean779) {
 						Model class30_sub2_sub4_sub6;
@@ -525,7 +523,7 @@ public class LandscapeLoader {
 					}
 				}
 				if (class46.aBoolean767 && collisionmap != null)
-					collisionmap.method212 (class46.aBoolean757, anInt138, class46.anInt744, class46.objsize, spwnx, spawny, objrotation);
+					collisionmap.method212 (class46.aBoolean757, anInt138, class46.anInt744, class46.size, spwnx, spawny, objrotation);
 			} else if (objtype >= 12) {
 				Entity class30_sub2_sub4;
 				if (class46.anInt781 == -1 && class46.anIntArray759 == null)
@@ -536,7 +534,7 @@ public class LandscapeLoader {
 				if (objtype >= 12 && objtype <= 17 && objtype != 13 && spwnz > 0)
 					tilesettings2[spwnz][spwnx][spawny] |= 0x924;
 				if (class46.aBoolean767 && collisionmap != null)
-				  collisionmap.method212 (class46.aBoolean757, anInt138, class46.anInt744, class46.objsize, spwnx, spawny, objrotation);
+				  collisionmap.method212 (class46.aBoolean757, anInt138, class46.anInt744, class46.size, spwnx, spawny, objrotation);
 			} else if (objtype == 0) {
 				Entity class30_sub2_sub4;
 				if (class46.anInt781 == -1 && class46.anIntArray759 == null)
@@ -696,7 +694,7 @@ public class LandscapeLoader {
 						   spawny, spwnx);
 				if (class46.aBoolean767 && collisionmap != null)
 				  collisionmap.method212 (class46.aBoolean757, anInt138,
-							 class46.anInt744, class46.objsize,
+							 class46.anInt744, class46.size,
 							 spwnx, spawny, objrotation);
 			} else {
 					if (class46.aBoolean762) {
@@ -805,7 +803,7 @@ public class LandscapeLoader {
     return class46.method577 (i_159_, true);
   }
   
-  public void method179 (int i, int i_162_, CollisionMap[] class11s, int i_163_,
+  public void method179 (int i, int i_162_, PlaneFlags[] class11s, int i_163_,
 			 int i_164_, int i_165_, byte[] is, int i_166_,
 			 int i_167_, int i_168_)
   {
@@ -815,7 +813,7 @@ public class LandscapeLoader {
 	  {
 	    if (i_164_ + i_169_ > 0 && i_164_ + i_169_ < 103
 		&& i_168_ + i_170_ > 0 && i_168_ + i_170_ < 103)
-	      class11s[i_167_].index[i_164_ + i_169_][(i_168_
+	      class11s[i_167_].flagBuffer[i_164_ + i_169_][(i_168_
 								    + i_170_)]
 		&= ~0x1000000;
 	  }
@@ -844,12 +842,12 @@ public class LandscapeLoader {
       }
   }
   
-	public void method180(byte[] is, int i, int i_175_, int i_176_, int i_177_, byte junk, CollisionMap[] class11s) {
+	public void method180(byte[] is, int i, int i_175_, int i_176_, int i_177_, byte junk, PlaneFlags[] class11s) {
 		for (int i_179_ = 0; i_179_ < 4; i_179_++) {
 			for (int i_180_ = 0; i_180_ < 64; i_180_++) {
 				for (int i_181_ = 0; i_181_ < 64; i_181_++) {
 					if (i_175_ + i_180_ > 0 && i_175_ + i_180_ < 103 && i + i_181_ > 0 && i + i_181_ < 103)
-						class11s[i_179_].index[i_175_ + i_180_][i + i_181_] &= ~0x1000000;
+						class11s[i_179_].flagBuffer[i_175_ + i_180_][i + i_181_] &= ~0x1000000;
 				}
 			}
 		}
@@ -864,13 +862,13 @@ public class LandscapeLoader {
   
 	public void loadTiles_(int y, int i_185_, ByteBuffer buffer0, int x, int z, int i_188_, int junk, int i_190_) {
 		if (x >= 0 && x < 104 && y >= 0 && y < 104) {
-			tilesettings[z][x][y] = (byte) 0;
+			tileFlags[z][x][y] = (byte) 0;
 			for (;;) {
 				int opcode = buffer0.getUbyte();
 				/* Generate height map from perlin noise */
 				if (opcode == 0) {
 					if (z == 0)
-						heightmap[0][x][y] = - generatePerlinNoise(932731 + x + i_190_, 556238 + y + i_185_) * 8;
+						heightmap[0][x][y] = -generatePerlinNoise(932731 + x + i_190_, 556238 + y + i_185_) * 8;
 					else {
 						heightmap[z][x][y] = heightmap[z - 1][x][y] - 240;
 						break;
@@ -894,7 +892,7 @@ public class LandscapeLoader {
 					floorshadingtypes[z][x][y] = (byte) ((opcode - 2) / 4); 
 					floortexturerotation[z][x][y] = (byte) (opcode - 2 + i_188_ & 0x3);
 				} else if (opcode <= 81)
-					tilesettings[z][x][y] = (byte) (opcode - 49);
+					tileFlags[z][x][y] = (byte) (opcode - 49);
 				else
 					floormap2[z][x][y] = (byte) (opcode - 81);
 			}
@@ -913,18 +911,18 @@ public class LandscapeLoader {
 		}
 	}
   
-  public int getHeightFromTilesettings (int i, int i_194_, int i_195_, int i_196_)
+  public int getHeightFromTilesettings (int i, int z, int i_195_, int i_196_)
   {
     if (i_196_ != 0)
       return 2;
-    if ((tilesettings[i_194_][i_195_][i] & 0x8) != 0)
+    if ((tileFlags[z][i_195_][i] & 0x8) != 0)
       return 0;
-    if (i_194_ > 0 && (tilesettings[1][i_195_][i] & 0x2) != 0)
-      return i_194_ - 1;
-    return i_194_;
+    if (z > 0 && (tileFlags[1][i_195_][i] & 0x2) != 0)
+      return z - 1;
+    return z;
   }
   
-	public void loadConstructionChunk(CollisionMap[] class11s, Palette palette, int z, int palettex, int regiony, boolean junk, int h, byte[] bytes, int regionx, int rotation, int palettey) {
+	public void loadChunk(PlaneFlags[] class11s, Palette palette, int z, int palettex, int regiony, boolean junk, int h, byte[] bytes, int regionx, int rotation, int palettey) {
 		ByteBuffer buffer0 = new ByteBuffer (bytes);
 		int objid = -1;
 		for (;;) {
@@ -946,13 +944,13 @@ public class LandscapeLoader {
 				int objrotation = rthash & 0x3;
 				if (objz == z && objregionx >= regionx && objregionx < regionx + 8 && objregiony >= regiony && objregiony < regiony + 8) {
 					ObjectDefinition class46 = ObjectDefinition.getObjectDefinition (objid);
-					int spwnx = palettex + MapUtils.method157(rotation, class46.objsize, objregionx & 0x7, (byte) 113, objregiony & 0x7, class46.anInt744);
-					int spwny = palettey + MapUtils.method158(-433, objregiony & 0x7, class46.objsize, rotation, class46.anInt744, objregionx & 0x7);
+					int spwnx = palettex + MapUtils.method157(rotation, class46.size, objregionx & 0x7, (byte) 113, objregiony & 0x7, class46.anInt744);
+					int spwny = palettey + MapUtils.method158(-433, objregiony & 0x7, class46.size, rotation, class46.anInt744, objregionx & 0x7);
 					if (spwnx > 0 && spwny > 0 && spwnx < 103 && spwny < 103) {
 						int i_215_ = objz;
-						if ((tilesettings[1][spwnx][spwny] & 0x2) == 2)
+						if ((tileFlags[1][spwnx][spwny] & 0x2) == 2)
 							i_215_--;
-						CollisionMap collisionmap = null;
+						PlaneFlags collisionmap = null;
 						if (i_215_ >= 0)
 							collisionmap = class11s[i_215_];
 						spawnObject(spwny, palette, collisionmap, objtype, h, spwnx, objid, false, objrotation + rotation & 0x3);
@@ -962,10 +960,10 @@ public class LandscapeLoader {
 		}
 	}
   
-  public static int cosineInterpolate(int i, int i_216_, int d128, int i_218_)
+  public static int cosineInterpolate(int a, int b, int piK, int ratio)
   {
-    int i_219_ = (65536 - TriangleRasterizer.COSINE_TABLE[d128 * 1024 / i_218_] >> 1);
-    return (i * (65536 - i_219_) >> 16) + (i_216_ * i_219_ >> 16);
+    int i_219_ = (65536 - TriangleRasterizer.COSINE_TABLE[piK * 1024 / ratio] >> 1);
+    return (a * (65536 - i_219_) >> 16) + (b * i_219_ >> 16);
   }
   
   public int method185 (int i, int i_220_)
@@ -1008,7 +1006,7 @@ public class LandscapeLoader {
 	}
   
   public static void method188 (Palette class25, int i, int i_226_, int i_227_,
-				int i_228_, CollisionMap class11, int[][][] is,
+				int i_228_, PlaneFlags class11, int[][][] is,
 				int i_229_, int i_230_, int i_231_,
 				byte i_232_)
   {
@@ -1060,13 +1058,13 @@ public class LandscapeLoader {
 	    int i_242_;
 	    if (i == 1 || i == 3)
 	      {
-		i_241_ = class46.objsize;
+		i_241_ = class46.size;
 		i_242_ = class46.anInt744;
 	      }
 	    else
 	      {
 		i_241_ = class46.anInt744;
-		i_242_ = class46.objsize;
+		i_242_ = class46.size;
 	      }
 	    class25.method284 (i_238_, i_239_, i_237_, i_242_,
 			       class30_sub2_sub4, i_241_, i_231_, i_240_,
@@ -1074,7 +1072,7 @@ public class LandscapeLoader {
 	  }
 	if (class46.aBoolean767)
 	  class11.method212 (class46.aBoolean757, anInt138, class46.anInt744,
-			     class46.objsize, i_229_, i_226_, i);
+			     class46.size, i_229_, i_226_, i);
       }
     else if (i_227_ >= 12)
       {
@@ -1091,7 +1089,7 @@ public class LandscapeLoader {
 			   i_231_, 0, (byte) 110, i_226_, i_229_);
 	if (class46.aBoolean767)
 	  class11.method212 (class46.aBoolean757, anInt138, class46.anInt744,
-			     class46.objsize, i_229_, i_226_, i);
+			     class46.size, i_229_, i_226_, i);
       }
     else if (i_227_ == 0)
       {
@@ -1190,7 +1188,7 @@ public class LandscapeLoader {
 			   i_231_, 0, (byte) 110, i_226_, i_229_);
 	if (class46.aBoolean767)
 	  class11.method212 (class46.aBoolean757, anInt138, class46.anInt744,
-			     class46.objsize, i_229_, i_226_, i);
+			     class46.size, i_229_, i_226_, i);
       }
     else
       {
@@ -1336,40 +1334,38 @@ public class LandscapeLoader {
     return bool;
   }
   
-	public void method190(int i, CollisionMap[] class11s, int i_263_, int junk, Palette class25, byte[] is) {
-		if (junk >= 7 && junk <= 7) {
-			ByteBuffer buffer0 = new ByteBuffer (is);
+	public void method190(int xOffset, PlaneFlags[] class11s, int yOffset, int junk, Palette class25, byte[] is) {
+			ByteBuffer buffer = new ByteBuffer (is);
 			int i_265_ = -1;
 			for (;;) {
-				int i_266_ = buffer0.getSmartB ();
-				if (i_266_ == 0)
+				int counter = buffer.getSmartB ();
+				if (counter == 0)
 				  break;
-				i_265_ += i_266_;
-				int i_267_ = 0;
+				i_265_ += counter;
+				int coordData = 0;
 				for (;;) {
-					int i_268_ = buffer0.getSmartB ();
-					if (i_268_ == 0)
+					int offset = buffer.getSmartB();
+					if (offset == 0)
 					  break;
-					i_267_ += i_268_ - 1;
-					int i_269_ = i_267_ & 0x3f;
-					int i_270_ = i_267_ >> 6 & 0x3f;
-					int i_271_ = i_267_ >> 12;
-					int i_272_ = buffer0.getUbyte ();
-					int i_273_ = i_272_ >> 2;
-					int i_274_ = i_272_ & 0x3;
-					int i_275_ = i_270_ + i;
-					int i_276_ = i_269_ + i_263_;
-					if (i_275_ > 0 && i_276_ > 0 && i_275_ < 103 && i_276_ < 103) {
-						int i_277_ = i_271_;
-						if ((tilesettings[1][i_275_][i_276_] & 0x2) == 2)
-							i_277_--;
-						CollisionMap class11 = null;
-						if (i_277_ >= 0)
-							class11 = class11s[i_277_];
-						spawnObject(i_276_, class25, class11, i_273_, i_271_, i_275_, i_265_, false, i_274_);
+					coordData += offset - 1;
+					int originY = coordData & 0x3f;
+					int originX = coordData >> 6 & 0x3f;
+					int originZ = coordData >> 12;
+					int settingFlags = buffer.getUbyte();
+					int type = settingFlags >> 2;
+					int rotation = settingFlags & 0x3;
+					int x = originX + xOffset;
+					int y = originY + yOffset;
+					if (x > 0 && y > 0 && x < 103 && y < 103) {
+						int z = originZ;
+						if ((tileFlags[1][x][y] & 0x2) == 2)
+							z--;
+						PlaneFlags class11 = null;
+						if (z >= 0)
+                                                    class11 = class11s[z];
+						spawnObject(y, class25, class11, type, originZ, x, i_265_, false, rotation);
 					}
 				}
 			}
-		}
 	}
 }

@@ -69,7 +69,7 @@ public class SpotAnim {
         Model class30_sub2_sub4_sub6 = (Model) aClass12_415.get(id);
         if(class30_sub2_sub4_sub6 != null)
             return class30_sub2_sub4_sub6;
-        class30_sub2_sub4_sub6 = Model.getModel((int) 'j', model_id);
+        class30_sub2_sub4_sub6 = Model.getModel(model_id);
         if(class30_sub2_sub4_sub6 == null)
             return null;
         for(int i = 0; i < 6; i++)

@@ -39,7 +39,7 @@ public class Main extends ApplicationApplet {
             int attempts = 0;
             while(jaggrabArchiveCrcs[8] == 0) {
                 String s = "Unknown problem";
-                drawLoadingBar(20, (byte)4, "Connecting to web server");
+                drawLoadingBar("Connecting to web server", 20);
                 try {
                     DataInputStream datainputstream = writeJaggrabRequest("crc" + (int) (Math.random() * 99999999D) + "-" + 317);
                     ByteBuffer buffer = new ByteBuffer(new byte[40]);
@@ -71,10 +71,10 @@ public class Main extends ApplicationApplet {
                     attempts++;
                     for(int l = delay; l > 0; l--) {
                         if(attempts >= 10) {
-                            drawLoadingBar(10, (byte)4, "Game updated - please reload page");
+                            drawLoadingBar("Game updated - please reload page", 10);
                             l = 10;
                         } else {
-                            drawLoadingBar(10, (byte)4, s + " - Will retry in " + l + " secs.");
+                            drawLoadingBar(s + " - Will retry in " + l + " secs.", 10);
                         }
                         try{
                             Thread.sleep(1000L);
@@ -240,8 +240,8 @@ public class Main extends ApplicationApplet {
                 anInt1211 = 78;
             drawScrollBar(519, 77, anInt1211 - anInt1089 - 77, 0, 463, anInt1211);
             String s;
-            if(localplayer != null && localplayer.name != null)
-                s = localplayer.name;
+            if(localPlayer != null && localPlayer.name != null)
+                s = localPlayer.name;
             else
                 s = TextTools.formatUsername(-45804, username);
             class30_sub2_sub1_sub4.drawText(0, s + ":", 90, 822, 4);
@@ -250,19 +250,20 @@ public class Main extends ApplicationApplet {
         }
         if(aBoolean885 && clickarea == 2)
             method40((byte)9);
-        chat_imagefetcher.updateGraphics(357, 23680, super.graphics, 17);
+        chat_imagefetcher.updateGraphics(357, 23680, super.appletGraphics, 17);
         toplefttext_imagefetcher.initialize(0);
         TriangleRasterizer.heightoffsets = anIntArray1182;
         if(i < 6 || i > 6)
             aBoolean991 = !aBoolean991;
     }
 
+    @Override
     public void init() {
         nodeid = Integer.parseInt(getParameter("nodeid"));
         portOffset = Integer.parseInt(getParameter("portoff"));
         String s = getParameter("lowmem");
         if(s != null && s.equals("1"))
-            setLowMem((byte)77);
+            initializeLowMemory();
         else
             setHighMem(false);
         String s1 = getParameter("free");
@@ -270,9 +271,10 @@ public class Main extends ApplicationApplet {
             members = false;
         else
             members = true;
-        webInitialize(503, false, 765);
+        initializeApplet(503, 765);
     }
 
+    @Override
     public void createThread(Runnable runnable, int i)
     {
         if(i > 10)
@@ -302,14 +304,14 @@ public class Main extends ApplicationApplet {
         if(anInt1086 != 0)
             return;
         int j = super.anInt26;
-        if(anInt1136 == 1 && super.curpressed_x >= 516 && super.curpressed_y >= 160 && super.curpressed_x <= 765 && super.curpressed_y <= 205)
+        if(anInt1136 == 1 && super.pressedX >= 516 && super.pressedY >= 160 && super.pressedX <= 765 && super.pressedY <= 205)
             j = 0;
         if(aBoolean885)
         {
             if(j != 1)
             {
-                int k = super.mouse_x;
-                int j1 = super.mouse_y;
+                int k = super.newMouseX;
+                int j1 = super.newMouseY;
                 if(clickarea == 0)
                 {
                     k -= 4;
@@ -339,8 +341,8 @@ public class Main extends ApplicationApplet {
                 int l = anInt949;
                 int k1 = anInt950;
                 int i2 = anInt951;
-                int k2 = super.curpressed_x;
-                int l2 = super.curpressed_y;
+                int k2 = super.pressedX;
+                int l2 = super.pressedY;
                 if(clickarea == 0)
                 {
                     k2 -= 4;
@@ -392,11 +394,11 @@ public class Main extends ApplicationApplet {
                         moveitem_frameid = j2;
                         moveitem_startslot = l1;
                         anInt1086 = 2;
-                        anInt1087 = super.curpressed_x;
-                        anInt1088 = super.curpressed_y;
-                        if(Widget.widgets[j2].parentid == anInt857)
+                        anInt1087 = super.pressedX;
+                        anInt1088 = super.pressedY;
+                        if(Widget.widgets[j2].parentId == anInt857)
                             anInt1086 = 1;
-                        if(Widget.widgets[j2].parentid == anInt1276)
+                        if(Widget.widgets[j2].parentId == anInt1276)
                             anInt1086 = 3;
                         return;
                     }
@@ -429,17 +431,17 @@ public class Main extends ApplicationApplet {
             pallet.reset();
             System.gc();
             for(int i = 0; i < 4; i++)
-                collisionmaps[i].initialize();
+                planeFlags[i].resetFlagBuffer();
             for(int l = 0; l < 4; l++)
             {
                 for(int k1 = 0; k1 < 104; k1++)
                 {
                     for(int j2 = 0; j2 < 104; j2++)
-                        main_tilesettings[l][k1][j2] = 0;
+                        tileFlags[l][k1][j2] = 0;
                 }
             }
 
-            LandscapeLoader class7 = new LandscapeLoader(main_tilesettings, -60, 104, 104, main_heightmap);
+            LandscapeLoader class7 = new LandscapeLoader(tileFlags, -60, 104, 104, tileHeightmap);
             int k2 = tilebytes.length;
             gameBuffer.putPacket(0);
             if(!aBoolean1159)
@@ -450,7 +452,7 @@ public class Main extends ApplicationApplet {
                     int k5 = (regionhashes[i3] & 0xff) * 64 - palettey;
                     byte abyte0[] = tilebytes[i3];
                     if(abyte0 != null)
-                        class7.method180(abyte0, k5, i4, (chunkx_ - 6) * 8, (chunky_ - 6) * 8, (byte)4, collisionmaps);
+                        class7.method180(abyte0, k5, i4, (chunkx_ - 6) * 8, (chunky_ - 6) * 8, (byte)4, planeFlags);
                 }
 
                 for(int j4 = 0; j4 < k2; j4++)
@@ -477,7 +479,7 @@ public class Main extends ApplicationApplet {
                     {
                         int l8 = (regionhashes[i6] >> 8) * 64 - palettex;
                         int k9 = (regionhashes[i6] & 0xff) * 64 - palettey;
-                        class7.method190(l8, collisionmaps, k9, 7, pallet, abyte1);
+                        class7.method190(l8, planeFlags, k9, 7, pallet, abyte1);
                     }
                 }
 
@@ -502,7 +504,7 @@ public class Main extends ApplicationApplet {
                                 {
                                     if(regionhashes[l11] != j11 || tilebytes[l11] == null)
                                         continue;
-                                    class7.method179(i9, l9, collisionmaps, 9, k4 * 8, (j10 & 7) * 8, tilebytes[l11], (l10 & 7) * 8, j3, j6 * 8);
+                                    class7.method179(i9, l9, planeFlags, 9, k4 * 8, (j10 & 7) * 8, tilebytes[l11], (l10 & 7) * 8, j3, j6 * 8);
                                     break;
                                 }
 
@@ -543,7 +545,7 @@ public class Main extends ApplicationApplet {
                                 {
                                     if(regionhashes[k12] != regionhash || regionbytes[k12] == null)
                                         continue;
-                                    class7.loadConstructionChunk(collisionmaps, pallet, z, x * 8, (chunky & 7) * 8, true, h, regionbytes[k12], (chunkx & 7) * 8, rotation, y * 8);
+                                    class7.loadChunk(planeFlags, pallet, z, x * 8, (chunky & 7) * 8, true, h, regionbytes[k12], (chunkx & 7) * 8, rotation, y * 8);
                                     break;
                                 }
 
@@ -556,14 +558,14 @@ public class Main extends ApplicationApplet {
 
             }
             gameBuffer.putPacket(0);
-            class7.method171(collisionmaps, pallet, 2);
+            class7.method171(planeFlags, pallet, 2);
             toplefttext_imagefetcher.initialize(0);
             gameBuffer.putPacket(0);
             int k3 = LandscapeLoader.anInt145;
-            if(k3 > cheight)
-                k3 = cheight;
-            if(k3 < cheight - 1)
-                k3 = cheight - 1;
+            if(k3 > currentZ)
+                k3 = currentZ;
+            if(k3 < currentZ - 1)
+                k3 = currentZ - 1;
             if(lowMemory)
                 pallet.buildPlane(LandscapeLoader.anInt145);
             else
@@ -583,10 +585,13 @@ public class Main extends ApplicationApplet {
             }
             method63(-919);
         }
-        catch(Exception exception) { }
+        catch(Exception exception) { 
+            exception.printStackTrace();
+            int a = 5;
+        }
         ObjectDefinition.aClass12_785.clear();
         isOnlineGame &= flag;
-        if(super.frame != null)
+        if(super.appletFrame != null)
         {
             gameBuffer.putPacket(210);
             gameBuffer.putDword(0x3f008edd);
@@ -637,7 +642,7 @@ public class Main extends ApplicationApplet {
     {
         ObjectDefinition.aClass12_785.clear();
         ObjectDefinition.object_modelstorage.clear();
-        NPCDefinition.aClass12_95.clear();
+        NpcDefinition.aClass12_95.clear();
         ItemDefinition.item_modelstorage.clear();
         ItemDefinition.aClass12_158.clear();
         Player.aClass12_1704.clear();
@@ -656,9 +661,9 @@ public class Main extends ApplicationApplet {
             int i1 = 24628 + (103 - l) * 512 * 4;
             for(int k1 = 1; k1 < 103; k1++)
             {
-                if((main_tilesettings[i][k1][l] & 0x18) == 0)
+                if((tileFlags[i][k1][l] & 0x18) == 0)
                     pallet.method309(ai, i1, 512, i, k1, l);
-                if(i < 3 && (main_tilesettings[i + 1][k1][l] & 8) != 0)
+                if(i < 3 && (tileFlags[i + 1][k1][l] & 8) != 0)
                     pallet.method309(ai, i1, 512, i + 1, k1, l);
                 i1 += 4;
             }
@@ -672,9 +677,9 @@ public class Main extends ApplicationApplet {
         {
             for(int j2 = 1; j2 < 103; j2++)
             {
-                if((main_tilesettings[i][j2][i2] & 0x18) == 0)
+                if((tileFlags[i][j2][i2] & 0x18) == 0)
                     method50(i2, -960, j1, j2, l1, i);
-                if(i < 3 && (main_tilesettings[i + 1][j2][i2] & 8) != 0)
+                if(i < 3 && (tileFlags[i + 1][j2][i2] & 8) != 0)
                     method50(i2, -960, j1, j2, l1, i + 1);
             }
 
@@ -687,7 +692,7 @@ public class Main extends ApplicationApplet {
         {
             for(int l2 = 0; l2 < 104; l2++)
             {
-                int i3 = pallet.method303(cheight, k2, l2);
+                int i3 = pallet.method303(currentZ, k2, l2);
                 if(i3 != 0)
                 {
                     i3 = i3 >> 14 & 0x7fff;
@@ -698,19 +703,19 @@ public class Main extends ApplicationApplet {
                         int l3 = l2;
                         if(j3 != 22 && j3 != 29 && j3 != 34 && j3 != 36 && j3 != 46 && j3 != 47 && j3 != 48)
                         {
-                            byte byte0 = 104;
-                            byte byte1 = 104;
-                            int ai1[][] = collisionmaps[cheight].index;
+                            byte planeWidth = 104;
+                            byte planeHeight = 104;
+                            int flags[][] = planeFlags[currentZ].flagBuffer;
                             for(int i4 = 0; i4 < 10; i4++)
                             {
                                 int j4 = (int)(Math.random() * 4D);
-                                if(j4 == 0 && k3 > 0 && k3 > k2 - 3 && (ai1[k3 - 1][l3] & 0x1280108) == 0)
+                                if(j4 == 0 && k3 > 0 && k3 > k2 - 3 && (flags[k3 - 1][l3] & 0x1280108) == 0)
                                     k3--;
-                                if(j4 == 1 && k3 < byte0 - 1 && k3 < k2 + 3 && (ai1[k3 + 1][l3] & 0x1280180) == 0)
+                                if(j4 == 1 && k3 < planeWidth - 1 && k3 < k2 + 3 && (flags[k3 + 1][l3] & 0x1280180) == 0)
                                     k3++;
-                                if(j4 == 2 && l3 > 0 && l3 > l2 - 3 && (ai1[k3][l3 - 1] & 0x1280102) == 0)
+                                if(j4 == 2 && l3 > 0 && l3 > l2 - 3 && (flags[k3][l3 - 1] & 0x1280102) == 0)
                                     l3--;
-                                if(j4 == 3 && l3 < byte1 - 1 && l3 < l2 + 3 && (ai1[k3][l3 + 1] & 0x1280120) == 0)
+                                if(j4 == 3 && l3 < planeHeight - 1 && l3 < l2 + 3 && (flags[k3][l3 + 1] & 0x1280120) == 0)
                                     l3++;
                             }
 
@@ -729,10 +734,10 @@ public class Main extends ApplicationApplet {
 
     public void method25(int i, int j)
     {
-        Deque class19 = grounditems[cheight][i][j];
+        Deque class19 = grounditems[currentZ][i][j];
         if(class19 == null)
         {
-            pallet.method295(cheight, i, j);
+            pallet.method295(currentZ, i, j);
             return;
         }
         int k = 0xfa0a1f01;
@@ -762,22 +767,22 @@ public class Main extends ApplicationApplet {
         }
 
         int i1 = i + (j << 7) + 0x60000000;
-        pallet.method281((byte)7, i, i1, ((Entity) (obj1)), calculateTileHeight( i * 128 + 64, j * 128 + 64, cheight), ((Entity) (obj2)), ((Entity) (obj)), cheight, j);
+        pallet.method281((byte)7, i, i1, ((Entity) (obj1)), calculateTileHeight( i * 128 + 64, j * 128 + 64, currentZ), ((Entity) (obj2)), ((Entity) (obj)), currentZ, j);
     }
 
     public void processNPCs(boolean flag, int i)
     {
         for(int j = 0; j < anInt836; j++)
         {
-            NPC class30_sub2_sub4_sub1_sub1 = npcs[updatenpcs[j]];
-            int k = 0x20000000 + (updatenpcs[j] << 14);
-            if(class30_sub2_sub4_sub1_sub1 == null || !class30_sub2_sub4_sub1_sub1.hasDefinition(aBoolean1224) || class30_sub2_sub4_sub1_sub1.definition.placementpriority != flag)
+            Npc class30_sub2_sub4_sub1_sub1 = npcs[localNpcIds[j]];
+            int k = 0x20000000 + (localNpcIds[j] << 14);
+            if(class30_sub2_sub4_sub1_sub1 == null || !class30_sub2_sub4_sub1_sub1.hasDefinition() || class30_sub2_sub4_sub1_sub1.definition.placementpriority != flag)
                 continue;
-            int l = ((Mob) (class30_sub2_sub4_sub1_sub1)).fineposx >> 7;
-            int i1 = ((Mob) (class30_sub2_sub4_sub1_sub1)).fineposy >> 7;
+            int l = ((Mob) (class30_sub2_sub4_sub1_sub1)).fineX >> 7;
+            int i1 = ((Mob) (class30_sub2_sub4_sub1_sub1)).fineY >> 7;
             if(l < 0 || l >= 104 || i1 < 0 || i1 >= 104)
                 continue;
-            if(((Mob) (class30_sub2_sub4_sub1_sub1)).halftile_offsets == 1 && (((Mob) (class30_sub2_sub4_sub1_sub1)).fineposx & 0x7f) == 64 && (((Mob) (class30_sub2_sub4_sub1_sub1)).fineposy & 0x7f) == 64)
+            if(((Mob) (class30_sub2_sub4_sub1_sub1)).halfOffsets == 1 && (((Mob) (class30_sub2_sub4_sub1_sub1)).fineX & 0x7f) == 64 && (((Mob) (class30_sub2_sub4_sub1_sub1)).fineY & 0x7f) == 64)
             {
                 if(anIntArrayArray929[l][i1] == anInt1265)
                     continue;
@@ -785,7 +790,7 @@ public class Main extends ApplicationApplet {
             }
             if(!class30_sub2_sub4_sub1_sub1.definition.isvisible)
                 k += 0x80000000;
-            pallet.method285(cheight, ((Mob) (class30_sub2_sub4_sub1_sub1)).anInt1552, (byte)6, calculateTileHeight( ((Mob) (class30_sub2_sub4_sub1_sub1)).fineposx, ((Mob) (class30_sub2_sub4_sub1_sub1)).fineposy, cheight), k, ((Mob) (class30_sub2_sub4_sub1_sub1)).fineposy, (((Mob) (class30_sub2_sub4_sub1_sub1)).halftile_offsets - 1) * 64 + 60, ((Mob) (class30_sub2_sub4_sub1_sub1)).fineposx, class30_sub2_sub4_sub1_sub1, ((Mob) (class30_sub2_sub4_sub1_sub1)).aBoolean1541);
+            pallet.method285(currentZ, ((Mob) (class30_sub2_sub4_sub1_sub1)).anInt1552, (byte)6, calculateTileHeight( ((Mob) (class30_sub2_sub4_sub1_sub1)).fineX, ((Mob) (class30_sub2_sub4_sub1_sub1)).fineY, currentZ), k, ((Mob) (class30_sub2_sub4_sub1_sub1)).fineY, (((Mob) (class30_sub2_sub4_sub1_sub1)).halfOffsets - 1) * 64 + 60, ((Mob) (class30_sub2_sub4_sub1_sub1)).fineX, class30_sub2_sub4_sub1_sub1, ((Mob) (class30_sub2_sub4_sub1_sub1)).aBoolean1541);
         }
 
         if(i == -30815);
@@ -817,90 +822,90 @@ public class Main extends ApplicationApplet {
 
     public void handleInterfaceOptions(int xlimit, int junk, Widget parent, int mousex, int ylimit, int mousey, int yoffset)
     {
-        if(parent.widgettype != 0 || parent.childrenwidgets == null || parent.aBoolean266)
+        if(parent.type != 0 || parent.childrenIds == null || parent.isActive)
             return;
         if(mousex < xlimit || mousey < ylimit || mousex > xlimit + parent.width || mousey > ylimit + parent.height)
             return;
-        int k1 = parent.childrenwidgets.length;
+        int k1 = parent.childrenIds.length;
         for(int l1 = 0; l1 < k1; l1++)
         {
-            int i2 = parent.positionx[l1] + xlimit;
-            int j2 = (parent.positiony[l1] + ylimit) - yoffset;
-            Widget class9_1 = Widget.widgets[parent.childrenwidgets[l1]];
-            i2 += class9_1.anInt263;
-            j2 += class9_1.anInt265;
-            if((class9_1.anInt230 >= 0 || class9_1.anInt216 != 0) && mousex >= i2 && mousey >= j2 && mousex < i2 + class9_1.width && mousey < j2 + class9_1.height)
-                if(class9_1.anInt230 >= 0)
-                    anInt886 = class9_1.anInt230;
+            int i2 = parent.childrenOffX[l1] + xlimit;
+            int j2 = (parent.childrenOffY[l1] + ylimit) - yoffset;
+            Widget class9_1 = Widget.widgets[parent.childrenIds[l1]];
+            i2 += class9_1.offsetX;
+            j2 += class9_1.offsetY;
+            if((class9_1.childId >= 0 || class9_1.anInt216 != 0) && mousex >= i2 && mousey >= j2 && mousex < i2 + class9_1.width && mousey < j2 + class9_1.height)
+                if(class9_1.childId >= 0)
+                    currentWidgetId = class9_1.childId;
                 else
-                    anInt886 = class9_1.widgetid;
-            if(class9_1.widgettype == 0)
+                    currentWidgetId = class9_1.widgetId;
+            if(class9_1.type == 0)
             {
                 handleInterfaceOptions(i2, 13037, class9_1, mousex, j2, mousey, class9_1.anInt224);
-                if(class9_1.anInt261 > class9_1.height)
-                    method65(i2 + class9_1.width, class9_1.height, mousex, mousey, class9_1, j2, true, class9_1.anInt261, 0);
+                if(class9_1.currentHeight > class9_1.height)
+                    method65(i2 + class9_1.width, class9_1.height, mousex, mousey, class9_1, j2, true, class9_1.currentHeight, 0);
             } else
             {
-                if(class9_1.textfieldtype == 1 && mousex >= i2 && mousey >= j2 && mousex < i2 + class9_1.width && mousey < j2 + class9_1.height)
+                if(class9_1.fieldType == 1 && mousex >= i2 && mousey >= j2 && mousex < i2 + class9_1.width && mousey < j2 + class9_1.height)
                 {
                     boolean flag = false;
-                    if(class9_1.actioncode != 0)
+                    if(class9_1.actionCode != 0)
                         flag = method103(class9_1, false);
                     if(!flag)
                     {
-                        interfacestringstack[anInt1133] = class9_1.aString221;
+                        interfacestringstack[anInt1133] = class9_1.optionField;
                         interfaceopcodestack[anInt1133] = 315;
-                        interfacestack_b[anInt1133] = class9_1.widgetid;
+                        interfacestack_b[anInt1133] = class9_1.widgetId;
                         anInt1133++;
                     }
                 }
-                if(class9_1.textfieldtype == 2 && anInt1136 == 0 && mousex >= i2 && mousey >= j2 && mousex < i2 + class9_1.width && mousey < j2 + class9_1.height)
+                if(class9_1.fieldType == 2 && anInt1136 == 0 && mousex >= i2 && mousey >= j2 && mousex < i2 + class9_1.width && mousey < j2 + class9_1.height)
                 {
                     String s = class9_1.aString222;
                     if(s.indexOf(" ") != -1)
                         s = s.substring(0, s.indexOf(" "));
                     interfacestringstack[anInt1133] = s + " @gre@" + class9_1.aString218;
                     interfaceopcodestack[anInt1133] = 626;
-                    interfacestack_b[anInt1133] = class9_1.widgetid;
+                    interfacestack_b[anInt1133] = class9_1.widgetId;
                     anInt1133++;
                 }
-                if(class9_1.textfieldtype == 3 && mousex >= i2 && mousey >= j2 && mousex < i2 + class9_1.width && mousey < j2 + class9_1.height)
+                if(class9_1.fieldType == 3 && mousex >= i2 && mousey >= j2 && mousex < i2 + class9_1.width && mousey < j2 + class9_1.height)
                 {
                     interfacestringstack[anInt1133] = "Close";
                     interfaceopcodestack[anInt1133] = 200;
-                    interfacestack_b[anInt1133] = class9_1.widgetid;
+                    interfacestack_b[anInt1133] = class9_1.widgetId;
                     anInt1133++;
                 }
-                if(class9_1.textfieldtype == 4 && mousex >= i2 && mousey >= j2 && mousex < i2 + class9_1.width && mousey < j2 + class9_1.height)
+                if(class9_1.fieldType == 4 && mousex >= i2 && mousey >= j2 && mousex < i2 + class9_1.width && mousey < j2 + class9_1.height)
                 {
-                    interfacestringstack[anInt1133] = class9_1.aString221;
+                    interfacestringstack[anInt1133] = class9_1.optionField;
                     interfaceopcodestack[anInt1133] = 169;
-                    interfacestack_b[anInt1133] = class9_1.widgetid;
+                    interfacestack_b[anInt1133] = class9_1.widgetId;
                     anInt1133++;
                 }
-                if(class9_1.textfieldtype == 5 && mousex >= i2 && mousey >= j2 && mousex < i2 + class9_1.width && mousey < j2 + class9_1.height)
+                if(class9_1.fieldType == 5 && mousex >= i2 && mousey >= j2 && mousex < i2 + class9_1.width && mousey < j2 + class9_1.height)
                 {
-                    interfacestringstack[anInt1133] = class9_1.aString221;
+                    interfacestringstack[anInt1133] = class9_1.optionField;
                     interfaceopcodestack[anInt1133] = 646;
-                    interfacestack_b[anInt1133] = class9_1.widgetid;
+                    interfacestack_b[anInt1133] = class9_1.widgetId;
                     anInt1133++;
                 }
-                if(class9_1.textfieldtype == 6 && !aBoolean1149 && mousex >= i2 && mousey >= j2 && mousex < i2 + class9_1.width && mousey < j2 + class9_1.height)
+                if(class9_1.fieldType == 6 && !aBoolean1149 && mousex >= i2 && mousey >= j2 && mousex < i2 + class9_1.width && mousey < j2 + class9_1.height)
                 {
-                    interfacestringstack[anInt1133] = class9_1.aString221;
+                    interfacestringstack[anInt1133] = class9_1.optionField;
                     interfaceopcodestack[anInt1133] = 679;
-                    interfacestack_b[anInt1133] = class9_1.widgetid;
+                    interfacestack_b[anInt1133] = class9_1.widgetId;
                     anInt1133++;
                 }
-                if(class9_1.widgettype == 2)
+                if(class9_1.type == 2)
                 {
                     int k2 = 0;
-                    for(int l2 = 0; l2 < class9_1.height; l2++)
+                    for(int y = 0; y < class9_1.height; y++)
                     {
-                        for(int i3 = 0; i3 < class9_1.width; i3++)
+                        for(int x = 0; x < class9_1.width; x++)
                         {
-                            int j3 = i2 + i3 * (32 + class9_1.anInt231);
-                            int k3 = j2 + l2 * (32 + class9_1.anInt244);
+                            int j3 = i2 + x * (32 + class9_1.xOff);
+                            int k3 = j2 + y * (32 + class9_1.yOff);
                             if(k2 < 20)
                             {
                                 j3 += class9_1.anIntArray215[k2];
@@ -909,19 +914,19 @@ public class Main extends ApplicationApplet {
                             if(mousex >= j3 && mousey >= k3 && mousex < j3 + 32 && mousey < k3 + 32)
                             {
                                 moveitem_endslot = k2;
-                                anInt1067 = class9_1.widgetid;
-                                if(class9_1.itemarray[k2] > 0)
+                                anInt1067 = class9_1.widgetId;
+                                if(class9_1.itemIds[k2] > 0)
                                 {
-                                    ItemDefinition class8 = ItemDefinition.getItemDefinition(class9_1.itemarray[k2] - 1);
+                                    ItemDefinition item = ItemDefinition.getItemDefinition(class9_1.itemIds[k2] - 1);
                                     if(anInt1282 == 1 && class9_1.aBoolean249)
                                     {
-                                        if(class9_1.widgetid != anInt1284 || k2 != anInt1283)
+                                        if(class9_1.widgetId != anInt1284 || k2 != anInt1283)
                                         {
-                                            interfacestringstack[anInt1133] = "Use " + aString1286 + " with @lre@" + class8.name;
+                                            interfacestringstack[anInt1133] = "Use " + usedItemName + " with @lre@" + item.withItemName;
                                             interfaceopcodestack[anInt1133] = 870;
-                                            interfacestack_c[anInt1133] = class8.id;
+                                            interfacestack_c[anInt1133] = item.id;
                                             interfacestack_a[anInt1133] = k2;
-                                            interfacestack_b[anInt1133] = class9_1.widgetid;
+                                            interfacestack_b[anInt1133] = class9_1.widgetId;
                                             anInt1133++;
                                         }
                                     } else
@@ -929,11 +934,11 @@ public class Main extends ApplicationApplet {
                                     {
                                         if((anInt1138 & 0x10) == 16)
                                         {
-                                            interfacestringstack[anInt1133] = aString1139 + " @lre@" + class8.name;
+                                            interfacestringstack[anInt1133] = aString1139 + " @lre@" + item.withItemName;
                                             interfaceopcodestack[anInt1133] = 543;
-                                            interfacestack_c[anInt1133] = class8.id;
+                                            interfacestack_c[anInt1133] = item.id;
                                             interfacestack_a[anInt1133] = k2;
-                                            interfacestack_b[anInt1133] = class9_1.widgetid;
+                                            interfacestack_b[anInt1133] = class9_1.widgetId;
                                             anInt1133++;
                                         }
                                     } else
@@ -941,63 +946,63 @@ public class Main extends ApplicationApplet {
                                         if(class9_1.aBoolean249)
                                         {
                                             for(int l3 = 4; l3 >= 3; l3--)
-                                                if(class8.inventory_options != null && class8.inventory_options[l3] != null)
+                                                if(item.inventory_options != null && item.inventory_options[l3] != null)
                                                 {
-                                                    interfacestringstack[anInt1133] = class8.inventory_options[l3] + " @lre@" + class8.name;
+                                                    interfacestringstack[anInt1133] = item.inventory_options[l3] + " @lre@" + item.withItemName;
                                                     if(l3 == 3)
                                                         interfaceopcodestack[anInt1133] = 493;
                                                     if(l3 == 4)
                                                         interfaceopcodestack[anInt1133] = 847;
-                                                    interfacestack_c[anInt1133] = class8.id;
+                                                    interfacestack_c[anInt1133] = item.id;
                                                     interfacestack_a[anInt1133] = k2;
-                                                    interfacestack_b[anInt1133] = class9_1.widgetid;
+                                                    interfacestack_b[anInt1133] = class9_1.widgetId;
                                                     anInt1133++;
                                                 } else
                                                 if(l3 == 4)
                                                 {
-                                                    interfacestringstack[anInt1133] = "Drop @lre@" + class8.name;
+                                                    interfacestringstack[anInt1133] = "Drop @lre@" + item.withItemName;
                                                     interfaceopcodestack[anInt1133] = 847;
-                                                    interfacestack_c[anInt1133] = class8.id;
+                                                    interfacestack_c[anInt1133] = item.id;
                                                     interfacestack_a[anInt1133] = k2;
-                                                    interfacestack_b[anInt1133] = class9_1.widgetid;
+                                                    interfacestack_b[anInt1133] = class9_1.widgetId;
                                                     anInt1133++;
                                                 }
 
                                         }
                                         if(class9_1.aBoolean242)
                                         {
-                                            interfacestringstack[anInt1133] = "Use @lre@" + class8.name;
+                                            interfacestringstack[anInt1133] = "Use @lre@" + item.withItemName;
                                             interfaceopcodestack[anInt1133] = 447;
-                                            interfacestack_c[anInt1133] = class8.id;
+                                            interfacestack_c[anInt1133] = item.id;
                                             interfacestack_a[anInt1133] = k2;
-                                            interfacestack_b[anInt1133] = class9_1.widgetid;
+                                            interfacestack_b[anInt1133] = class9_1.widgetId;
                                             anInt1133++;
                                         }
-                                        if(class9_1.aBoolean249 && class8.inventory_options != null)
+                                        if(class9_1.aBoolean249 && item.inventory_options != null)
                                         {
                                             for(int i4 = 2; i4 >= 0; i4--)
-                                                if(class8.inventory_options[i4] != null)
+                                                if(item.inventory_options[i4] != null)
                                                 {
-                                                    interfacestringstack[anInt1133] = class8.inventory_options[i4] + " @lre@" + class8.name;
+                                                    interfacestringstack[anInt1133] = item.inventory_options[i4] + " @lre@" + item.withItemName;
                                                     if(i4 == 0)
                                                         interfaceopcodestack[anInt1133] = 74;
                                                     if(i4 == 1)
                                                         interfaceopcodestack[anInt1133] = 454;
                                                     if(i4 == 2)
                                                         interfaceopcodestack[anInt1133] = 539;
-                                                    interfacestack_c[anInt1133] = class8.id;
+                                                    interfacestack_c[anInt1133] = item.id;
                                                     interfacestack_a[anInt1133] = k2;
-                                                    interfacestack_b[anInt1133] = class9_1.widgetid;
+                                                    interfacestack_b[anInt1133] = class9_1.widgetId;
                                                     anInt1133++;
                                                 }
 
                                         }
-                                        if(class9_1.itemoptions != null)
+                                        if(class9_1.itemOptions != null)
                                         {
                                             for(int j4 = 4; j4 >= 0; j4--)
-                                                if(class9_1.itemoptions[j4] != null)
+                                                if(class9_1.itemOptions[j4] != null)
                                                 {
-                                                    interfacestringstack[anInt1133] = class9_1.itemoptions[j4] + " @lre@" + class8.name;
+                                                    interfacestringstack[anInt1133] = class9_1.itemOptions[j4] + " @lre@" + item.withItemName;
                                                     if(j4 == 0)
                                                         interfaceopcodestack[anInt1133] = 632;
                                                     if(j4 == 1)
@@ -1008,18 +1013,18 @@ public class Main extends ApplicationApplet {
                                                         interfaceopcodestack[anInt1133] = 431;
                                                     if(j4 == 4)
                                                         interfaceopcodestack[anInt1133] = 53;
-                                                    interfacestack_c[anInt1133] = class8.id;
+                                                    interfacestack_c[anInt1133] = item.id;
                                                     interfacestack_a[anInt1133] = k2;
-                                                    interfacestack_b[anInt1133] = class9_1.widgetid;
+                                                    interfacestack_b[anInt1133] = class9_1.widgetId;
                                                     anInt1133++;
                                                 }
 
                                         }
-                                        interfacestringstack[anInt1133] = "Examine @lre@" + class8.name;
+                                        interfacestringstack[anInt1133] = "Examine @lre@" + item.withItemName;
                                         interfaceopcodestack[anInt1133] = 1125;
-                                        interfacestack_c[anInt1133] = class8.id;
+                                        interfacestack_c[anInt1133] = item.id;
                                         interfacestack_a[anInt1133] = k2;
-                                        interfacestack_b[anInt1133] = class9_1.widgetid;
+                                        interfacestack_b[anInt1133] = class9_1.widgetId;
                                         anInt1133++;
                                     }
                                 }
@@ -1057,14 +1062,14 @@ public class Main extends ApplicationApplet {
 
     public void parseNpcUpdate(ByteBuffer buffer, int i, int j)
     {
-        amtplayerremovestack = 0;
+        eRmQueuePosition = 0;
         amtplayerupdatestack = 0;
         method139(buffer, -45, i);
         processNpcs(i, buffer, (byte)2);
         parseNpcUpdateMasks(i, buffer, true);
-        for(int k = 0; k < amtplayerremovestack; k++)
+        for(int k = 0; k < eRmQueuePosition; k++)
         {
-            int l = playerremove_stack[k];
+            int l = eRmQueue[k];
             if(((Mob) (npcs[l])).anInt1537 != loopCycle)
             {
                 npcs[l].definition = null;
@@ -1078,7 +1083,7 @@ public class Main extends ApplicationApplet {
             throw new RuntimeException("eek");
         }
         for(int i1 = 0; i1 < anInt836; i1++)
-            if(npcs[updatenpcs[i1]] == null)
+            if(npcs[localNpcIds[i1]] == null)
             {
                 Signlink.reportError(username + " null entry in npc list - pos:" + i1 + " size:" + anInt836);
                 throw new RuntimeException("eek");
@@ -1086,12 +1091,12 @@ public class Main extends ApplicationApplet {
 
     }
 
-    public void handleClientToolbar(boolean flag)
+    public void handleToolbar(boolean flag)
     {
         isOnlineGame &= flag;
         if(super.anInt26 == 1)
         {
-            if(super.curpressed_x >= 6 && super.curpressed_x <= 106 && super.curpressed_y >= 467 && super.curpressed_y <= 499)
+            if(super.pressedX >= 6 && super.pressedX <= 106 && super.pressedY >= 467 && super.pressedY <= 499)
             {
                 anInt1287 = (anInt1287 + 1) % 4;
                 updatetoolbar = true;
@@ -1101,7 +1106,7 @@ public class Main extends ApplicationApplet {
                 gameBuffer.put(anInt845);
                 gameBuffer.put(anInt1248);
             }
-            if(super.curpressed_x >= 135 && super.curpressed_x <= 235 && super.curpressed_y >= 467 && super.curpressed_y <= 499)
+            if(super.pressedX >= 135 && super.pressedX <= 235 && super.pressedY >= 467 && super.pressedY <= 499)
             {
                 anInt845 = (anInt845 + 1) % 3;
                 updatetoolbar = true;
@@ -1111,7 +1116,7 @@ public class Main extends ApplicationApplet {
                 gameBuffer.put(anInt845);
                 gameBuffer.put(anInt1248);
             }
-            if(super.curpressed_x >= 273 && super.curpressed_x <= 373 && super.curpressed_y >= 467 && super.curpressed_y <= 499)
+            if(super.pressedX >= 273 && super.pressedX <= 373 && super.pressedY >= 467 && super.pressedY <= 499)
             {
                 anInt1248 = (anInt1248 + 1) % 3;
                 updatetoolbar = true;
@@ -1121,7 +1126,7 @@ public class Main extends ApplicationApplet {
                 gameBuffer.put(anInt845);
                 gameBuffer.put(anInt1248);
             }
-            if(super.curpressed_x >= 412 && super.curpressed_x <= 512 && super.curpressed_y >= 467 && super.curpressed_y <= 499)
+            if(super.pressedX >= 412 && super.pressedX <= 512 && super.pressedY >= 467 && super.pressedY <= 499)
                 if(anInt857 == -1)
                 {
                     method147(537);
@@ -1129,9 +1134,9 @@ public class Main extends ApplicationApplet {
                     aBoolean1158 = false;
                     for(int i = 0; i < Widget.widgets.length; i++)
                     {
-                        if(Widget.widgets[i] == null || Widget.widgets[i].actioncode != 600)
+                        if(Widget.widgets[i] == null || Widget.widgets[i].actionCode != 600)
                             continue;
-                        anInt1178 = anInt857 = Widget.widgets[i].parentid;
+                        anInt1178 = anInt857 = Widget.widgets[i].parentId;
                         break;
                     }
 
@@ -1182,7 +1187,7 @@ public class Main extends ApplicationApplet {
             if(k == 4)
                 TriangleRasterizer.method372(0.59999999999999998D, aByte1200);
             ItemDefinition.aClass12_158.clear();
-            aBoolean1255 = true;
+            paintRequested = true;
         }
         if(j == 3)
         {
@@ -1264,38 +1269,38 @@ public class Main extends ApplicationApplet {
     public void updateMobGraphics(int i)
     {
         anInt974 = 0;
-        for(int j = -1; j < anInt891 + anInt836; j++)
+        for(int j = -1; j < playerOffset + anInt836; j++)
         {
             Object obj;
             if(j == -1)
-                obj = localplayer;
+                obj = localPlayer;
             else
-            if(j < anInt891)
-                obj = players[anIntArray892[j]];
+            if(j < playerOffset)
+                obj = playerArray[addedPlayers[j]];
             else
-                obj = npcs[updatenpcs[j - anInt891]];
-            if(obj == null || !((Mob) (obj)).hasDefinition(aBoolean1224))
+                obj = npcs[localNpcIds[j - playerOffset]];
+            if(obj == null || !((Mob) (obj)).hasDefinition())
                 continue;
-            if(obj instanceof NPC)
+            if(obj instanceof Npc)
             {
-                NPCDefinition class5 = ((NPC)obj).definition;
+                NpcDefinition class5 = ((Npc)obj).definition;
                 if(class5.confignpcs != null)
                     class5 = class5.method161(anInt877);
                 if(class5 == null)
                     continue;
             }
-            if(j < anInt891)
+            if(j < playerOffset)
             {
                 int l = 30;
                 Player class30_sub2_sub4_sub1_sub2 = (Player)obj;
 		/* Render isActive head icons */
-                if(class30_sub2_sub4_sub1_sub2.active_headicons != 0)
+                if(class30_sub2_sub4_sub1_sub2.headIcons != 0)
                 {
                     calculateSpriteMobXY(true, ((Mob) (obj)), ((Mob) (obj)).anInt1507 + 15);
                     if(spriteX > -1)
                     {
                         for(int i2 = 0; i2 < 8; i2++)
-                            if((class30_sub2_sub4_sub1_sub2.active_headicons & 1 << i2) != 0)
+                            if((class30_sub2_sub4_sub1_sub2.headIcons & 1 << i2) != 0)
                             {
                                 headicons[i2].draw(spriteX - 12, 16083, spriteY - l);
                                 l -= 25;
@@ -1303,7 +1308,7 @@ public class Main extends ApplicationApplet {
                     }
                 }
 		/* Render hint icon */
-                if(j >= 0 && markertype == 10 && pmarker_id == anIntArray892[j])
+                if(j >= 0 && markertype == 10 && pmarker_id == addedPlayers[j])
                 {
                     calculateSpriteMobXY(true, ((Mob) (obj)), ((Mob) (obj)).anInt1507 + 15);
                     if(spriteX > -1)
@@ -1311,8 +1316,8 @@ public class Main extends ApplicationApplet {
                 }
             } else
             {
-                NPCDefinition class5_1 = ((NPC)obj).definition;
-				/* Render NPC head icon */
+                NpcDefinition class5_1 = ((Npc)obj).definition;
+				/* Render Npc head icon */
                 if(class5_1.npcheadicon >= 0 && class5_1.npcheadicon < headicons.length)
                 {
                     calculateSpriteMobXY(true, ((Mob) (obj)), ((Mob) (obj)).anInt1507 + 15);
@@ -1320,7 +1325,7 @@ public class Main extends ApplicationApplet {
                         headicons[class5_1.npcheadicon].draw(spriteX - 12, 16083, spriteY - 30);
                 }
 				/* Render hint icon */
-                if(markertype == 1 && nmarker_id == updatenpcs[j - anInt891] && loopCycle % 20 < 10)
+                if(markertype == 1 && nmarker_id == localNpcIds[j - playerOffset] && loopCycle % 20 < 10)
                 {
                     calculateSpriteMobXY(true, ((Mob) (obj)), ((Mob) (obj)).anInt1507 + 15);
                     if(spriteX > -1)
@@ -1328,7 +1333,7 @@ public class Main extends ApplicationApplet {
                 }
             }
 			/* Update chat */
-            if(((Mob) (obj)).chat_txt != null && (j >= anInt891 || anInt1287 == 0 || anInt1287 == 3 || anInt1287 == 1 && onFriendsList(false, ((Player)obj).name)))
+            if(((Mob) (obj)).chat_txt != null && (j >= playerOffset || anInt1287 == 0 || anInt1287 == 3 || anInt1287 == 1 && onFriendsList(false, ((Player)obj).name)))
             {
                 calculateSpriteMobXY(true, ((Mob) (obj)), ((Mob) (obj)).anInt1507);
                 if(spriteX > -1 && anInt974 < anInt975)
@@ -1564,7 +1569,7 @@ public class Main extends ApplicationApplet {
             drawWidget(Widget.widgets[tab_interfaces[current_tab]],0, 0, 0);
         if(aBoolean885 && clickarea == 1)
             method40((byte)9);
-        aClass15_1163.updateGraphics(205, 23680, super.graphics, 553);
+        aClass15_1163.updateGraphics(205, 23680, super.appletGraphics, 553);
         toplefttext_imagefetcher.initialize(0);
         TriangleRasterizer.heightoffsets = anIntArray1182;
     }
@@ -1578,14 +1583,14 @@ public class Main extends ApplicationApplet {
             if(TriangleRasterizer.unpackcounters[17] >= j)
             {
                 IndexedColorSprite class30_sub2_sub1_sub2 = TriangleRasterizer.textures[17];
-                int k = class30_sub2_sub1_sub2.indexwidth_ * class30_sub2_sub1_sub2.indexheight_ - 1;
-                int j1 = class30_sub2_sub1_sub2.indexwidth_ * anInt945 * 2;
-                byte abyte0[] = class30_sub2_sub1_sub2.colorindex;
+                int k = class30_sub2_sub1_sub2.indexWidth * class30_sub2_sub1_sub2.indexHeight - 1;
+                int j1 = class30_sub2_sub1_sub2.indexWidth * anInt945 * 2;
+                byte abyte0[] = class30_sub2_sub1_sub2.buffer;
                 byte abyte3[] = aByteArray912;
                 for(int i2 = 0; i2 <= k; i2++)
                     abyte3[i2] = abyte0[i2 - j1 & k];
 
-                class30_sub2_sub1_sub2.colorindex = abyte3;
+                class30_sub2_sub1_sub2.buffer = abyte3;
                 aByteArray912 = abyte0;
                 TriangleRasterizer.pushTexture(17);
                 anInt854++;
@@ -1612,28 +1617,28 @@ public class Main extends ApplicationApplet {
             if(TriangleRasterizer.unpackcounters[24] >= j)
             {
                 IndexedColorSprite class30_sub2_sub1_sub2_1 = TriangleRasterizer.textures[24];
-                int l = class30_sub2_sub1_sub2_1.indexwidth_ * class30_sub2_sub1_sub2_1.indexheight_ - 1;
-                int k1 = class30_sub2_sub1_sub2_1.indexwidth_ * anInt945 * 2;
-                byte abyte1[] = class30_sub2_sub1_sub2_1.colorindex;
+                int l = class30_sub2_sub1_sub2_1.indexWidth * class30_sub2_sub1_sub2_1.indexHeight - 1;
+                int k1 = class30_sub2_sub1_sub2_1.indexWidth * anInt945 * 2;
+                byte abyte1[] = class30_sub2_sub1_sub2_1.buffer;
                 byte abyte4[] = aByteArray912;
                 for(int j2 = 0; j2 <= l; j2++)
                     abyte4[j2] = abyte1[j2 - k1 & l];
 
-                class30_sub2_sub1_sub2_1.colorindex = abyte4;
+                class30_sub2_sub1_sub2_1.buffer = abyte4;
                 aByteArray912 = abyte1;
                 TriangleRasterizer.pushTexture(24);
             }
             if(TriangleRasterizer.unpackcounters[34] >= j)
             {
                 IndexedColorSprite class30_sub2_sub1_sub2_2 = TriangleRasterizer.textures[34];
-                int i1 = class30_sub2_sub1_sub2_2.indexwidth_ * class30_sub2_sub1_sub2_2.indexheight_ - 1;
-                int l1 = class30_sub2_sub1_sub2_2.indexwidth_ * anInt945 * 2;
-                byte abyte2[] = class30_sub2_sub1_sub2_2.colorindex;
+                int i1 = class30_sub2_sub1_sub2_2.indexWidth * class30_sub2_sub1_sub2_2.indexHeight - 1;
+                int l1 = class30_sub2_sub1_sub2_2.indexWidth * anInt945 * 2;
+                byte abyte2[] = class30_sub2_sub1_sub2_2.buffer;
                 byte abyte5[] = aByteArray912;
                 for(int k2 = 0; k2 <= i1; k2++)
                     abyte5[k2] = abyte2[k2 - l1 & i1];
 
-                class30_sub2_sub1_sub2_2.colorindex = abyte5;
+                class30_sub2_sub1_sub2_2.buffer = abyte5;
                 aByteArray912 = abyte2;
                 TriangleRasterizer.pushTexture(34);
             }
@@ -1644,14 +1649,14 @@ public class Main extends ApplicationApplet {
     {
         if(byte0 != -92)
             gameBuffer.put(214);
-        for(int i = -1; i < anInt891; i++)
+        for(int i = -1; i < playerOffset; i++)
         {
             int j;
             if(i == -1)
-                j = localindex;
+                j = localPlayerIndex;
             else
-                j = anIntArray892[i];
-            Player class30_sub2_sub4_sub1_sub2 = players[j];
+                j = addedPlayers[i];
+            Player class30_sub2_sub4_sub1_sub2 = playerArray[j];
             if(class30_sub2_sub4_sub1_sub2 != null && ((Mob) (class30_sub2_sub4_sub1_sub2)).anInt1535 > 0)
             {
                 class30_sub2_sub4_sub1_sub2.anInt1535--;
@@ -1662,8 +1667,8 @@ public class Main extends ApplicationApplet {
 
         for(int k = 0; k < anInt836; k++)
         {
-            int l = updatenpcs[k];
-            NPC class30_sub2_sub4_sub1_sub1 = npcs[l];
+            int l = localNpcIds[k];
+            Npc class30_sub2_sub4_sub1_sub1 = npcs[l];
             if(class30_sub2_sub4_sub1_sub1 != null && ((Mob) (class30_sub2_sub4_sub1_sub1)).anInt1535 > 0)
             {
                 class30_sub2_sub4_sub1_sub1.anInt1535--;
@@ -1674,12 +1679,12 @@ public class Main extends ApplicationApplet {
 
     }
 
-    public void calculateCameraPosition(byte junk)
+    public void updateCameraPosition(byte junk)
     {
 		/* Spinning camera calculations */
         int i = spincam_x * 128 + 64;
         int j = spincam_y * 128 + 64;
-        int k = calculateTileHeight(i, j, cheight) - spincam_z;
+        int k = calculateTileHeight(i, j, currentZ) - spincam_z;
 		/* Calculate moving right */
         if(camerax < i)
         {
@@ -1724,7 +1729,7 @@ public class Main extends ApplicationApplet {
         }
         i = normalcam_x * 128 + 64;
         j = normalcam_y * 128 + 64;
-        k = calculateTileHeight(i, j, cheight) - normalcam_z;
+        k = calculateTileHeight(i, j, currentZ) - normalcam_z;
         int l = i - camerax;
         int i1 = k - cameraz;
         int j1 = j - cameray;
@@ -1786,8 +1791,8 @@ public class Main extends ApplicationApplet {
         BasicRasterizer.drawQuad( i + 1, j + 1, k - 2, 16, 0);
         BasicRasterizer.drawQuadrilateralOutline(i + 1, j + 18, k - 2, l - 19, 0);
         b12Font.drawText(i1, "Choose Option", j + 14, 822, i + 3);
-        int j1 = super.mouse_x;
-        int k1 = super.mouse_y;
+        int j1 = super.newMouseX;
+        int k1 = super.newMouseY;
         if(clickarea == 0)
         {
             j1 -= 4;
@@ -1820,7 +1825,7 @@ public class Main extends ApplicationApplet {
         {
             if(l == 0L)
                 return;
-            if(amt_friendhashes >= 100 && anInt1046 != 1)
+            if(amt_friendhashes >= 100 && isMembers != 1)
             {
                 pushMessage("Your friendlist is full. Max of 100 for free users, and 200 for members", 0, "", aBoolean991);
                 return;
@@ -1847,7 +1852,7 @@ public class Main extends ApplicationApplet {
                     return;
                 }
 
-            if(s.equals(localplayer.name))
+            if(s.equals(localPlayer.name))
             {
                 return;
             } else
@@ -1876,12 +1881,12 @@ public class Main extends ApplicationApplet {
         if(x < 0 || y < 0 || x > 103 || y > 103)
             return 0;
         int height = z;
-        if(height < 3 && (main_tilesettings[1][x][y] & 2) == 2)
+        if(height < 3 && (tileFlags[1][x][y] & 2) == 2)
             height++;
         int finetilex = finex & 0x7f;
         int finetiley = finey & 0x7f;
-        int i2 = main_heightmap[height][x][y] * (128 - finetilex) + main_heightmap[height][x + 1][y] * finetilex >> 7;
-        int j2 = main_heightmap[height][x][y + 1] * (128 - finetilex) + main_heightmap[height][x + 1][y + 1] * finetilex >> 7;
+        int i2 = tileHeightmap[height][x][y] * (128 - finetilex) + tileHeightmap[height][x + 1][y] * finetilex >> 7;
+        int j2 = tileHeightmap[height][x][y + 1] * (128 - finetilex) + tileHeightmap[height][x + 1][y + 1] * finetilex >> 7;
         return i2 * (128 - finetiley) + j2 * finetiley >> 7;
     }
 
@@ -1913,7 +1918,7 @@ public class Main extends ApplicationApplet {
         clearModelCaches(false);
         pallet.reset();
         for(int i = 0; i < 4; i++)
-            collisionmaps[i].initialize();
+            planeFlags[i].resetFlagBuffer();
 
         System.gc();
         stopMidi(860);
@@ -1929,12 +1934,12 @@ public class Main extends ApplicationApplet {
         aBoolean1031 = true;
         for(int j = 0; j < 7; j++)
         {
-            anIntArray1065[j] = -1;
-            for(int k = 0; k < CharModel.anInt655; k++)
+            characterModelIds[j] = -1;
+            for(int k = 0; k < IdentityKit.anInt655; k++)
             {
-                if(CharModel.charactermodels[k].aBoolean662 || CharModel.charactermodels[k].anInt657 != j + (aBoolean1047 ? 0 : 7))
+                if(IdentityKit.identityKits[k].aBoolean662 || IdentityKit.identityKits[k].anInt657 != j + (aBoolean1047 ? 0 : 7))
                     continue;
-                anIntArray1065[j] = k;
+                characterModelIds[j] = k;
                 break;
             }
 
@@ -1950,9 +1955,9 @@ public class Main extends ApplicationApplet {
             if(k == 16383)
                 break;
             if(npcs[k] == null)
-                npcs[k] = new NPC();
-            NPC class30_sub2_sub4_sub1_sub1 = npcs[k];
-            updatenpcs[anInt836++] = k;
+                npcs[k] = new Npc();
+            Npc class30_sub2_sub4_sub1_sub1 = npcs[k];
+            localNpcIds[anInt836++] = k;
             class30_sub2_sub4_sub1_sub1.anInt1537 = loopCycle;
             int l = buffer0.getBits(5);
             if(l > 15)
@@ -1961,18 +1966,18 @@ public class Main extends ApplicationApplet {
             if(i1 > 15)
                 i1 -= 32;
             int j1 = buffer0.getBits(1);
-            class30_sub2_sub4_sub1_sub1.definition = NPCDefinition.getNPCDefinition(buffer0.getBits(12));
+            class30_sub2_sub4_sub1_sub1.definition = NpcDefinition.getNPCDefinition(buffer0.getBits(12));
             int k1 = buffer0.getBits(1);
             if(k1 == 1)
-                playerupdate_stack[amtplayerupdatestack++] = k;
-            class30_sub2_sub4_sub1_sub1.halftile_offsets = class30_sub2_sub4_sub1_sub1.definition.npc_halftileoffsets;
+                pFlagUpdateList[amtplayerupdatestack++] = k;
+            class30_sub2_sub4_sub1_sub1.halfOffsets = class30_sub2_sub4_sub1_sub1.definition.npc_halftileoffsets;
             class30_sub2_sub4_sub1_sub1.rotation = class30_sub2_sub4_sub1_sub1.definition.spawndirection;
-            class30_sub2_sub4_sub1_sub1.walk_anim = class30_sub2_sub4_sub1_sub1.definition.npcdef_walkanim;
-            class30_sub2_sub4_sub1_sub1.turn180_anim = class30_sub2_sub4_sub1_sub1.definition.npcdef_turn180anim;
-            class30_sub2_sub4_sub1_sub1.turn90cw_anim = class30_sub2_sub4_sub1_sub1.definition.npcdef_turn90cw;
-            class30_sub2_sub4_sub1_sub1.turn90ccw_anim = class30_sub2_sub4_sub1_sub1.definition.npcdef_turn90ccw;
-            class30_sub2_sub4_sub1_sub1.stand_anim = class30_sub2_sub4_sub1_sub1.definition.npcdef_standanim;
-            class30_sub2_sub4_sub1_sub1.updateMobPosition(((Mob) (localplayer)).palettex_stack[0] + i1, ((Mob) (localplayer)).palettey_stack[0] + l, j1 == 1, false);
+            class30_sub2_sub4_sub1_sub1.walkAnimation = class30_sub2_sub4_sub1_sub1.definition.npcdef_walkanim;
+            class30_sub2_sub4_sub1_sub1.turnAnimation180 = class30_sub2_sub4_sub1_sub1.definition.npcdef_turn180anim;
+            class30_sub2_sub4_sub1_sub1.turnCwAnimation90 = class30_sub2_sub4_sub1_sub1.definition.npcdef_turn90cw;
+            class30_sub2_sub4_sub1_sub1.turnCcwAnimation90 = class30_sub2_sub4_sub1_sub1.definition.npcdef_turn90ccw;
+            class30_sub2_sub4_sub1_sub1.standAnimation = class30_sub2_sub4_sub1_sub1.definition.npcdef_standanim;
+            class30_sub2_sub4_sub1_sub1.updateMobPosition(((Mob) (localPlayer)).xList[0] + i1, ((Mob) (localPlayer)).yList[0] + l, j1 == 1);
         }
         buffer0.endBitAccess();
     }
@@ -1990,9 +1995,9 @@ public class Main extends ApplicationApplet {
 
     public void processPlayers(int i, boolean flag)
     {
-        if(((Mob) (localplayer)).fineposx >> 7 == anInt1261 && ((Mob) (localplayer)).fineposy >> 7 == anInt1262)
+        if(((Mob) (localPlayer)).fineX >> 7 == anInt1261 && ((Mob) (localPlayer)).fineY >> 7 == anInt1262)
             anInt1261 = 0;
-        int j = anInt891;
+        int j = playerOffset;
         if(i != 0)
         {
             for(int k = 1; k > 0; k++);
@@ -2005,37 +2010,37 @@ public class Main extends ApplicationApplet {
             int i1;
             if(flag)
             {
-                class30_sub2_sub4_sub1_sub2 = localplayer;
-                i1 = localindex << 14;
+                class30_sub2_sub4_sub1_sub2 = localPlayer;
+                i1 = localPlayerIndex << 14;
             } else
             {
-                class30_sub2_sub4_sub1_sub2 = players[anIntArray892[l]];
-                i1 = anIntArray892[l] << 14;
+                class30_sub2_sub4_sub1_sub2 = playerArray[addedPlayers[l]];
+                i1 = addedPlayers[l] << 14;
             }
-            if(class30_sub2_sub4_sub1_sub2 == null || !class30_sub2_sub4_sub1_sub2.hasDefinition(aBoolean1224))
+            if(class30_sub2_sub4_sub1_sub2 == null || !class30_sub2_sub4_sub1_sub2.hasDefinition())
                 continue;
             class30_sub2_sub4_sub1_sub2.aBoolean1699 = false;
-            if((lowMemory && anInt891 > 50 || anInt891 > 200) && !flag && ((Mob) (class30_sub2_sub4_sub1_sub2)).anInt1517 == ((Mob) (class30_sub2_sub4_sub1_sub2)).stand_anim)
+            if((lowMemory && playerOffset > 50 || playerOffset > 200) && !flag && ((Mob) (class30_sub2_sub4_sub1_sub2)).anInt1517 == ((Mob) (class30_sub2_sub4_sub1_sub2)).standAnimation)
                 class30_sub2_sub4_sub1_sub2.aBoolean1699 = true;
-            int j1 = ((Mob) (class30_sub2_sub4_sub1_sub2)).fineposx >> 7;
-            int k1 = ((Mob) (class30_sub2_sub4_sub1_sub2)).fineposy >> 7;
+            int j1 = ((Mob) (class30_sub2_sub4_sub1_sub2)).fineX >> 7;
+            int k1 = ((Mob) (class30_sub2_sub4_sub1_sub2)).fineY >> 7;
             if(j1 < 0 || j1 >= 104 || k1 < 0 || k1 >= 104)
                 continue;
             if(class30_sub2_sub4_sub1_sub2.aActor_Sub6_1714 != null && loopCycle >= class30_sub2_sub4_sub1_sub2.anInt1707 && loopCycle < class30_sub2_sub4_sub1_sub2.anInt1708)
             {
                 class30_sub2_sub4_sub1_sub2.aBoolean1699 = false;
-                class30_sub2_sub4_sub1_sub2.tileheight$ = calculateTileHeight( ((Mob) (class30_sub2_sub4_sub1_sub2)).fineposx, ((Mob) (class30_sub2_sub4_sub1_sub2)).fineposy, cheight);
-                pallet.method286(60, cheight, ((Mob) (class30_sub2_sub4_sub1_sub2)).fineposy, class30_sub2_sub4_sub1_sub2, ((Mob) (class30_sub2_sub4_sub1_sub2)).anInt1552, class30_sub2_sub4_sub1_sub2.anInt1722, ((Mob) (class30_sub2_sub4_sub1_sub2)).fineposx, class30_sub2_sub4_sub1_sub2.tileheight$, class30_sub2_sub4_sub1_sub2.anInt1719, class30_sub2_sub4_sub1_sub2.anInt1721, i1, class30_sub2_sub4_sub1_sub2.anInt1720, (byte)35);
+                class30_sub2_sub4_sub1_sub2.tileheight$ = calculateTileHeight( ((Mob) (class30_sub2_sub4_sub1_sub2)).fineX, ((Mob) (class30_sub2_sub4_sub1_sub2)).fineY, currentZ);
+                pallet.method286(60, currentZ, ((Mob) (class30_sub2_sub4_sub1_sub2)).fineY, class30_sub2_sub4_sub1_sub2, ((Mob) (class30_sub2_sub4_sub1_sub2)).anInt1552, class30_sub2_sub4_sub1_sub2.anInt1722, ((Mob) (class30_sub2_sub4_sub1_sub2)).fineX, class30_sub2_sub4_sub1_sub2.tileheight$, class30_sub2_sub4_sub1_sub2.anInt1719, class30_sub2_sub4_sub1_sub2.anInt1721, i1, class30_sub2_sub4_sub1_sub2.anInt1720, (byte)35);
                 continue;
             }
-            if((((Mob) (class30_sub2_sub4_sub1_sub2)).fineposx & 0x7f) == 64 && (((Mob) (class30_sub2_sub4_sub1_sub2)).fineposy & 0x7f) == 64)
+            if((((Mob) (class30_sub2_sub4_sub1_sub2)).fineX & 0x7f) == 64 && (((Mob) (class30_sub2_sub4_sub1_sub2)).fineY & 0x7f) == 64)
             {
                 if(anIntArrayArray929[j1][k1] == anInt1265)
                     continue;
                 anIntArrayArray929[j1][k1] = anInt1265;
             }
-            class30_sub2_sub4_sub1_sub2.tileheight$ = calculateTileHeight( ((Mob) (class30_sub2_sub4_sub1_sub2)).fineposx, ((Mob) (class30_sub2_sub4_sub1_sub2)).fineposy, cheight);
-            pallet.method285(cheight, ((Mob) (class30_sub2_sub4_sub1_sub2)).anInt1552, (byte)6, class30_sub2_sub4_sub1_sub2.tileheight$, i1, ((Mob) (class30_sub2_sub4_sub1_sub2)).fineposy, 60, ((Mob) (class30_sub2_sub4_sub1_sub2)).fineposx, class30_sub2_sub4_sub1_sub2, ((Mob) (class30_sub2_sub4_sub1_sub2)).aBoolean1541);
+            class30_sub2_sub4_sub1_sub2.tileheight$ = calculateTileHeight( ((Mob) (class30_sub2_sub4_sub1_sub2)).fineX, ((Mob) (class30_sub2_sub4_sub1_sub2)).fineY, currentZ);
+            pallet.method285(currentZ, ((Mob) (class30_sub2_sub4_sub1_sub2)).anInt1552, (byte)6, class30_sub2_sub4_sub1_sub2.tileheight$, i1, ((Mob) (class30_sub2_sub4_sub1_sub2)).fineY, 60, ((Mob) (class30_sub2_sub4_sub1_sub2)).fineX, class30_sub2_sub4_sub1_sub2, ((Mob) (class30_sub2_sub4_sub1_sub2)).aBoolean1541);
         }
 
     }
@@ -2044,7 +2049,7 @@ public class Main extends ApplicationApplet {
     {
         if(i <= 0)
             packetId = -1;
-        int j = class9.actioncode;
+        int j = class9.actionCode;
         if(anInt900 == 2)
         {
             if(j == 201)
@@ -2093,17 +2098,17 @@ public class Main extends ApplicationApplet {
         {
             int k = (j - 300) / 2;
             int j1 = j & 1;
-            int i2 = anIntArray1065[k];
+            int i2 = characterModelIds[k];
             if(i2 != -1)
             {
                 do
                 {
                     if(j1 == 0 && --i2 < 0)
-                        i2 = CharModel.anInt655 - 1;
-                    if(j1 == 1 && ++i2 >= CharModel.anInt655)
+                        i2 = IdentityKit.anInt655 - 1;
+                    if(j1 == 1 && ++i2 >= IdentityKit.anInt655)
                         i2 = 0;
-                } while(CharModel.charactermodels[i2].aBoolean662 || CharModel.charactermodels[i2].anInt657 != k + (aBoolean1047 ? 0 : 7));
-                anIntArray1065[k] = i2;
+                } while(IdentityKit.identityKits[i2].aBoolean662 || IdentityKit.identityKits[i2].anInt657 != k + (aBoolean1047 ? 0 : 7));
+                characterModelIds[k] = i2;
                 aBoolean1031 = true;
             }
         }
@@ -2111,12 +2116,12 @@ public class Main extends ApplicationApplet {
         {
             int l = (j - 314) / 2;
             int k1 = j & 1;
-            int j2 = anIntArray990[l];
+            int j2 = characterColorIds[l];
             if(k1 == 0 && --j2 < 0)
                 j2 = anIntArrayArray1003[l].length - 1;
             if(k1 == 1 && ++j2 >= anIntArrayArray1003[l].length)
                 j2 = 0;
-            anIntArray990[l] = j2;
+            characterColorIds[l] = j2;
             aBoolean1031 = true;
         }
         if(j == 324 && !aBoolean1047)
@@ -2134,10 +2139,10 @@ public class Main extends ApplicationApplet {
             gameBuffer.putPacket(101);
             gameBuffer.put(aBoolean1047 ? 0 : 1);
             for(int i1 = 0; i1 < 7; i1++)
-                gameBuffer.put(anIntArray1065[i1]);
+                gameBuffer.put(characterModelIds[i1]);
 
             for(int l1 = 0; l1 < 5; l1++)
-                gameBuffer.put(anIntArray990[l1]);
+                gameBuffer.put(characterColorIds[l1]);
 
             return true;
         }
@@ -2157,20 +2162,18 @@ public class Main extends ApplicationApplet {
         return false;
     }
 
-    public void doPlayerUpdateMasks(int i, byte byte0, ByteBuffer buffer0)
+    public void handlePlayerUpdateFlags(ByteBuffer buffer)
     {
-        if(byte0 == 2)
-            byte0 = 0;
-        else
-            return;
         for(int j = 0; j < amtplayerupdatestack; j++)
         {
-            int k = playerupdate_stack[j];
-            Player class30_sub2_sub4_sub1_sub2 = players[k];
-            int l = buffer0.getUbyte();
-            if((l & 0x40) != 0)
-                l += buffer0.getUbyte() << 8;
-            parsePlayerUpdateMasks(l, k, buffer0, aByte923, class30_sub2_sub4_sub1_sub2);
+            int id = pFlagUpdateList[j];
+            Player player = playerArray[id];
+            int flag = buffer.getUbyte();
+            if((flag & 0x40) != 0)
+                flag += buffer.getUbyte() << 8;
+            System.out.println("Flag: " + flag);
+            System.out.println("PID: "+ id);
+            parsePlayerUpdateFlags(flag, id, buffer, player);
         }
 
     }
@@ -2197,9 +2200,9 @@ public class Main extends ApplicationApplet {
                 IndexedColorSprite class30_sub2_sub1_sub2_2 = mapscene[class46_2.anInt758];
                 if(class30_sub2_sub1_sub2_2 != null)
                 {
-                    int i6 = (class46_2.anInt744 * 4 - class30_sub2_sub1_sub2_2.indexwidth_) / 2;
-                    int j6 = (class46_2.objsize * 4 - class30_sub2_sub1_sub2_2.indexheight_) / 2;
-                    class30_sub2_sub1_sub2_2.renderImage(48 + l * 4 + i6, 16083, 48 + (104 - i - class46_2.objsize) * 4 + j6);
+                    int i6 = (class46_2.anInt744 * 4 - class30_sub2_sub1_sub2_2.indexWidth) / 2;
+                    int j6 = (class46_2.size * 4 - class30_sub2_sub1_sub2_2.indexHeight) / 2;
+                    class30_sub2_sub1_sub2_2.renderImage(48 + l * 4 + i6, 16083, 48 + (104 - i - class46_2.size) * 4 + j6);
                 }
             } else
             {
@@ -2288,9 +2291,9 @@ public class Main extends ApplicationApplet {
                 IndexedColorSprite class30_sub2_sub1_sub2_1 = mapscene[class46_1.anInt758];
                 if(class30_sub2_sub1_sub2_1 != null)
                 {
-                    int j5 = (class46_1.anInt744 * 4 - class30_sub2_sub1_sub2_1.indexwidth_) / 2;
-                    int k5 = (class46_1.objsize * 4 - class30_sub2_sub1_sub2_1.indexheight_) / 2;
-                    class30_sub2_sub1_sub2_1.renderImage(48 + l * 4 + j5, 16083, 48 + (104 - i - class46_1.objsize) * 4 + k5);
+                    int j5 = (class46_1.anInt744 * 4 - class30_sub2_sub1_sub2_1.indexWidth) / 2;
+                    int k5 = (class46_1.size * 4 - class30_sub2_sub1_sub2_1.indexHeight) / 2;
+                    class30_sub2_sub1_sub2_1.renderImage(48 + l * 4 + j5, 16083, 48 + (104 - i - class46_1.size) * 4 + k5);
                 }
             } else
             if(j3 == 9)
@@ -2325,9 +2328,9 @@ public class Main extends ApplicationApplet {
                 IndexedColorSprite class30_sub2_sub1_sub2 = mapscene[class46.anInt758];
                 if(class30_sub2_sub1_sub2 != null)
                 {
-                    int i4 = (class46.anInt744 * 4 - class30_sub2_sub1_sub2.indexwidth_) / 2;
-                    int j4 = (class46.objsize * 4 - class30_sub2_sub1_sub2.indexheight_) / 2;
-                    class30_sub2_sub1_sub2.renderImage(48 + l * 4 + i4, 16083, 48 + (104 - i - class46.objsize) * 4 + j4);
+                    int i4 = (class46.anInt744 * 4 - class30_sub2_sub1_sub2.indexWidth) / 2;
+                    int j4 = (class46.size * 4 - class30_sub2_sub1_sub2.indexHeight) / 2;
+                    class30_sub2_sub1_sub2.renderImage(48 + l * 4 + i4, 16083, 48 + (104 - i - class46.size) * 4 + j4);
                 }
             }
         }
@@ -2410,7 +2413,7 @@ public class Main extends ApplicationApplet {
         method106(null, -135);
         anIntArray828 = new int[32768];
         anIntArray829 = new int[32768];
-        drawLoadingBar(10, (byte)4, "Connecting to fileserver");
+        drawLoadingBar("Connecting to fileserver", 10);
         if(!runflamecycle)
         {
             runclient = true;
@@ -2437,7 +2440,7 @@ public class Main extends ApplicationApplet {
             nodeid = Integer.parseInt(args[0]);
             portOffset = Integer.parseInt(args[1]);
             if(args[2].equals("lowmem"))
-                setLowMem((byte)77);
+                initializeLowMemory();
             else if(args[2].equals("highmem")) {
                 setHighMem(false);
             } else {
@@ -2456,7 +2459,7 @@ public class Main extends ApplicationApplet {
             JAGGRAB_DISABLED = Boolean.parseBoolean(args[5]);
             Signlink.initialize(InetAddress.getLocalHost());
             Main client = new Main();
-            client.frameInitialize(503, false, 765);
+            client.initializeFrame(503, 765);
             return;
         }
         catch(Exception exception)
@@ -2465,32 +2468,32 @@ public class Main extends ApplicationApplet {
         }
     }
 
-    public void landscapeLoadingStep1(int i)
+    public void updateLandscape(int i)
     {
         if(i != -48877)
             return;
-        if(lowMemory && landscape_stage == 2 && LandscapeLoader.ml_hieght != cheight)
+        if(lowMemory && landscape_stage == 2 && LandscapeLoader.ml_hieght != currentZ)
         {
             toplefttext_imagefetcher.initialize(0);
             p12Font.drawCenteredYText(0, "Loading - please wait.", 23693, 151, 257);
             p12Font.drawCenteredYText(0xffffff, "Loading - please wait.", 23693, 150, 256);
-            toplefttext_imagefetcher.updateGraphics(4, 23680, super.graphics, 4);
+            toplefttext_imagefetcher.updateGraphics(4, 23680, super.appletGraphics, 4);
             landscape_stage = 1;
-            aLong824 = System.currentTimeMillis();
+            timestamp = System.currentTimeMillis();
         }
         if(landscape_stage == 1)
         {
             int j = method54();
-            if(j != 0 && System.currentTimeMillis() - aLong824 > 0x57e40L)
+            if(j != 0 && System.currentTimeMillis() - timestamp > 0x57e40L)
             {
-                Signlink.reportError(username + " glcfb " + ssk + "," + j + "," + lowMemory + "," + fileIndexes[0] + "," + ondemandhandler.amount() + "," + cheight + "," + chunkx_ + "," + chunky_);
-                aLong824 = System.currentTimeMillis();
+                Signlink.reportError(username + " glcfb " + ssk + "," + j + "," + lowMemory + "," + fileIndexes[0] + "," + ondemandhandler.amount() + "," + currentZ + "," + chunkx_ + "," + chunky_);
+                timestamp = System.currentTimeMillis();
             }
         }
-        if(landscape_stage == 2 && cheight != anInt985)
+        if(landscape_stage == 2 && currentZ != anInt985)
         {
-            anInt985 = cheight;
-            method24(true, cheight);
+            anInt985 = currentZ;
+            method24(true, currentZ);
         }
     }
 
@@ -2529,7 +2532,7 @@ public class Main extends ApplicationApplet {
         } else
         {
             landscape_stage = 2;
-            LandscapeLoader.ml_hieght = cheight;
+            LandscapeLoader.ml_hieght = currentZ;
             processLandscapeLoading_(true);
             gameBuffer.putPacket(121);
             return 0;
@@ -2541,30 +2544,30 @@ public class Main extends ApplicationApplet {
         while(i >= 0) 
             loadClient();
         for(Projectile class30_sub2_sub4_sub4 = (Projectile)aClass19_1013.getFirst(); class30_sub2_sub4_sub4 != null; class30_sub2_sub4_sub4 = (Projectile)aClass19_1013.getNextFront())
-            if(class30_sub2_sub4_sub4.anInt1597 != cheight || loopCycle > class30_sub2_sub4_sub4.anInt1572)
+            if(class30_sub2_sub4_sub4.anInt1597 != currentZ || loopCycle > class30_sub2_sub4_sub4.anInt1572)
                 class30_sub2_sub4_sub4.removeDeque();
             else
             if(loopCycle >= class30_sub2_sub4_sub4.anInt1571)
             {
                 if(class30_sub2_sub4_sub4.anInt1590 > 0)
                 {
-                    NPC class30_sub2_sub4_sub1_sub1 = npcs[class30_sub2_sub4_sub4.anInt1590 - 1];
-                    if(class30_sub2_sub4_sub1_sub1 != null && ((Mob) (class30_sub2_sub4_sub1_sub1)).fineposx >= 0 && ((Mob) (class30_sub2_sub4_sub1_sub1)).fineposx < 13312 && ((Mob) (class30_sub2_sub4_sub1_sub1)).fineposy >= 0 && ((Mob) (class30_sub2_sub4_sub1_sub1)).fineposy < 13312)
-                        class30_sub2_sub4_sub4.method455(loopCycle, ((Mob) (class30_sub2_sub4_sub1_sub1)).fineposy, calculateTileHeight(((Mob) (class30_sub2_sub4_sub1_sub1)).fineposx, ((Mob) (class30_sub2_sub4_sub1_sub1)).fineposy, class30_sub2_sub4_sub4.anInt1597) - class30_sub2_sub4_sub4.anInt1583, ((Mob) (class30_sub2_sub4_sub1_sub1)).fineposx, (byte)-83);
+                    Npc class30_sub2_sub4_sub1_sub1 = npcs[class30_sub2_sub4_sub4.anInt1590 - 1];
+                    if(class30_sub2_sub4_sub1_sub1 != null && ((Mob) (class30_sub2_sub4_sub1_sub1)).fineX >= 0 && ((Mob) (class30_sub2_sub4_sub1_sub1)).fineX < 13312 && ((Mob) (class30_sub2_sub4_sub1_sub1)).fineY >= 0 && ((Mob) (class30_sub2_sub4_sub1_sub1)).fineY < 13312)
+                        class30_sub2_sub4_sub4.method455(loopCycle, ((Mob) (class30_sub2_sub4_sub1_sub1)).fineY, calculateTileHeight(((Mob) (class30_sub2_sub4_sub1_sub1)).fineX, ((Mob) (class30_sub2_sub4_sub1_sub1)).fineY, class30_sub2_sub4_sub4.anInt1597) - class30_sub2_sub4_sub4.anInt1583, ((Mob) (class30_sub2_sub4_sub1_sub1)).fineX, (byte)-83);
                 }
                 if(class30_sub2_sub4_sub4.anInt1590 < 0)
                 {
                     int j = -class30_sub2_sub4_sub4.anInt1590 - 1;
                     Player class30_sub2_sub4_sub1_sub2;
-                    if(j == anInt884)
-                        class30_sub2_sub4_sub1_sub2 = localplayer;
+                    if(j == localPlayerId)
+                        class30_sub2_sub4_sub1_sub2 = localPlayer;
                     else
-                        class30_sub2_sub4_sub1_sub2 = players[j];
-                    if(class30_sub2_sub4_sub1_sub2 != null && ((Mob) (class30_sub2_sub4_sub1_sub2)).fineposx >= 0 && ((Mob) (class30_sub2_sub4_sub1_sub2)).fineposx < 13312 && ((Mob) (class30_sub2_sub4_sub1_sub2)).fineposy >= 0 && ((Mob) (class30_sub2_sub4_sub1_sub2)).fineposy < 13312)
-                        class30_sub2_sub4_sub4.method455(loopCycle, ((Mob) (class30_sub2_sub4_sub1_sub2)).fineposy, calculateTileHeight(((Mob) (class30_sub2_sub4_sub1_sub2)).fineposx, ((Mob) (class30_sub2_sub4_sub1_sub2)).fineposy, class30_sub2_sub4_sub4.anInt1597) - class30_sub2_sub4_sub4.anInt1583, ((Mob) (class30_sub2_sub4_sub1_sub2)).fineposx, (byte)-83);
+                        class30_sub2_sub4_sub1_sub2 = playerArray[j];
+                    if(class30_sub2_sub4_sub1_sub2 != null && ((Mob) (class30_sub2_sub4_sub1_sub2)).fineX >= 0 && ((Mob) (class30_sub2_sub4_sub1_sub2)).fineX < 13312 && ((Mob) (class30_sub2_sub4_sub1_sub2)).fineY >= 0 && ((Mob) (class30_sub2_sub4_sub1_sub2)).fineY < 13312)
+                        class30_sub2_sub4_sub4.method455(loopCycle, ((Mob) (class30_sub2_sub4_sub1_sub2)).fineY, calculateTileHeight(((Mob) (class30_sub2_sub4_sub1_sub2)).fineX, ((Mob) (class30_sub2_sub4_sub1_sub2)).fineY, class30_sub2_sub4_sub4.anInt1597) - class30_sub2_sub4_sub4.anInt1583, ((Mob) (class30_sub2_sub4_sub1_sub2)).fineX, (byte)-83);
                 }
                 class30_sub2_sub4_sub4.method456(anInt945, anInt1020);
-                pallet.method285(cheight, class30_sub2_sub4_sub4.anInt1595, (byte)6, (int)class30_sub2_sub4_sub4.aDouble1587, -1, (int)class30_sub2_sub4_sub4.aDouble1586, 60, (int)class30_sub2_sub4_sub4.aDouble1585, class30_sub2_sub4_sub4, false);
+                pallet.method285(currentZ, class30_sub2_sub4_sub4.anInt1595, (byte)6, (int)class30_sub2_sub4_sub4.aDouble1587, -1, (int)class30_sub2_sub4_sub4.aDouble1586, 60, (int)class30_sub2_sub4_sub4.aDouble1585, class30_sub2_sub4_sub4, false);
             }
 
     }
@@ -2755,10 +2758,8 @@ public class Main extends ApplicationApplet {
         }
     }
 
-    public boolean method59(byte abyte0[], byte byte0, int i)
+    public boolean writeWaveFile(byte abyte0[], int i)
     {
-        if(byte0 != 116)
-            throw new NullPointerException();
         if(abyte0 == null)
             return true;
         else
@@ -2768,13 +2769,13 @@ public class Main extends ApplicationApplet {
     public void method60(int i, byte byte0)
     {
         Widget class9 = Widget.widgets[i];
-        for(int j = 0; j < class9.childrenwidgets.length; j++)
+        for(int j = 0; j < class9.childrenIds.length; j++)
         {
-            if(class9.childrenwidgets[j] == -1)
+            if(class9.childrenIds[j] == -1)
                 break;
-            Widget class9_1 = Widget.widgets[class9.childrenwidgets[j]];
-            if(class9_1.widgettype == 1)
-                method60(class9_1.widgetid, (byte)6);
+            Widget class9_1 = Widget.widgets[class9.childrenIds[j]];
+            if(class9_1.type == 1)
+                method60(class9_1.widgetId, (byte)6);
             class9_1.anInt246 = 0;
             class9_1.anInt208 = 0;
         }
@@ -2808,33 +2809,33 @@ public class Main extends ApplicationApplet {
                 break;
         if(!isOnlineGame)
             return;
-		/* Write watchdog packet */
-        synchronized(watchdog.sync)
+		/* Write monitor packet */
+        synchronized(monitor.sync)
         {
             if(flagged) {
-                if(super.anInt26 != 0 || watchdog.position >= 40) {
+                if(super.anInt26 != 0 || monitor.position >= 40) {
                     gameBuffer.putPacket(45);
                     gameBuffer.put(0);
                     int j2 = gameBuffer.offset;
                     int j3 = 0;
-                    for(int j4 = 0; j4 < watchdog.position; j4++) {
+                    for(int j4 = 0; j4 < monitor.position; j4++) {
                         if(j2 - gameBuffer.offset >= 240)
                             break;
                         j3++;
-                        int l4 = watchdog.y_queue[j4];
+                        int l4 = monitor.y_queue[j4];
                         if(l4 < 0)
                             l4 = 0;
                         else
                         if(l4 > 502)
                             l4 = 502;
-                        int k5 = watchdog.x_queue[j4];
+                        int k5 = monitor.x_queue[j4];
                         if(k5 < 0)
                             k5 = 0;
                         else
                         if(k5 > 764)
                             k5 = 764;
                         int i6 = l4 * 765 + k5;
-                        if(watchdog.y_queue[j4] == -1 && watchdog.x_queue[j4] == -1)
+                        if(monitor.y_queue[j4] == -1 && monitor.x_queue[j4] == -1)
                         {
                             k5 = -1;
                             l4 = -1;
@@ -2870,56 +2871,56 @@ public class Main extends ApplicationApplet {
                     }
 
                     gameBuffer.endVarByte(gameBuffer.offset - j2, (byte)0);
-                    if(j3 >= watchdog.position)
+                    if(j3 >= monitor.position)
                     {
-                        watchdog.position = 0;
+                        monitor.position = 0;
                     } else
                     {
-                        watchdog.position -= j3;
-                        for(int i5 = 0; i5 < watchdog.position; i5++)
+                        monitor.position -= j3;
+                        for(int i5 = 0; i5 < monitor.position; i5++)
                         {
-                            watchdog.x_queue[i5] = watchdog.x_queue[i5 + j3];
-                            watchdog.y_queue[i5] = watchdog.y_queue[i5 + j3];
+                            monitor.x_queue[i5] = monitor.x_queue[i5 + j3];
+                            monitor.y_queue[i5] = monitor.y_queue[i5 + j3];
                         }
 
                     }
                 }
             } else
             {
-                watchdog.position = 0;
+                monitor.position = 0;
             }
         }
 		/* Write click packet */
         if(super.anInt26 != 0)
         {
-            long l = (super.curpressed_t - lastpressed_t) / 50L;
-            if(l > 4095L)
-                l = 4095L;
-            lastpressed_t = super.curpressed_t;
-            int k2 = super.curpressed_y;
-            if(k2 < 0)
-                k2 = 0;
+            long timeDif = (super.pressedTimestamp - lastPressedTimestamp) / 50L;
+            if(timeDif > 4095L)
+                timeDif = 4095L;
+            lastPressedTimestamp = super.pressedTimestamp;
+            int y = super.pressedY;
+            if(y < 0)
+                y = 0;
             else
-            if(k2 > 502)
-                k2 = 502;
-            int k3 = super.curpressed_x;
-            if(k3 < 0)
-                k3 = 0;
+            if(y > 502)
+                y = 502;
+            int x = super.pressedX;
+            if(x < 0)
+                x = 0;
             else
-            if(k3 > 764)
-                k3 = 764;
-            int k4 = k2 * 765 + k3;
-            int j5 = 0;
+            if(x > 764)
+                x = 764;
+            int coordHash = y * 765 + x;
+            int pressedOp = 0;
             if(super.anInt26 == 2)
-                j5 = 1;
-            int l5 = (int)l;
+                pressedOp = 1;
+            int tStamp = (int)timeDif;
             gameBuffer.putPacket(241);
-            gameBuffer.putDword((l5 << 20) + (j5 << 19) + k4);
+            gameBuffer.putDword((tStamp << 20) + (pressedOp << 19) + coordHash);
         }
         if(camerapacket_delay > 0)
             camerapacket_delay--;
 		/* Up, down, left, right */
-        if(super.active_keycodes[1] == 1 || super.active_keycodes[2] == 1 || super.active_keycodes[3] == 1 || super.active_keycodes[4] == 1)
+        if(super.activeKeycodes[1] == 1 || super.activeKeycodes[2] == 1 || super.activeKeycodes[3] == 1 || super.activeKeycodes[4] == 1)
             camerapacket_write = true;
 		/* Camera change */
         if(camerapacket_write && camerapacket_delay <= 0)
@@ -2927,31 +2928,31 @@ public class Main extends ApplicationApplet {
             camerapacket_delay = 20;
             camerapacket_write = false;
             gameBuffer.putPacket(86);
-            gameBuffer.putWord(camerapitch);
-            gameBuffer.putWord128(camerayaw);
+            gameBuffer.putWord(cameraPitch);
+            gameBuffer.putWord128(cameraYaw);
         }
 		/* Focus change */
-        if(super.aBoolean17 && !aBoolean954)
+        if(super.aBoolean17 && !focusPacketToggle)
         {
-            aBoolean954 = true;
+            focusPacketToggle = true;
             gameBuffer.putPacket(3);
             gameBuffer.put(1);
         }
 		/* Focus change */
-        if(!super.aBoolean17 && aBoolean954)
+        if(!super.aBoolean17 && focusPacketToggle)
         {
-            aBoolean954 = false;
+            focusPacketToggle = false;
             gameBuffer.putPacket(3);
             gameBuffer.put(0);
         }
-        landscapeLoadingStep1(-48877);
-        updateSpawnedObjects_((byte)8);
-        updateSounds_(false);
+        updateLandscape(-48877);
+        updateObjects((byte)8);
+        updateSounds(false);
         anInt1009++;
         if(anInt1009 > 750)
             connectionLost(-670);
-        updatePlayersOrientations((byte)-74);
-        updateNPCsOrentation(-8066);
+        updatePlayers((byte)-74);
+        updateNpcs(-8066);
         resetMobsChatText((byte)-92);
         anInt945++;
         if(anInt917 != 0)
@@ -2975,7 +2976,7 @@ public class Main extends ApplicationApplet {
         if(anInt1086 != 0)
         {
             anInt989++;
-            if(super.mouse_x > anInt1087 + 5 || super.mouse_x < anInt1087 - 5 || super.mouse_y > anInt1088 + 5 || super.mouse_y < anInt1088 - 5)
+            if(super.newMouseX > anInt1087 + 5 || super.newMouseX < anInt1087 - 5 || super.newMouseY > anInt1088 + 5 || super.newMouseY < anInt1088 - 5)
                 aBoolean1242 = true;
             if(super.anInt19 == 0)
             {
@@ -2993,18 +2994,18 @@ public class Main extends ApplicationApplet {
                     {
                         Widget class9 = Widget.widgets[moveitem_frameid];
                         int j1 = 0;
-                        if(anInt913 == 1 && class9.actioncode == 206)
+                        if(anInt913 == 1 && class9.actionCode == 206)
                             j1 = 1;
-                        if(class9.itemarray[moveitem_endslot] <= 0)
+                        if(class9.itemIds[moveitem_endslot] <= 0)
                             j1 = 0;
                         if(class9.aBoolean235)
                         {
                             int l2 = moveitem_startslot;
                             int l3 = moveitem_endslot;
-                            class9.itemarray[l3] = class9.itemarray[l2];
-                            class9.itemamounts[l3] = class9.itemamounts[l2];
-                            class9.itemarray[l2] = -1;
-                            class9.itemamounts[l2] = 0;
+                            class9.itemIds[l3] = class9.itemIds[l2];
+                            class9.itemAmounts[l3] = class9.itemAmounts[l2];
+                            class9.itemIds[l2] = -1;
+                            class9.itemAmounts[l2] = 0;
                         } else
                         if(j1 == 1)
                         {
@@ -3012,18 +3013,18 @@ public class Main extends ApplicationApplet {
                             for(int i4 = moveitem_endslot; i3 != i4;)
                                 if(i3 > i4)
                                 {
-                                    class9.initializeWidgets(i3, (byte)9, i3 - 1);
+                                    class9.swapItem(i3, i3 - 1);
                                     i3--;
                                 } else
                                 if(i3 < i4)
                                 {
-                                    class9.initializeWidgets(i3, (byte)9, i3 + 1);
+                                    class9.swapItem(i3, i3 + 1);
                                     i3++;
                                 }
 
                         } else
                         {
-                            class9.initializeWidgets(moveitem_startslot, (byte)9, moveitem_endslot);
+                            class9.swapItem(moveitem_startslot, moveitem_endslot);
                         }
                         gameBuffer.putPacket(214);
                         gameBuffer.putWordLE128(moveitem_frameid);
@@ -3045,12 +3046,12 @@ public class Main extends ApplicationApplet {
         {
             int k = Palette.anInt470;
             int k1 = Palette.anInt471;
-            boolean flag = sendWalkPacket(0, 0, 0, -11308, 0, ((Mob) (localplayer)).palettey_stack[0], 0, 0, k1, ((Mob) (localplayer)).palettex_stack[0], true, k);
+            boolean flag = sendWalkPacket(0, 0, 0, -11308, 0, ((Mob) (localPlayer)).yList[0], 0, 0, k1, ((Mob) (localPlayer)).xList[0], true, k);
             Palette.anInt470 = -1;
             if(flag)
             {
-                anInt914 = super.curpressed_x;
-                anInt915 = super.curpressed_y;
+                anInt914 = super.pressedX;
+                anInt915 = super.pressedY;
                 anInt917 = 1;
                 anInt916 = 0;
             }
@@ -3062,23 +3063,23 @@ public class Main extends ApplicationApplet {
             super.anInt26 = 0;
         }
         handleClickPackets_(4);
-        handleMinimapClicking(true);
-        handleTabClicking(19);
-        handleClientToolbar(true);
+        handleMinimap(true);
+        handleTabs(19);
+        handleToolbar(true);
         if(super.anInt19 == 1 || super.anInt26 == 1)
             anInt1213++;
         if(landscape_stage == 2)
             handleKeyboardArrows(3);
         if(landscape_stage == 2 && aBoolean1160)
-            calculateCameraPosition((byte)5);
+            updateCameraPosition((byte)5);
         for(int i1 = 0; i1 < 5; i1++)
             cameratransvars2[i1]++;
         method73(732);
 		/* Handle idea counter */
-        super.idle_counter++;
-        if(super.idle_counter > 4500) {
+        super.idleCounter++;
+        if(super.idleCounter > 4500) {
             anInt1011 = 250;
-            super.idle_counter -= 500;
+            super.idleCounter -= 500;
             gameBuffer.putPacket(202);
         }
         anInt988++;
@@ -3173,7 +3174,7 @@ public class Main extends ApplicationApplet {
     {
         if(logo_imagefetcher != null)
             return;
-        super.aClass15_13 = null;
+        super.appletImageFetcher = null;
         chat_imagefetcher = null;
         aClass15_1164 = null;
         aClass15_1163 = null;
@@ -3203,17 +3204,17 @@ public class Main extends ApplicationApplet {
             drawTitleBackround(0);
             method51(215);
         }
-        aBoolean1255 = true;
+        paintRequested = true;
     }
 
-    public void drawLoadingBar(int i, byte byte0, String s)
+    public void drawLoadingBar(String s, int i)
     {
         anInt1079 = i;
         aString1049 = s;
         method64(0);
         if(titlescreen_archive == null)
         {
-            super.drawLoadingBar(i, (byte)4, s);
+            super.drawLoadingBar(s, i);
             return;
         }
         aClass15_1109.initialize(0);
@@ -3227,25 +3228,21 @@ public class Main extends ApplicationApplet {
         BasicRasterizer.drawQuad(c / 2 - 150, j + 2, i * 3, 30, 0x8c1111);
         BasicRasterizer.drawQuad( (c / 2 - 150) + i * 3, j + 2, 300 - i * 3, 30, 0);
         b12Font.drawCenteredYText(0xffffff, s, 23693, (c1 / 2 + 5) - byte1, c / 2);
-        aClass15_1109.updateGraphics(171, 23680, super.graphics, 202);
-        if(byte0 != 4)
+        aClass15_1109.updateGraphics(171, 23680, super.appletGraphics, 202);
+        if(paintRequested)
         {
-            for(int k = 1; k > 0; k++);
-        }
-        if(aBoolean1255)
-        {
-            aBoolean1255 = false;
+            paintRequested = false;
             if(!runflamecycle)
             {
-                titletopleft_imagefetcher.updateGraphics(0, 23680, super.graphics, 0);
-                titletopright_imagefetcher.updateGraphics(0, 23680, super.graphics, 637);
+                titletopleft_imagefetcher.updateGraphics(0, 23680, super.appletGraphics, 0);
+                titletopright_imagefetcher.updateGraphics(0, 23680, super.appletGraphics, 637);
             }
-            logo_imagefetcher.updateGraphics(0, 23680, super.graphics, 128);
-            bottomleftmid_imagefetcher.updateGraphics(371, 23680, super.graphics, 202);
-            aClass15_1112.updateGraphics(265, 23680, super.graphics, 0);
-            aClass15_1113.updateGraphics(265, 23680, super.graphics, 562);
-            aClass15_1114.updateGraphics(171, 23680, super.graphics, 128);
-            aClass15_1115.updateGraphics(171, 23680, super.graphics, 562);
+            logo_imagefetcher.updateGraphics(0, 23680, super.appletGraphics, 128);
+            bottomleftmid_imagefetcher.updateGraphics(371, 23680, super.appletGraphics, 202);
+            aClass15_1112.updateGraphics(265, 23680, super.appletGraphics, 0);
+            aClass15_1113.updateGraphics(265, 23680, super.appletGraphics, 562);
+            aClass15_1114.updateGraphics(171, 23680, super.appletGraphics, 128);
+            aClass15_1115.updateGraphics(171, 23680, super.appletGraphics, 562);
         }
     }
 
@@ -3293,7 +3290,7 @@ public class Main extends ApplicationApplet {
     public boolean method66(int i, int j, int k, int l)
     {
         int i1 = i >> 14 & 0x7fff;
-        int j1 = pallet.method304(cheight, k, j, i);
+        int j1 = pallet.method304(currentZ, k, j, i);
         if(l >= 0)
             throw new NullPointerException();
         if(j1 == -1)
@@ -3308,22 +3305,22 @@ public class Main extends ApplicationApplet {
             if(l1 == 0 || l1 == 2)
             {
                 i2 = class46.anInt744;
-                j2 = class46.objsize;
+                j2 = class46.size;
             } else
             {
-                i2 = class46.objsize;
+                i2 = class46.size;
                 j2 = class46.anInt744;
             }
             int k2 = class46.anInt768;
             if(l1 != 0)
                 k2 = (k2 << l1 & 0xf) + (k2 >> 4 - l1);
-            sendWalkPacket(2, 0, j2, -11308, 0, ((Mob) (localplayer)).palettey_stack[0], i2, k2, j, ((Mob) (localplayer)).palettex_stack[0], false, k);
+            sendWalkPacket(2, 0, j2, -11308, 0, ((Mob) (localPlayer)).yList[0], i2, k2, j, ((Mob) (localPlayer)).xList[0], false, k);
         } else
         {
-            sendWalkPacket(2, l1, 0, -11308, k1 + 1, ((Mob) (localplayer)).palettey_stack[0], 0, 0, j, ((Mob) (localplayer)).palettex_stack[0], false, k);
+            sendWalkPacket(2, l1, 0, -11308, k1 + 1, ((Mob) (localPlayer)).yList[0], 0, 0, j, ((Mob) (localPlayer)).xList[0], false, k);
         }
-        anInt914 = super.curpressed_x;
-        anInt915 = super.curpressed_y;
+        anInt914 = super.pressedX;
+        anInt915 = super.pressedY;
         anInt917 = 2;
         anInt916 = 0;
         return true;
@@ -3337,7 +3334,7 @@ public class Main extends ApplicationApplet {
                 src = fileIndexes[0].get(id);
         } catch(Exception ex) {
         }
-        if(JAGGRAB_DISABLED) {
+        if(!JAGGRAB_DISABLED) {
             if(src != null) {
                 CRC.reset();
                 CRC.update(src);
@@ -3356,7 +3353,7 @@ public class Main extends ApplicationApplet {
         int attempts = 0;
         while(src == null) {
             String errorMessage = "Unknown error";
-            drawLoadingBar(loadingPercent, (byte)4, "Requesting " + archiveName);
+            drawLoadingBar("Requesting " + archiveName, loadingPercent);
             try {
                 int currentPercent = 0;
                 DataInputStream datainputstream = writeJaggrabRequest(requestAddress + expectedChecksum);
@@ -3380,7 +3377,7 @@ public class Main extends ApplicationApplet {
                     archiveOffset += read;
                     int percent = (archiveOffset * 100) / len;
                     if(percent != currentPercent)
-                        drawLoadingBar(loadingPercent, (byte)4, "Loading " + archiveName + " - " + percent + "%");
+                        drawLoadingBar("Loading " + archiveName + " - " + percent + "%", loadingPercent);
                     currentPercent = percent;
                 }
                 datainputstream.close();
@@ -3424,10 +3421,10 @@ public class Main extends ApplicationApplet {
                 for(int l1 = delay; l1 > 0; l1--) {
                     if(attempts >= 3)
                     {
-                        drawLoadingBar(loadingPercent, (byte)4, "Game updated - please reload page");
+                        drawLoadingBar("Game updated - please reload page", loadingPercent);
                         l1 = 10;
                     } else {
-                        drawLoadingBar(loadingPercent, (byte)4, errorMessage + " - Retrying in " + l1);
+                        drawLoadingBar(errorMessage + " - Retrying in " + l1, loadingPercent);
                     }
                     try {
                         Thread.sleep(1000L);
@@ -3458,7 +3455,7 @@ public class Main extends ApplicationApplet {
         p12Font.drawCenteredYText(0xffffff, "Please wait - attempting to reestablish", 23693, 158, 256);
         while(i >= 0) 
             gameBuffer.put(164);
-        toplefttext_imagefetcher.updateGraphics(4, 23680, super.graphics, 4);
+        toplefttext_imagefetcher.updateGraphics(4, 23680, super.appletGraphics, 4);
         anInt1021 = 0;
         anInt1261 = 0;
         BufferedConnection class24 = bufferedConnection;
@@ -3493,15 +3490,15 @@ public class Main extends ApplicationApplet {
         int i1 = interfacestack_c[i];
         if(l >= 2000)
             l -= 2000;
-		/* Write item on NPC packet */
+		/* Write item on Npc packet */
         if(l == 582)
         {
-            NPC class30_sub2_sub4_sub1_sub1 = npcs[i1];
+            Npc class30_sub2_sub4_sub1_sub1 = npcs[i1];
             if(class30_sub2_sub4_sub1_sub1 != null)
             {
-                sendWalkPacket(2, 0, 1, -11308, 0, ((Mob) (localplayer)).palettey_stack[0], 1, 0, ((Mob) (class30_sub2_sub4_sub1_sub1)).palettey_stack[0], ((Mob) (localplayer)).palettex_stack[0], false, ((Mob) (class30_sub2_sub4_sub1_sub1)).palettex_stack[0]);
-                anInt914 = super.curpressed_x;
-                anInt915 = super.curpressed_y;
+                sendWalkPacket(2, 0, 1, -11308, 0, ((Mob) (localPlayer)).yList[0], 1, 0, ((Mob) (class30_sub2_sub4_sub1_sub1)).yList[0], ((Mob) (localPlayer)).xList[0], false, ((Mob) (class30_sub2_sub4_sub1_sub1)).xList[0]);
+                anInt914 = super.pressedX;
+                anInt915 = super.pressedY;
                 anInt917 = 2;
                 anInt916 = 0;
                 gameBuffer.putPacket(57);
@@ -3514,11 +3511,11 @@ public class Main extends ApplicationApplet {
 		/* Pickup ground item */
         if(l == 234)
         {
-            boolean flag1 = sendWalkPacket(2, 0, 0, -11308, 0, ((Mob) (localplayer)).palettey_stack[0], 0, 0, k, ((Mob) (localplayer)).palettex_stack[0], false, j);
+            boolean flag1 = sendWalkPacket(2, 0, 0, -11308, 0, ((Mob) (localPlayer)).yList[0], 0, 0, k, ((Mob) (localPlayer)).xList[0], false, j);
             if(!flag1)
-                flag1 = sendWalkPacket(2, 0, 1, -11308, 0, ((Mob) (localplayer)).palettey_stack[0], 1, 0, k, ((Mob) (localplayer)).palettex_stack[0], false, j);
-            anInt914 = super.curpressed_x;
-            anInt915 = super.curpressed_y;
+                flag1 = sendWalkPacket(2, 0, 1, -11308, 0, ((Mob) (localPlayer)).yList[0], 1, 0, k, ((Mob) (localPlayer)).xList[0], false, j);
+            anInt914 = super.pressedX;
+            anInt915 = super.pressedY;
             anInt917 = 2;
             anInt916 = 0;
             gameBuffer.putPacket(236);
@@ -3540,11 +3537,11 @@ public class Main extends ApplicationApplet {
 		/* Item on floor */
         if(l == 511)
         {
-            boolean flag2 = sendWalkPacket(2, 0, 0, -11308, 0, ((Mob) (localplayer)).palettey_stack[0], 0, 0, k, ((Mob) (localplayer)).palettex_stack[0], false, j);
+            boolean flag2 = sendWalkPacket(2, 0, 0, -11308, 0, ((Mob) (localPlayer)).yList[0], 0, 0, k, ((Mob) (localPlayer)).xList[0], false, j);
             if(!flag2)
-                flag2 = sendWalkPacket(2, 0, 1, -11308, 0, ((Mob) (localplayer)).palettey_stack[0], 1, 0, k, ((Mob) (localplayer)).palettex_stack[0], false, j);
-            anInt914 = super.curpressed_x;
-            anInt915 = super.curpressed_y;
+                flag2 = sendWalkPacket(2, 0, 1, -11308, 0, ((Mob) (localPlayer)).yList[0], 1, 0, k, ((Mob) (localPlayer)).xList[0], false, j);
+            anInt914 = super.pressedX;
+            anInt915 = super.pressedY;
             anInt917 = 2;
             anInt916 = 0;
             gameBuffer.putPacket(25);
@@ -3566,9 +3563,9 @@ public class Main extends ApplicationApplet {
             anInt1244 = k;
             anInt1245 = j;
             anInt1246 = 2;
-            if(Widget.widgets[k].parentid == anInt857)
+            if(Widget.widgets[k].parentId == anInt857)
                 anInt1246 = 1;
-            if(Widget.widgets[k].parentid == anInt1276)
+            if(Widget.widgets[k].parentId == anInt1276)
                 anInt1246 = 3;
         }
 		/* Button click */
@@ -3576,7 +3573,7 @@ public class Main extends ApplicationApplet {
         {
             Widget class9 = Widget.widgets[k];
             boolean flag8 = true;
-            if(class9.actioncode > 0)
+            if(class9.actionCode > 0)
                 flag8 = method48(505, class9);
             if(flag8)
             {
@@ -3586,12 +3583,12 @@ public class Main extends ApplicationApplet {
         }
         if(l == 561)
         {
-            Player class30_sub2_sub4_sub1_sub2 = players[i1];
+            Player class30_sub2_sub4_sub1_sub2 = playerArray[i1];
             if(class30_sub2_sub4_sub1_sub2 != null)
             {
-                sendWalkPacket(2, 0, 1, -11308, 0, ((Mob) (localplayer)).palettey_stack[0], 1, 0, ((Mob) (class30_sub2_sub4_sub1_sub2)).palettey_stack[0], ((Mob) (localplayer)).palettex_stack[0], false, ((Mob) (class30_sub2_sub4_sub1_sub2)).palettex_stack[0]);
-                anInt914 = super.curpressed_x;
-                anInt915 = super.curpressed_y;
+                sendWalkPacket(2, 0, 1, -11308, 0, ((Mob) (localPlayer)).yList[0], 1, 0, ((Mob) (class30_sub2_sub4_sub1_sub2)).yList[0], ((Mob) (localPlayer)).xList[0], false, ((Mob) (class30_sub2_sub4_sub1_sub2)).xList[0]);
+                anInt914 = super.pressedX;
+                anInt915 = super.pressedY;
                 anInt917 = 2;
                 anInt916 = 0;
                 anInt1188 += i1;
@@ -3606,12 +3603,12 @@ public class Main extends ApplicationApplet {
         }
         if(l == 20)
         {
-            NPC class30_sub2_sub4_sub1_sub1_1 = npcs[i1];
+            Npc class30_sub2_sub4_sub1_sub1_1 = npcs[i1];
             if(class30_sub2_sub4_sub1_sub1_1 != null)
             {
-                sendWalkPacket(2, 0, 1, -11308, 0, ((Mob) (localplayer)).palettey_stack[0], 1, 0, ((Mob) (class30_sub2_sub4_sub1_sub1_1)).palettey_stack[0], ((Mob) (localplayer)).palettex_stack[0], false, ((Mob) (class30_sub2_sub4_sub1_sub1_1)).palettex_stack[0]);
-                anInt914 = super.curpressed_x;
-                anInt915 = super.curpressed_y;
+                sendWalkPacket(2, 0, 1, -11308, 0, ((Mob) (localPlayer)).yList[0], 1, 0, ((Mob) (class30_sub2_sub4_sub1_sub1_1)).yList[0], ((Mob) (localPlayer)).xList[0], false, ((Mob) (class30_sub2_sub4_sub1_sub1_1)).xList[0]);
+                anInt914 = super.pressedX;
+                anInt915 = super.pressedY;
                 anInt917 = 2;
                 anInt916 = 0;
                 gameBuffer.putPacket(155);
@@ -3620,12 +3617,12 @@ public class Main extends ApplicationApplet {
         }
         if(l == 779)
         {
-            Player class30_sub2_sub4_sub1_sub2_1 = players[i1];
+            Player class30_sub2_sub4_sub1_sub2_1 = playerArray[i1];
             if(class30_sub2_sub4_sub1_sub2_1 != null)
             {
-                sendWalkPacket(2, 0, 1, -11308, 0, ((Mob) (localplayer)).palettey_stack[0], 1, 0, ((Mob) (class30_sub2_sub4_sub1_sub2_1)).palettey_stack[0], ((Mob) (localplayer)).palettex_stack[0], false, ((Mob) (class30_sub2_sub4_sub1_sub2_1)).palettex_stack[0]);
-                anInt914 = super.curpressed_x;
-                anInt915 = super.curpressed_y;
+                sendWalkPacket(2, 0, 1, -11308, 0, ((Mob) (localPlayer)).yList[0], 1, 0, ((Mob) (class30_sub2_sub4_sub1_sub2_1)).yList[0], ((Mob) (localPlayer)).xList[0], false, ((Mob) (class30_sub2_sub4_sub1_sub2_1)).xList[0]);
+                anInt914 = super.pressedX;
+                anInt915 = super.pressedY;
                 anInt917 = 2;
                 anInt916 = 0;
                 gameBuffer.putPacket(153);
@@ -3634,7 +3631,7 @@ public class Main extends ApplicationApplet {
         }
         if(l == 516)
             if(!aBoolean885)
-                pallet.method312(false, super.curpressed_y - 4, super.curpressed_x - 4);
+                pallet.method312(false, super.pressedY - 4, super.pressedX - 4);
             else
                 pallet.method312(false, k - 4, j - 4);
         if(l == 1062)
@@ -3668,9 +3665,9 @@ public class Main extends ApplicationApplet {
             anInt1244 = k;
             anInt1245 = j;
             anInt1246 = 2;
-            if(Widget.widgets[k].parentid == anInt857)
+            if(Widget.widgets[k].parentId == anInt857)
                 anInt1246 = 1;
-            if(Widget.widgets[k].parentid == anInt1276)
+            if(Widget.widgets[k].parentId == anInt1276)
                 anInt1246 = 3;
         }
         if(l == 337 || l == 42 || l == 792 || l == 322)
@@ -3700,9 +3697,9 @@ public class Main extends ApplicationApplet {
             anInt1244 = k;
             anInt1245 = j;
             anInt1246 = 2;
-            if(Widget.widgets[k].parentid == anInt857)
+            if(Widget.widgets[k].parentId == anInt857)
                 anInt1246 = 1;
-            if(Widget.widgets[k].parentid == anInt1276)
+            if(Widget.widgets[k].parentId == anInt1276)
                 anInt1246 = 3;
         }
         if(l == 539)
@@ -3715,9 +3712,9 @@ public class Main extends ApplicationApplet {
             anInt1244 = k;
             anInt1245 = j;
             anInt1246 = 2;
-            if(Widget.widgets[k].parentid == anInt857)
+            if(Widget.widgets[k].parentId == anInt857)
                 anInt1246 = 1;
-            if(Widget.widgets[k].parentid == anInt1276)
+            if(Widget.widgets[k].parentId == anInt1276)
                 anInt1246 = 3;
         }
         if(l == 484 || l == 6)
@@ -3729,16 +3726,16 @@ public class Main extends ApplicationApplet {
                 s1 = s1.substring(l1 + 5).trim();
                 String s7 = TextTools.formatUsername(-45804, TextTools.longToString(TextTools.stringToLong(s1), (byte)-99));
                 boolean flag9 = false;
-                for(int j3 = 0; j3 < anInt891; j3++)
+                for(int j3 = 0; j3 < playerOffset; j3++)
                 {
-                    Player class30_sub2_sub4_sub1_sub2_7 = players[anIntArray892[j3]];
+                    Player class30_sub2_sub4_sub1_sub2_7 = playerArray[addedPlayers[j3]];
                     if(class30_sub2_sub4_sub1_sub2_7 == null || class30_sub2_sub4_sub1_sub2_7.name == null || !class30_sub2_sub4_sub1_sub2_7.name.equalsIgnoreCase(s7))
                         continue;
-                    sendWalkPacket(2, 0, 1, -11308, 0, ((Mob) (localplayer)).palettey_stack[0], 1, 0, ((Mob) (class30_sub2_sub4_sub1_sub2_7)).palettey_stack[0], ((Mob) (localplayer)).palettex_stack[0], false, ((Mob) (class30_sub2_sub4_sub1_sub2_7)).palettex_stack[0]);
+                    sendWalkPacket(2, 0, 1, -11308, 0, ((Mob) (localPlayer)).yList[0], 1, 0, ((Mob) (class30_sub2_sub4_sub1_sub2_7)).yList[0], ((Mob) (localPlayer)).xList[0], false, ((Mob) (class30_sub2_sub4_sub1_sub2_7)).xList[0]);
                     if(l == 484)
                     {
                         gameBuffer.putPacket(139);
-                        gameBuffer.putWordLE(anIntArray892[j3]);
+                        gameBuffer.putWordLE(addedPlayers[j3]);
                     }
                     if(l == 6)
                     {
@@ -3749,7 +3746,7 @@ public class Main extends ApplicationApplet {
                             anInt1188 = 0;
                         }
                         gameBuffer.putPacket(128);
-                        gameBuffer.putWord(anIntArray892[j3]);
+                        gameBuffer.putWord(addedPlayers[j3]);
                     }
                     flag9 = true;
                     break;
@@ -3773,9 +3770,9 @@ public class Main extends ApplicationApplet {
             anInt1244 = k;
             anInt1245 = j;
             anInt1246 = 2;
-            if(Widget.widgets[k].parentid == anInt857)
+            if(Widget.widgets[k].parentId == anInt857)
                 anInt1246 = 1;
-            if(Widget.widgets[k].parentid == anInt1276)
+            if(Widget.widgets[k].parentId == anInt1276)
                 anInt1246 = 3;
         }
 		/* Drop item */
@@ -3789,9 +3786,9 @@ public class Main extends ApplicationApplet {
             anInt1244 = k;
             anInt1245 = j;
             anInt1246 = 2;
-            if(Widget.widgets[k].parentid == anInt857)
+            if(Widget.widgets[k].parentId == anInt857)
                 anInt1246 = 1;
-            if(Widget.widgets[k].parentid == anInt1276)
+            if(Widget.widgets[k].parentId == anInt1276)
                 anInt1246 = 3;
         }
         if(l == 626)
@@ -3827,19 +3824,19 @@ public class Main extends ApplicationApplet {
             anInt1244 = k;
             anInt1245 = j;
             anInt1246 = 2;
-            if(Widget.widgets[k].parentid == anInt857)
+            if(Widget.widgets[k].parentId == anInt857)
                 anInt1246 = 1;
-            if(Widget.widgets[k].parentid == anInt1276)
+            if(Widget.widgets[k].parentId == anInt1276)
                 anInt1246 = 3;
         }
         if(l == 27)
         {
-            Player class30_sub2_sub4_sub1_sub2_2 = players[i1];
+            Player class30_sub2_sub4_sub1_sub2_2 = playerArray[i1];
             if(class30_sub2_sub4_sub1_sub2_2 != null)
             {
-                sendWalkPacket(2, 0, 1, -11308, 0, ((Mob) (localplayer)).palettey_stack[0], 1, 0, ((Mob) (class30_sub2_sub4_sub1_sub2_2)).palettey_stack[0], ((Mob) (localplayer)).palettex_stack[0], false, ((Mob) (class30_sub2_sub4_sub1_sub2_2)).palettex_stack[0]);
-                anInt914 = super.curpressed_x;
-                anInt915 = super.curpressed_y;
+                sendWalkPacket(2, 0, 1, -11308, 0, ((Mob) (localPlayer)).yList[0], 1, 0, ((Mob) (class30_sub2_sub4_sub1_sub2_2)).yList[0], ((Mob) (localPlayer)).xList[0], false, ((Mob) (class30_sub2_sub4_sub1_sub2_2)).xList[0]);
+                anInt914 = super.pressedX;
+                anInt915 = super.pressedY;
                 anInt917 = 2;
                 anInt916 = 0;
                 anInt986 += i1;
@@ -3855,11 +3852,11 @@ public class Main extends ApplicationApplet {
         }
         if(l == 213)
         {
-            boolean flag3 = sendWalkPacket(2, 0, 0, -11308, 0, ((Mob) (localplayer)).palettey_stack[0], 0, 0, k, ((Mob) (localplayer)).palettex_stack[0], false, j);
+            boolean flag3 = sendWalkPacket(2, 0, 0, -11308, 0, ((Mob) (localPlayer)).yList[0], 0, 0, k, ((Mob) (localPlayer)).xList[0], false, j);
             if(!flag3)
-                flag3 = sendWalkPacket(2, 0, 1, -11308, 0, ((Mob) (localplayer)).palettey_stack[0], 1, 0, k, ((Mob) (localplayer)).palettex_stack[0], false, j);
-            anInt914 = super.curpressed_x;
-            anInt915 = super.curpressed_y;
+                flag3 = sendWalkPacket(2, 0, 1, -11308, 0, ((Mob) (localPlayer)).yList[0], 1, 0, k, ((Mob) (localPlayer)).xList[0], false, j);
+            anInt914 = super.pressedX;
+            anInt915 = super.pressedY;
             anInt917 = 2;
             anInt916 = 0;
             gameBuffer.putPacket(79);
@@ -3877,9 +3874,9 @@ public class Main extends ApplicationApplet {
             anInt1244 = k;
             anInt1245 = j;
             anInt1246 = 2;
-            if(Widget.widgets[k].parentid == anInt857)
+            if(Widget.widgets[k].parentId == anInt857)
                 anInt1246 = 1;
-            if(Widget.widgets[k].parentid == anInt1276)
+            if(Widget.widgets[k].parentId == anInt1276)
                 anInt1246 = 3;
         }
         if(l == 493)
@@ -3892,18 +3889,18 @@ public class Main extends ApplicationApplet {
             anInt1244 = k;
             anInt1245 = j;
             anInt1246 = 2;
-            if(Widget.widgets[k].parentid == anInt857)
+            if(Widget.widgets[k].parentId == anInt857)
                 anInt1246 = 1;
-            if(Widget.widgets[k].parentid == anInt1276)
+            if(Widget.widgets[k].parentId == anInt1276)
                 anInt1246 = 3;
         }
         if(l == 652)
         {
-            boolean flag4 = sendWalkPacket(2, 0, 0, -11308, 0, ((Mob) (localplayer)).palettey_stack[0], 0, 0, k, ((Mob) (localplayer)).palettex_stack[0], false, j);
+            boolean flag4 = sendWalkPacket(2, 0, 0, -11308, 0, ((Mob) (localPlayer)).yList[0], 0, 0, k, ((Mob) (localPlayer)).xList[0], false, j);
             if(!flag4)
-                flag4 = sendWalkPacket(2, 0, 1, -11308, 0, ((Mob) (localplayer)).palettey_stack[0], 1, 0, k, ((Mob) (localplayer)).palettex_stack[0], false, j);
-            anInt914 = super.curpressed_x;
-            anInt915 = super.curpressed_y;
+                flag4 = sendWalkPacket(2, 0, 1, -11308, 0, ((Mob) (localPlayer)).yList[0], 1, 0, k, ((Mob) (localPlayer)).xList[0], false, j);
+            anInt914 = super.pressedX;
+            anInt915 = super.pressedY;
             anInt917 = 2;
             anInt916 = 0;
             gameBuffer.putPacket(156);
@@ -3913,11 +3910,11 @@ public class Main extends ApplicationApplet {
         }
         if(l == 94)
         {
-            boolean flag5 = sendWalkPacket(2, 0, 0, -11308, 0, ((Mob) (localplayer)).palettey_stack[0], 0, 0, k, ((Mob) (localplayer)).palettex_stack[0], false, j);
+            boolean flag5 = sendWalkPacket(2, 0, 0, -11308, 0, ((Mob) (localPlayer)).yList[0], 0, 0, k, ((Mob) (localPlayer)).xList[0], false, j);
             if(!flag5)
-                flag5 = sendWalkPacket(2, 0, 1, -11308, 0, ((Mob) (localplayer)).palettey_stack[0], 1, 0, k, ((Mob) (localplayer)).palettex_stack[0], false, j);
-            anInt914 = super.curpressed_x;
-            anInt915 = super.curpressed_y;
+                flag5 = sendWalkPacket(2, 0, 1, -11308, 0, ((Mob) (localPlayer)).yList[0], 1, 0, k, ((Mob) (localPlayer)).xList[0], false, j);
+            anInt914 = super.pressedX;
+            anInt915 = super.pressedY;
             anInt917 = 2;
             anInt916 = 0;
             gameBuffer.putPacket(181);
@@ -3931,12 +3928,12 @@ public class Main extends ApplicationApplet {
             gameBuffer.putPacket(185);
             gameBuffer.putWord(k);
             Widget class9_2 = Widget.widgets[k];
-            if(class9_2.anIntArrayArray226 != null && class9_2.anIntArrayArray226[0][0] == 5)
+            if(class9_2.scriptOpcodes != null && class9_2.scriptOpcodes[0][0] == 5)
             {
-                int i2 = class9_2.anIntArrayArray226[0][1];
-                if(configstates[i2] != class9_2.updatestates[0])
+                int i2 = class9_2.scriptOpcodes[0][1];
+                if(configstates[i2] != class9_2.scriptConditions[0])
                 {
-                    configstates[i2] = class9_2.updatestates[0];
+                    configstates[i2] = class9_2.scriptConditions[0];
                     parseClientVarps(false, i2);
                     aBoolean1153 = true;
                 }
@@ -3944,12 +3941,12 @@ public class Main extends ApplicationApplet {
         }
         if(l == 225)
         {
-            NPC class30_sub2_sub4_sub1_sub1_2 = npcs[i1];
+            Npc class30_sub2_sub4_sub1_sub1_2 = npcs[i1];
             if(class30_sub2_sub4_sub1_sub1_2 != null)
             {
-                sendWalkPacket(2, 0, 1, -11308, 0, ((Mob) (localplayer)).palettey_stack[0], 1, 0, ((Mob) (class30_sub2_sub4_sub1_sub1_2)).palettey_stack[0], ((Mob) (localplayer)).palettex_stack[0], false, ((Mob) (class30_sub2_sub4_sub1_sub1_2)).palettex_stack[0]);
-                anInt914 = super.curpressed_x;
-                anInt915 = super.curpressed_y;
+                sendWalkPacket(2, 0, 1, -11308, 0, ((Mob) (localPlayer)).yList[0], 1, 0, ((Mob) (class30_sub2_sub4_sub1_sub1_2)).yList[0], ((Mob) (localPlayer)).xList[0], false, ((Mob) (class30_sub2_sub4_sub1_sub1_2)).xList[0]);
+                anInt914 = super.pressedX;
+                anInt915 = super.pressedY;
                 anInt917 = 2;
                 anInt916 = 0;
                 anInt1226 += i1;
@@ -3965,12 +3962,12 @@ public class Main extends ApplicationApplet {
         }
         if(l == 965)
         {
-            NPC class30_sub2_sub4_sub1_sub1_3 = npcs[i1];
+            Npc class30_sub2_sub4_sub1_sub1_3 = npcs[i1];
             if(class30_sub2_sub4_sub1_sub1_3 != null)
             {
-                sendWalkPacket(2, 0, 1, -11308, 0, ((Mob) (localplayer)).palettey_stack[0], 1, 0, ((Mob) (class30_sub2_sub4_sub1_sub1_3)).palettey_stack[0], ((Mob) (localplayer)).palettex_stack[0], false, ((Mob) (class30_sub2_sub4_sub1_sub1_3)).palettex_stack[0]);
-                anInt914 = super.curpressed_x;
-                anInt915 = super.curpressed_y;
+                sendWalkPacket(2, 0, 1, -11308, 0, ((Mob) (localPlayer)).yList[0], 1, 0, ((Mob) (class30_sub2_sub4_sub1_sub1_3)).yList[0], ((Mob) (localPlayer)).xList[0], false, ((Mob) (class30_sub2_sub4_sub1_sub1_3)).xList[0]);
+                anInt914 = super.pressedX;
+                anInt915 = super.pressedY;
                 anInt917 = 2;
                 anInt916 = 0;
                 anInt1134++;
@@ -3986,12 +3983,12 @@ public class Main extends ApplicationApplet {
         }
         if(l == 413)
         {
-            NPC class30_sub2_sub4_sub1_sub1_4 = npcs[i1];
+            Npc class30_sub2_sub4_sub1_sub1_4 = npcs[i1];
             if(class30_sub2_sub4_sub1_sub1_4 != null)
             {
-                sendWalkPacket(2, 0, 1, -11308, 0, ((Mob) (localplayer)).palettey_stack[0], 1, 0, ((Mob) (class30_sub2_sub4_sub1_sub1_4)).palettey_stack[0], ((Mob) (localplayer)).palettex_stack[0], false, ((Mob) (class30_sub2_sub4_sub1_sub1_4)).palettex_stack[0]);
-                anInt914 = super.curpressed_x;
-                anInt915 = super.curpressed_y;
+                sendWalkPacket(2, 0, 1, -11308, 0, ((Mob) (localPlayer)).yList[0], 1, 0, ((Mob) (class30_sub2_sub4_sub1_sub1_4)).yList[0], ((Mob) (localPlayer)).xList[0], false, ((Mob) (class30_sub2_sub4_sub1_sub1_4)).xList[0]);
+                anInt914 = super.pressedX;
+                anInt915 = super.pressedY;
                 anInt917 = 2;
                 anInt916 = 0;
                 gameBuffer.putPacket(131);
@@ -4003,10 +4000,10 @@ public class Main extends ApplicationApplet {
             method147(537);
         if(l == 1025)
         {
-            NPC class30_sub2_sub4_sub1_sub1_5 = npcs[i1];
+            Npc class30_sub2_sub4_sub1_sub1_5 = npcs[i1];
             if(class30_sub2_sub4_sub1_sub1_5 != null)
             {
-                NPCDefinition class5 = class30_sub2_sub4_sub1_sub1_5.definition;
+                NpcDefinition class5 = class30_sub2_sub4_sub1_sub1_5.definition;
                 if(class5.confignpcs != null)
                     class5 = class5.method161(anInt877);
                 if(class5 != null)
@@ -4030,12 +4027,12 @@ public class Main extends ApplicationApplet {
         }
         if(l == 412)
         {
-            NPC class30_sub2_sub4_sub1_sub1_6 = npcs[i1];
+            Npc class30_sub2_sub4_sub1_sub1_6 = npcs[i1];
             if(class30_sub2_sub4_sub1_sub1_6 != null)
             {
-                sendWalkPacket(2, 0, 1, -11308, 0, ((Mob) (localplayer)).palettey_stack[0], 1, 0, ((Mob) (class30_sub2_sub4_sub1_sub1_6)).palettey_stack[0], ((Mob) (localplayer)).palettex_stack[0], false, ((Mob) (class30_sub2_sub4_sub1_sub1_6)).palettex_stack[0]);
-                anInt914 = super.curpressed_x;
-                anInt915 = super.curpressed_y;
+                sendWalkPacket(2, 0, 1, -11308, 0, ((Mob) (localPlayer)).yList[0], 1, 0, ((Mob) (class30_sub2_sub4_sub1_sub1_6)).yList[0], ((Mob) (localPlayer)).xList[0], false, ((Mob) (class30_sub2_sub4_sub1_sub1_6)).xList[0]);
+                anInt914 = super.pressedX;
+                anInt915 = super.pressedY;
                 anInt917 = 2;
                 anInt916 = 0;
                 gameBuffer.putPacket(72);
@@ -4044,12 +4041,12 @@ public class Main extends ApplicationApplet {
         }
         if(l == 365)
         {
-            Player class30_sub2_sub4_sub1_sub2_3 = players[i1];
+            Player class30_sub2_sub4_sub1_sub2_3 = playerArray[i1];
             if(class30_sub2_sub4_sub1_sub2_3 != null)
             {
-                sendWalkPacket(2, 0, 1, -11308, 0, ((Mob) (localplayer)).palettey_stack[0], 1, 0, ((Mob) (class30_sub2_sub4_sub1_sub2_3)).palettey_stack[0], ((Mob) (localplayer)).palettex_stack[0], false, ((Mob) (class30_sub2_sub4_sub1_sub2_3)).palettex_stack[0]);
-                anInt914 = super.curpressed_x;
-                anInt915 = super.curpressed_y;
+                sendWalkPacket(2, 0, 1, -11308, 0, ((Mob) (localPlayer)).yList[0], 1, 0, ((Mob) (class30_sub2_sub4_sub1_sub2_3)).yList[0], ((Mob) (localPlayer)).xList[0], false, ((Mob) (class30_sub2_sub4_sub1_sub2_3)).xList[0]);
+                anInt914 = super.pressedX;
+                anInt915 = super.pressedY;
                 anInt917 = 2;
                 anInt916 = 0;
                 gameBuffer.putPacket(249);
@@ -4059,12 +4056,12 @@ public class Main extends ApplicationApplet {
         }
         if(l == 729)
         {
-            Player class30_sub2_sub4_sub1_sub2_4 = players[i1];
+            Player class30_sub2_sub4_sub1_sub2_4 = playerArray[i1];
             if(class30_sub2_sub4_sub1_sub2_4 != null)
             {
-                sendWalkPacket(2, 0, 1, -11308, 0, ((Mob) (localplayer)).palettey_stack[0], 1, 0, ((Mob) (class30_sub2_sub4_sub1_sub2_4)).palettey_stack[0], ((Mob) (localplayer)).palettex_stack[0], false, ((Mob) (class30_sub2_sub4_sub1_sub2_4)).palettex_stack[0]);
-                anInt914 = super.curpressed_x;
-                anInt915 = super.curpressed_y;
+                sendWalkPacket(2, 0, 1, -11308, 0, ((Mob) (localPlayer)).yList[0], 1, 0, ((Mob) (class30_sub2_sub4_sub1_sub2_4)).yList[0], ((Mob) (localPlayer)).xList[0], false, ((Mob) (class30_sub2_sub4_sub1_sub2_4)).xList[0]);
+                anInt914 = super.pressedX;
+                anInt915 = super.pressedY;
                 anInt917 = 2;
                 anInt916 = 0;
                 gameBuffer.putPacket(39);
@@ -4073,12 +4070,12 @@ public class Main extends ApplicationApplet {
         }
         if(l == 577)
         {
-            Player class30_sub2_sub4_sub1_sub2_5 = players[i1];
+            Player class30_sub2_sub4_sub1_sub2_5 = playerArray[i1];
             if(class30_sub2_sub4_sub1_sub2_5 != null)
             {
-                sendWalkPacket(2, 0, 1, -11308, 0, ((Mob) (localplayer)).palettey_stack[0], 1, 0, ((Mob) (class30_sub2_sub4_sub1_sub2_5)).palettey_stack[0], ((Mob) (localplayer)).palettex_stack[0], false, ((Mob) (class30_sub2_sub4_sub1_sub2_5)).palettex_stack[0]);
-                anInt914 = super.curpressed_x;
-                anInt915 = super.curpressed_y;
+                sendWalkPacket(2, 0, 1, -11308, 0, ((Mob) (localPlayer)).yList[0], 1, 0, ((Mob) (class30_sub2_sub4_sub1_sub2_5)).yList[0], ((Mob) (localPlayer)).xList[0], false, ((Mob) (class30_sub2_sub4_sub1_sub2_5)).xList[0]);
+                anInt914 = super.pressedX;
+                anInt915 = super.pressedY;
                 anInt917 = 2;
                 anInt916 = 0;
                 gameBuffer.putPacket(139);
@@ -4095,11 +4092,11 @@ public class Main extends ApplicationApplet {
         }
         if(l == 567)
         {
-            boolean flag6 = sendWalkPacket(2, 0, 0, -11308, 0, ((Mob) (localplayer)).palettey_stack[0], 0, 0, k, ((Mob) (localplayer)).palettex_stack[0], false, j);
+            boolean flag6 = sendWalkPacket(2, 0, 0, -11308, 0, ((Mob) (localPlayer)).yList[0], 0, 0, k, ((Mob) (localPlayer)).xList[0], false, j);
             if(!flag6)
-                flag6 = sendWalkPacket(2, 0, 1, -11308, 0, ((Mob) (localplayer)).palettey_stack[0], 1, 0, k, ((Mob) (localplayer)).palettex_stack[0], false, j);
-            anInt914 = super.curpressed_x;
-            anInt915 = super.curpressed_y;
+                flag6 = sendWalkPacket(2, 0, 1, -11308, 0, ((Mob) (localPlayer)).yList[0], 1, 0, k, ((Mob) (localPlayer)).xList[0], false, j);
+            anInt914 = super.pressedX;
+            anInt915 = super.pressedY;
             anInt917 = 2;
             anInt916 = 0;
             gameBuffer.putPacket(23);
@@ -4125,9 +4122,9 @@ public class Main extends ApplicationApplet {
             anInt1244 = k;
             anInt1245 = j;
             anInt1246 = 2;
-            if(Widget.widgets[k].parentid == anInt857)
+            if(Widget.widgets[k].parentId == anInt857)
                 anInt1246 = 1;
-            if(Widget.widgets[k].parentid == anInt1276)
+            if(Widget.widgets[k].parentId == anInt1276)
                 anInt1246 = 3;
         }
         if(l == 543)
@@ -4141,9 +4138,9 @@ public class Main extends ApplicationApplet {
             anInt1244 = k;
             anInt1245 = j;
             anInt1246 = 2;
-            if(Widget.widgets[k].parentid == anInt857)
+            if(Widget.widgets[k].parentId == anInt857)
                 anInt1246 = 1;
-            if(Widget.widgets[k].parentid == anInt1276)
+            if(Widget.widgets[k].parentId == anInt1276)
                 anInt1246 = 3;
         }
         if(l == 606)
@@ -4158,9 +4155,9 @@ public class Main extends ApplicationApplet {
                     aBoolean1158 = false;
                     for(int i3 = 0; i3 < Widget.widgets.length; i3++)
                     {
-                        if(Widget.widgets[i3] == null || Widget.widgets[i3].actioncode != 600)
+                        if(Widget.widgets[i3] == null || Widget.widgets[i3].actionCode != 600)
                             continue;
-                        anInt1178 = anInt857 = Widget.widgets[i3].parentid;
+                        anInt1178 = anInt857 = Widget.widgets[i3].parentId;
                         break;
                     }
 
@@ -4171,12 +4168,12 @@ public class Main extends ApplicationApplet {
         }
         if(l == 491)
         {
-            Player class30_sub2_sub4_sub1_sub2_6 = players[i1];
+            Player class30_sub2_sub4_sub1_sub2_6 = playerArray[i1];
             if(class30_sub2_sub4_sub1_sub2_6 != null)
             {
-                sendWalkPacket(2, 0, 1, -11308, 0, ((Mob) (localplayer)).palettey_stack[0], 1, 0, ((Mob) (class30_sub2_sub4_sub1_sub2_6)).palettey_stack[0], ((Mob) (localplayer)).palettex_stack[0], false, ((Mob) (class30_sub2_sub4_sub1_sub2_6)).palettex_stack[0]);
-                anInt914 = super.curpressed_x;
-                anInt915 = super.curpressed_y;
+                sendWalkPacket(2, 0, 1, -11308, 0, ((Mob) (localPlayer)).yList[0], 1, 0, ((Mob) (class30_sub2_sub4_sub1_sub2_6)).yList[0], ((Mob) (localPlayer)).xList[0], false, ((Mob) (class30_sub2_sub4_sub1_sub2_6)).xList[0]);
+                anInt914 = super.pressedX;
+                anInt915 = super.pressedY;
                 anInt917 = 2;
                 anInt916 = 0;
                 gameBuffer.putPacket(14);
@@ -4224,19 +4221,19 @@ public class Main extends ApplicationApplet {
             anInt1244 = k;
             anInt1245 = j;
             anInt1246 = 2;
-            if(Widget.widgets[k].parentid == anInt857)
+            if(Widget.widgets[k].parentId == anInt857)
                 anInt1246 = 1;
-            if(Widget.widgets[k].parentid == anInt1276)
+            if(Widget.widgets[k].parentId == anInt1276)
                 anInt1246 = 3;
         }
         if(l == 478)
         {
-            NPC class30_sub2_sub4_sub1_sub1_7 = npcs[i1];
+            Npc class30_sub2_sub4_sub1_sub1_7 = npcs[i1];
             if(class30_sub2_sub4_sub1_sub1_7 != null)
             {
-                sendWalkPacket(2, 0, 1, -11308, 0, ((Mob) (localplayer)).palettey_stack[0], 1, 0, ((Mob) (class30_sub2_sub4_sub1_sub1_7)).palettey_stack[0], ((Mob) (localplayer)).palettex_stack[0], false, ((Mob) (class30_sub2_sub4_sub1_sub1_7)).palettex_stack[0]);
-                anInt914 = super.curpressed_x;
-                anInt915 = super.curpressed_y;
+                sendWalkPacket(2, 0, 1, -11308, 0, ((Mob) (localPlayer)).yList[0], 1, 0, ((Mob) (class30_sub2_sub4_sub1_sub1_7)).yList[0], ((Mob) (localPlayer)).xList[0], false, ((Mob) (class30_sub2_sub4_sub1_sub1_7)).xList[0]);
+                anInt914 = super.pressedX;
+                anInt915 = super.pressedY;
                 anInt917 = 2;
                 anInt916 = 0;
                 if((i1 & 3) == 0)
@@ -4280,13 +4277,13 @@ public class Main extends ApplicationApplet {
             ItemDefinition class8 = ItemDefinition.getItemDefinition(i1);
             Widget class9_4 = Widget.widgets[k];
             String s5;
-            if(class9_4 != null && class9_4.itemamounts[j] >= 0x186a0)
-                s5 = class9_4.itemamounts[j] + " x " + class8.name;
+            if(class9_4 != null && class9_4.itemAmounts[j] >= 0x186a0)
+                s5 = class9_4.itemAmounts[j] + " x " + class8.withItemName;
             else
             if(class8.examine != null)
                 s5 = new String(class8.examine);
             else
-                s5 = "It's a " + class8.name + ".";
+                s5 = "It's a " + class8.withItemName + ".";
             pushMessage(s5, 0, "", aBoolean991);
         }
         if(l == 169)
@@ -4294,9 +4291,9 @@ public class Main extends ApplicationApplet {
             gameBuffer.putPacket(185);
             gameBuffer.putWord(k);
             Widget class9_3 = Widget.widgets[k];
-            if(class9_3.anIntArrayArray226 != null && class9_3.anIntArrayArray226[0][0] == 5)
+            if(class9_3.scriptOpcodes != null && class9_3.scriptOpcodes[0][0] == 5)
             {
-                int l2 = class9_3.anIntArrayArray226[0][1];
+                int l2 = class9_3.scriptOpcodes[0][1];
                 configstates[l2] = 1 - configstates[l2];
                 parseClientVarps(false, l2);
                 aBoolean1153 = true;
@@ -4308,7 +4305,7 @@ public class Main extends ApplicationApplet {
             anInt1283 = j;
             anInt1284 = k;
             anInt1285 = i1;
-            aString1286 = ItemDefinition.getItemDefinition(i1).name;
+            usedItemName = ItemDefinition.getItemDefinition(i1).withItemName;
             anInt1136 = 0;
             aBoolean1153 = true;
             return;
@@ -4326,11 +4323,11 @@ public class Main extends ApplicationApplet {
         }
         if(l == 244)
         {
-            boolean flag7 = sendWalkPacket(2, 0, 0, -11308, 0, ((Mob) (localplayer)).palettey_stack[0], 0, 0, k, ((Mob) (localplayer)).palettex_stack[0], false, j);
+            boolean flag7 = sendWalkPacket(2, 0, 0, -11308, 0, ((Mob) (localPlayer)).yList[0], 0, 0, k, ((Mob) (localPlayer)).xList[0], false, j);
             if(!flag7)
-                flag7 = sendWalkPacket(2, 0, 1, -11308, 0, ((Mob) (localplayer)).palettey_stack[0], 1, 0, k, ((Mob) (localplayer)).palettex_stack[0], false, j);
-            anInt914 = super.curpressed_x;
-            anInt915 = super.curpressed_y;
+                flag7 = sendWalkPacket(2, 0, 1, -11308, 0, ((Mob) (localPlayer)).yList[0], 1, 0, k, ((Mob) (localPlayer)).xList[0], false, j);
+            anInt914 = super.pressedX;
+            anInt915 = super.pressedY;
             anInt917 = 2;
             anInt916 = 0;
             gameBuffer.putPacket(253);
@@ -4345,7 +4342,7 @@ public class Main extends ApplicationApplet {
             if(class8_1.examine != null)
                 s6 = new String(class8_1.examine);
             else
-                s6 = "It's a " + class8_1.name + ".";
+                s6 = "It's a " + class8_1.withItemName + ".";
             pushMessage(s6, 0, "", aBoolean991);
         }
         anInt1282 = 0;
@@ -4363,8 +4360,8 @@ public class Main extends ApplicationApplet {
     public void calculateOntutorialIsland(int junk)
     {
         ontutorial_island = 0;
-        int x = (((Mob) (localplayer)).fineposx >> 7) + palettex;
-        int y = (((Mob) (localplayer)).fineposy >> 7) + palettey;
+        int x = (((Mob) (localPlayer)).fineX >> 7) + palettex;
+        int y = (((Mob) (localPlayer)).fineY >> 7) + palettey;
         if(x >= 3053 && x <= 3156 && y >= 3056 && y <= 3136)
             ontutorial_island = 1;
         if(x >= 3072 && x <= 3118 && y >= 9492 && y <= 9535)
@@ -4392,8 +4389,8 @@ public class Main extends ApplicationApplet {
         {
             interfacestringstack[anInt1133] = "Walk here";
             interfaceopcodestack[anInt1133] = 516;
-            interfacestack_a[anInt1133] = super.mouse_x;
-            interfacestack_b[anInt1133] = super.mouse_y;
+            interfacestack_a[anInt1133] = super.newMouseX;
+            interfacestack_b[anInt1133] = super.newMouseY;
             anInt1133++;
         }
         int j = -1;
@@ -4407,7 +4404,7 @@ public class Main extends ApplicationApplet {
             if(l == j)
                 continue;
             j = l;
-            if(type == 2 && pallet.method304(cheight, i1, j1, l) >= 0)
+            if(type == 2 && pallet.method304(currentZ, i1, j1, l) >= 0)
             {
                 ObjectDefinition class46 = ObjectDefinition.getObjectDefinition(l1);
                 if(class46.anIntArray759 != null)
@@ -4416,7 +4413,7 @@ public class Main extends ApplicationApplet {
                     continue;
                 if(anInt1282 == 1)
                 {
-                    interfacestringstack[anInt1133] = "Use " + aString1286 + " with @cya@" + class46.aString739;
+                    interfacestringstack[anInt1133] = "Use " + usedItemName + " with @cya@" + class46.aString739;
                     interfaceopcodestack[anInt1133] = 62;
                     interfacestack_c[anInt1133] = l;
                     interfacestack_a[anInt1133] = i1;
@@ -4469,21 +4466,21 @@ public class Main extends ApplicationApplet {
             }
             if(type == 1)
             {
-                NPC class30_sub2_sub4_sub1_sub1 = npcs[l1];
-                if(class30_sub2_sub4_sub1_sub1.definition.npc_halftileoffsets == 1 && (((Mob) (class30_sub2_sub4_sub1_sub1)).fineposx & 0x7f) == 64 && (((Mob) (class30_sub2_sub4_sub1_sub1)).fineposy & 0x7f) == 64)
+                Npc class30_sub2_sub4_sub1_sub1 = npcs[l1];
+                if(class30_sub2_sub4_sub1_sub1.definition.npc_halftileoffsets == 1 && (((Mob) (class30_sub2_sub4_sub1_sub1)).fineX & 0x7f) == 64 && (((Mob) (class30_sub2_sub4_sub1_sub1)).fineY & 0x7f) == 64)
                 {
                     for(int j2 = 0; j2 < anInt836; j2++)
                     {
-                        NPC class30_sub2_sub4_sub1_sub1_1 = npcs[updatenpcs[j2]];
-                        if(class30_sub2_sub4_sub1_sub1_1 != null && class30_sub2_sub4_sub1_sub1_1 != class30_sub2_sub4_sub1_sub1 && class30_sub2_sub4_sub1_sub1_1.definition.npc_halftileoffsets == 1 && ((Mob) (class30_sub2_sub4_sub1_sub1_1)).fineposx == ((Mob) (class30_sub2_sub4_sub1_sub1)).fineposx && ((Mob) (class30_sub2_sub4_sub1_sub1_1)).fineposy == ((Mob) (class30_sub2_sub4_sub1_sub1)).fineposy)
-                            method87(class30_sub2_sub4_sub1_sub1_1.definition, updatenpcs[j2], false, j1, i1);
+                        Npc class30_sub2_sub4_sub1_sub1_1 = npcs[localNpcIds[j2]];
+                        if(class30_sub2_sub4_sub1_sub1_1 != null && class30_sub2_sub4_sub1_sub1_1 != class30_sub2_sub4_sub1_sub1 && class30_sub2_sub4_sub1_sub1_1.definition.npc_halftileoffsets == 1 && ((Mob) (class30_sub2_sub4_sub1_sub1_1)).fineX == ((Mob) (class30_sub2_sub4_sub1_sub1)).fineX && ((Mob) (class30_sub2_sub4_sub1_sub1_1)).fineY == ((Mob) (class30_sub2_sub4_sub1_sub1)).fineY)
+                            method87(class30_sub2_sub4_sub1_sub1_1.definition, localNpcIds[j2], false, j1, i1);
                     }
 
-                    for(int l2 = 0; l2 < anInt891; l2++)
+                    for(int l2 = 0; l2 < playerOffset; l2++)
                     {
-                        Player class30_sub2_sub4_sub1_sub2_1 = players[anIntArray892[l2]];
-                        if(class30_sub2_sub4_sub1_sub2_1 != null && ((Mob) (class30_sub2_sub4_sub1_sub2_1)).fineposx == ((Mob) (class30_sub2_sub4_sub1_sub1)).fineposx && ((Mob) (class30_sub2_sub4_sub1_sub2_1)).fineposy == ((Mob) (class30_sub2_sub4_sub1_sub1)).fineposy)
-                            method88(i1, anIntArray892[l2], class30_sub2_sub4_sub1_sub2_1, false, j1);
+                        Player class30_sub2_sub4_sub1_sub2_1 = playerArray[addedPlayers[l2]];
+                        if(class30_sub2_sub4_sub1_sub2_1 != null && ((Mob) (class30_sub2_sub4_sub1_sub2_1)).fineX == ((Mob) (class30_sub2_sub4_sub1_sub1)).fineX && ((Mob) (class30_sub2_sub4_sub1_sub2_1)).fineY == ((Mob) (class30_sub2_sub4_sub1_sub1)).fineY)
+                            method88(i1, addedPlayers[l2], class30_sub2_sub4_sub1_sub2_1, false, j1);
                     }
 
                 }
@@ -4491,21 +4488,21 @@ public class Main extends ApplicationApplet {
             }
             if(type == 0)
             {
-                Player class30_sub2_sub4_sub1_sub2 = players[l1];
-                if((((Mob) (class30_sub2_sub4_sub1_sub2)).fineposx & 0x7f) == 64 && (((Mob) (class30_sub2_sub4_sub1_sub2)).fineposy & 0x7f) == 64)
+                Player class30_sub2_sub4_sub1_sub2 = playerArray[l1];
+                if((((Mob) (class30_sub2_sub4_sub1_sub2)).fineX & 0x7f) == 64 && (((Mob) (class30_sub2_sub4_sub1_sub2)).fineY & 0x7f) == 64)
                 {
                     for(int k2 = 0; k2 < anInt836; k2++)
                     {
-                        NPC class30_sub2_sub4_sub1_sub1_2 = npcs[updatenpcs[k2]];
-                        if(class30_sub2_sub4_sub1_sub1_2 != null && class30_sub2_sub4_sub1_sub1_2.definition.npc_halftileoffsets == 1 && ((Mob) (class30_sub2_sub4_sub1_sub1_2)).fineposx == ((Mob) (class30_sub2_sub4_sub1_sub2)).fineposx && ((Mob) (class30_sub2_sub4_sub1_sub1_2)).fineposy == ((Mob) (class30_sub2_sub4_sub1_sub2)).fineposy)
-                            method87(class30_sub2_sub4_sub1_sub1_2.definition, updatenpcs[k2], false, j1, i1);
+                        Npc class30_sub2_sub4_sub1_sub1_2 = npcs[localNpcIds[k2]];
+                        if(class30_sub2_sub4_sub1_sub1_2 != null && class30_sub2_sub4_sub1_sub1_2.definition.npc_halftileoffsets == 1 && ((Mob) (class30_sub2_sub4_sub1_sub1_2)).fineX == ((Mob) (class30_sub2_sub4_sub1_sub2)).fineX && ((Mob) (class30_sub2_sub4_sub1_sub1_2)).fineY == ((Mob) (class30_sub2_sub4_sub1_sub2)).fineY)
+                            method87(class30_sub2_sub4_sub1_sub1_2.definition, localNpcIds[k2], false, j1, i1);
                     }
 
-                    for(int i3 = 0; i3 < anInt891; i3++)
+                    for(int i3 = 0; i3 < playerOffset; i3++)
                     {
-                        Player class30_sub2_sub4_sub1_sub2_2 = players[anIntArray892[i3]];
-                        if(class30_sub2_sub4_sub1_sub2_2 != null && class30_sub2_sub4_sub1_sub2_2 != class30_sub2_sub4_sub1_sub2 && ((Mob) (class30_sub2_sub4_sub1_sub2_2)).fineposx == ((Mob) (class30_sub2_sub4_sub1_sub2)).fineposx && ((Mob) (class30_sub2_sub4_sub1_sub2_2)).fineposy == ((Mob) (class30_sub2_sub4_sub1_sub2)).fineposy)
-                            method88(i1, anIntArray892[i3], class30_sub2_sub4_sub1_sub2_2, false, j1);
+                        Player class30_sub2_sub4_sub1_sub2_2 = playerArray[addedPlayers[i3]];
+                        if(class30_sub2_sub4_sub1_sub2_2 != null && class30_sub2_sub4_sub1_sub2_2 != class30_sub2_sub4_sub1_sub2 && ((Mob) (class30_sub2_sub4_sub1_sub2_2)).fineX == ((Mob) (class30_sub2_sub4_sub1_sub2)).fineX && ((Mob) (class30_sub2_sub4_sub1_sub2_2)).fineY == ((Mob) (class30_sub2_sub4_sub1_sub2)).fineY)
+                            method88(i1, addedPlayers[i3], class30_sub2_sub4_sub1_sub2_2, false, j1);
                     }
 
                 }
@@ -4513,7 +4510,7 @@ public class Main extends ApplicationApplet {
             }
             if(type == 3)
             {
-                Deque class19 = grounditems[cheight][i1][j1];
+                Deque class19 = grounditems[currentZ][i1][j1];
                 if(class19 != null)
                 {
                     for(GroundItem class30_sub2_sub4_sub2 = (GroundItem)class19.getLast(); class30_sub2_sub4_sub2 != null; class30_sub2_sub4_sub2 = (GroundItem)class19.getNextBack())
@@ -4521,7 +4518,7 @@ public class Main extends ApplicationApplet {
                         ItemDefinition class8 = ItemDefinition.getItemDefinition(class30_sub2_sub4_sub2.itemid);
                         if(anInt1282 == 1)
                         {
-                            interfacestringstack[anInt1133] = "Use " + aString1286 + " with @lre@" + class8.name;
+                            interfacestringstack[anInt1133] = "Use " + usedItemName + " with @lre@" + class8.withItemName;
                             interfaceopcodestack[anInt1133] = 511;
                             interfacestack_c[anInt1133] = class30_sub2_sub4_sub2.itemid;
                             interfacestack_a[anInt1133] = i1;
@@ -4532,7 +4529,7 @@ public class Main extends ApplicationApplet {
                         {
                             if((anInt1138 & 1) == 1)
                             {
-                                interfacestringstack[anInt1133] = aString1139 + " @lre@" + class8.name;
+                                interfacestringstack[anInt1133] = aString1139 + " @lre@" + class8.withItemName;
                                 interfaceopcodestack[anInt1133] = 94;
                                 interfacestack_c[anInt1133] = class30_sub2_sub4_sub2.itemid;
                                 interfacestack_a[anInt1133] = i1;
@@ -4544,7 +4541,7 @@ public class Main extends ApplicationApplet {
                             for(int j3 = 4; j3 >= 0; j3--)
                                 if(class8.ground_options != null && class8.ground_options[j3] != null)
                                 {
-                                    interfacestringstack[anInt1133] = class8.ground_options[j3] + " @lre@" + class8.name;
+                                    interfacestringstack[anInt1133] = class8.ground_options[j3] + " @lre@" + class8.withItemName;
                                     if(j3 == 0)
                                         interfaceopcodestack[anInt1133] = 652;
                                     if(j3 == 1)
@@ -4562,7 +4559,7 @@ public class Main extends ApplicationApplet {
                                 } else
                                 if(j3 == 2)
                                 {
-                                    interfacestringstack[anInt1133] = "Take @lre@" + class8.name;
+                                    interfacestringstack[anInt1133] = "Take @lre@" + class8.withItemName;
                                     interfaceopcodestack[anInt1133] = 234;
                                     interfacestack_c[anInt1133] = class30_sub2_sub4_sub2.itemid;
                                     interfacestack_a[anInt1133] = i1;
@@ -4570,7 +4567,7 @@ public class Main extends ApplicationApplet {
                                     anInt1133++;
                                 }
 
-                            interfacestringstack[anInt1133] = "Examine @lre@" + class8.name;
+                            interfacestringstack[anInt1133] = "Examine @lre@" + class8.withItemName;
                             interfaceopcodestack[anInt1133] = 1448;
                             interfacestack_c[anInt1133] = class30_sub2_sub4_sub2.itemid;
                             interfacestack_a[anInt1133] = i1;
@@ -4598,9 +4595,9 @@ public class Main extends ApplicationApplet {
         catch(Exception _ex) { }
         bufferedConnection = null;
         stopMidi(860);
-        if(watchdog != null)
-            watchdog.running = false;
-        watchdog = null;
+        if(monitor != null)
+            monitor.running = false;
+        monitor = null;
         ondemandhandler.pause();
         ondemandhandler = null;
         aClass30_Sub2_Sub2_834 = null;
@@ -4612,10 +4609,10 @@ public class Main extends ApplicationApplet {
         regionbytes = null;
         anIntArray1235 = null;
         anIntArray1236 = null;
-        main_heightmap = null;
-        main_tilesettings = null;
+        tileHeightmap = null;
+        tileFlags = null;
         pallet = null;
-        collisionmaps = null;
+        planeFlags = null;
         anIntArrayArray901 = null;
         distancestrength = null;
         walkingstepsx = null;
@@ -4666,13 +4663,13 @@ public class Main extends ApplicationApplet {
         mapscene = null;
         mapfunction = null;
         anIntArrayArray929 = null;
-        players = null;
-        anIntArray892 = null;
-        playerupdate_stack = null;
-        appearancebuffers = null;
-        playerremove_stack = null;
+        playerArray = null;
+        addedPlayers = null;
+        pFlagUpdateList = null;
+        appearanceBuffers = null;
+        eRmQueue = null;
         npcs = null;
-        updatenpcs = null;
+        localNpcIds = null;
         grounditems = null;
         aClass19_1179 = null;
         i = 55 / i;
@@ -4702,16 +4699,16 @@ public class Main extends ApplicationApplet {
         aClass15_1115 = null;
         method118(3);
         ObjectDefinition.dystory(-501);
-        NPCDefinition.dystroy(-501);
+        NpcDefinition.dystroy(-501);
         ItemDefinition.dystroy(-501);
-        Floor.floors = null;
-        CharModel.charactermodels = null;
+        FloorDefinition.definitions = null;
+        IdentityKit.identityKits = null;
         Widget.widgets = null;
         AnimSequence.animationsequences = null;
         SpotAnim.aClass23Array403 = null;
         SpotAnim.aClass12_415 = null;
         VarpFile.aClass41Array701 = null;
-        super.aClass15_13 = null;
+        super.appletImageFetcher = null;
         Player.aClass12_1704 = null;
         TriangleRasterizer.destroy(-501);
         Palette.dystroy(-501);
@@ -4738,8 +4735,8 @@ public class Main extends ApplicationApplet {
     public Component getDrawableComponent() {
         if(Signlink.applet != null)
             return Signlink.applet;
-        if(super.frame != null)
-            return super.frame;
+        if(super.appletFrame != null)
+            return super.appletFrame;
         else
             return this;
     }
@@ -4749,7 +4746,7 @@ public class Main extends ApplicationApplet {
         i = 55 / i;
         do
         {
-            int j = getKey(-796);
+            int j = removeKeyId();
             if(j == -1)
                 break;
             if(anInt857 != -1 && anInt857 == anInt1178)
@@ -4906,7 +4903,7 @@ public class Main extends ApplicationApplet {
                                 for(int i2 = 1; i2 < 103; i2++)
                                 {
                                     for(int k2 = 1; k2 < 103; k2++)
-                                        collisionmaps[k1].index[i2][k2] = 0;
+                                        planeFlags[k1].flagBuffer[i2][k2] = 0;
 
                                 }
 
@@ -5021,17 +5018,17 @@ public class Main extends ApplicationApplet {
                         gameBuffer.endVarByte(gameBuffer.offset - j3, (byte)0);
                         aString887 = ChatUtils.method527(aString887, 0);
                         aString887 = Censor.censor(aString887, 0);
-                        localplayer.chat_txt = aString887;
-                        localplayer.anInt1513 = j2;
-                        localplayer.anInt1531 = i3;
-                        localplayer.anInt1535 = 150;
+                        localPlayer.chat_txt = aString887;
+                        localPlayer.anInt1513 = j2;
+                        localPlayer.anInt1531 = i3;
+                        localPlayer.anInt1535 = 150;
                         if(rights == 2)
-                            pushMessage(((Mob) (localplayer)).chat_txt, 2, "@cr2@" + localplayer.name, aBoolean991);
+                            pushMessage(((Mob) (localPlayer)).chat_txt, 2, "@cr2@" + localPlayer.name, aBoolean991);
                         else
                         if(rights == 1)
-                            pushMessage(((Mob) (localplayer)).chat_txt, 2, "@cr1@" + localplayer.name, aBoolean991);
+                            pushMessage(((Mob) (localPlayer)).chat_txt, 2, "@cr1@" + localPlayer.name, aBoolean991);
                         else
-                            pushMessage(((Mob) (localplayer)).chat_txt, 2, localplayer.name, aBoolean991);
+                            pushMessage(((Mob) (localPlayer)).chat_txt, 2, localPlayer.name, aBoolean991);
                         if(anInt1287 == 2)
                         {
                             anInt1287 = 3;
@@ -5078,7 +5075,7 @@ public class Main extends ApplicationApplet {
                 l++;
             if((j1 == 1 || j1 == 2) && (j1 == 1 || anInt1287 == 0 || anInt1287 == 1 && onFriendsList(false, s)))
             {
-                if(j > k1 - 14 && j <= k1 && !s.equals(localplayer.name))
+                if(j > k1 - 14 && j <= k1 && !s.equals(localPlayer.name))
                 {
                     if(rights >= 1)
                     {
@@ -5140,223 +5137,223 @@ public class Main extends ApplicationApplet {
 
     }
 
-    public void handleWidgetActionCode(int i, Widget widget)
+    public void handleWidgetActionCode(Widget widget)
     {
-        int code = widget.actioncode;
-        if(code >= 1 && code <= 100 || code >= 701 && code <= 800)
+        int actionCode = widget.actionCode;
+        if(actionCode >= 1 && actionCode <= 100 || actionCode >= 701 && actionCode <= 800)
         {
-            if(code == 1 && anInt900 == 0)
+            if(actionCode == 1 && anInt900 == 0)
             {
-                widget.aString248 = "Loading friend list";
-                widget.textfieldtype = 0;
+                widget.inactiveText = "Loading friend list";
+                widget.fieldType = 0;
                 return;
             }
-            if(code == 1 && anInt900 == 1)
+            if(actionCode == 1 && anInt900 == 1)
             {
-                widget.aString248 = "Connecting to friendserver";
-                widget.textfieldtype = 0;
+                widget.inactiveText = "Connecting to friendserver";
+                widget.fieldType = 0;
                 return;
             }
-            if(code == 2 && anInt900 != 2)
+            if(actionCode == 2 && anInt900 != 2)
             {
-                widget.aString248 = "Please wait...";
-                widget.textfieldtype = 0;
+                widget.inactiveText = "Please wait...";
+                widget.fieldType = 0;
                 return;
             }
             int k = amt_friendhashes;
             if(anInt900 != 2)
                 k = 0;
-            if(code > 700)
-                code -= 601;
+            if(actionCode > 700)
+                actionCode -= 601;
             else
-                code--;
-            if(code >= k)
+                actionCode--;
+            if(actionCode >= k)
             {
-                widget.aString248 = "";
-                widget.textfieldtype = 0;
+                widget.inactiveText = "";
+                widget.fieldType = 0;
                 return;
             } else
             {
-                widget.aString248 = friendusernames[code];
-                widget.textfieldtype = 1;
+                widget.inactiveText = friendusernames[actionCode];
+                widget.fieldType = 1;
                 return;
             }
         }
-        if(code >= 101 && code <= 200 || code >= 801 && code <= 900)
+        if(actionCode >= 101 && actionCode <= 200 || actionCode >= 801 && actionCode <= 900)
         {
             int l = amt_friendhashes;
             if(anInt900 != 2)
                 l = 0;
-            if(code > 800)
-                code -= 701;
+            if(actionCode > 800)
+                actionCode -= 701;
             else
-                code -= 101;
-            if(code >= l)
+                actionCode -= 101;
+            if(actionCode >= l)
             {
-                widget.aString248 = "";
-                widget.textfieldtype = 0;
+                widget.inactiveText = "";
+                widget.fieldType = 0;
                 return;
             }
-            if(anIntArray826[code] == 0)
-                widget.aString248 = "@red@Offline";
+            if(anIntArray826[actionCode] == 0)
+                widget.inactiveText = "@red@Offline";
             else
-            if(anIntArray826[code] == nodeid)
-                widget.aString248 = "@gre@World-" + (anIntArray826[code] - 9);
+            if(anIntArray826[actionCode] == nodeid)
+                widget.inactiveText = "@gre@World-" + (anIntArray826[actionCode] - 9);
             else
-                widget.aString248 = "@yel@World-" + (anIntArray826[code] - 9);
-            widget.textfieldtype = 1;
+                widget.inactiveText = "@yel@World-" + (anIntArray826[actionCode] - 9);
+            widget.fieldType = 1;
             return;
         }
-        if(code == 203)
+        if(actionCode == 203)
         {
             int i1 = amt_friendhashes;
             if(anInt900 != 2)
                 i1 = 0;
-            widget.anInt261 = i1 * 15 + 20;
-            if(widget.anInt261 <= widget.height)
-                widget.anInt261 = widget.height + 1;
+            widget.currentHeight = i1 * 15 + 20;
+            if(widget.currentHeight <= widget.height)
+                widget.currentHeight = widget.height + 1;
             return;
         }
-        if(code >= 401 && code <= 500)
+        if(actionCode >= 401 && actionCode <= 500)
         {
-            if((code -= 401) == 0 && anInt900 == 0)
+            if((actionCode -= 401) == 0 && anInt900 == 0)
             {
-                widget.aString248 = "Loading ignore list";
-                widget.textfieldtype = 0;
+                widget.inactiveText = "Loading ignore list";
+                widget.fieldType = 0;
                 return;
             }
-            if(code == 1 && anInt900 == 0)
+            if(actionCode == 1 && anInt900 == 0)
             {
-                widget.aString248 = "Please wait...";
-                widget.textfieldtype = 0;
+                widget.inactiveText = "Please wait...";
+                widget.fieldType = 0;
                 return;
             }
             int j1 = amt_ignorehashes;
             if(anInt900 == 0)
                 j1 = 0;
-            if(code >= j1)
+            if(actionCode >= j1)
             {
-                widget.aString248 = "";
-                widget.textfieldtype = 0;
+                widget.inactiveText = "";
+                widget.fieldType = 0;
                 return;
             } else
             {
-                widget.aString248 = TextTools.formatUsername(-45804, TextTools.longToString(ignore_hashes[code], (byte)-99));
-                widget.textfieldtype = 1;
+                widget.inactiveText = TextTools.formatUsername(-45804, TextTools.longToString(ignore_hashes[actionCode], (byte)-99));
+                widget.fieldType = 1;
                 return;
             }
         }
-        if(code == 503)
+        if(actionCode == 503)
         {
-            widget.anInt261 = amt_ignorehashes * 15 + 20;
-            if(widget.anInt261 <= widget.height)
-                widget.anInt261 = widget.height + 1;
+            widget.currentHeight = amt_ignorehashes * 15 + 20;
+            if(widget.currentHeight <= widget.height)
+                widget.currentHeight = widget.height + 1;
             return;
         }
-        if(code == 327)
+        if(actionCode == 327)
         {
-            widget.anInt270 = 150;
-            widget.anInt271 = (int)(Math.sin((double)loopCycle / 40D) * 256D) & 0x7ff;
+            widget.rotationAngleX = 150;
+            widget.rotationAngleY = (int)(Math.sin((double)loopCycle / 40D) * 256D) & 0x7ff;
             if(aBoolean1031)
             {
                 for(int k1 = 0; k1 < 7; k1++)
                 {
-                    int l1 = anIntArray1065[k1];
-                    if(l1 >= 0 && !CharModel.charactermodels[l1].method537((byte)2))
+                    int l1 = characterModelIds[k1];
+                    if(l1 >= 0 && !IdentityKit.identityKits[l1].method537((byte)2))
                         return;
                 }
 
                 aBoolean1031 = false;
-                Model charmodels[] = new Model[7];
+                Model characterModels[] = new Model[7];
                 int i2 = 0;
                 for(int j2 = 0; j2 < 7; j2++)
                 {
-                    int k2 = anIntArray1065[j2];
+                    int k2 = characterModelIds[j2];
                     if(k2 >= 0)
-                        charmodels[i2++] = CharModel.charactermodels[k2].method538(false);
+                        characterModels[i2++] = IdentityKit.identityKits[k2].method538(false);
                 }
 
-                Model charmodel = new Model(charmodels, i2);
+                Model charmodel = new Model(characterModels, i2);
                 for(int l2 = 0; l2 < 5; l2++)
-                    if(anIntArray990[l2] != 0)
+                    if(characterColorIds[l2] != 0)
                     {
-                        charmodel.setTriangleColors(anIntArrayArray1003[l2][0], anIntArrayArray1003[l2][anIntArray990[l2]]);
+                        charmodel.setTriangleColors(anIntArrayArray1003[l2][0], anIntArrayArray1003[l2][characterColorIds[l2]]);
                         if(l2 == 1)
-                            charmodel.setTriangleColors(anIntArray1204[0], anIntArray1204[anIntArray990[l2]]);
+                            charmodel.setTriangleColors(anIntArray1204[0], anIntArray1204[characterColorIds[l2]]);
                     }
                 charmodel.setVertexTriangleGroups();
-                charmodel.applyAnimationFrame(AnimSequence.animationsequences[((Mob) (localplayer)).stand_anim].anIntArray353[0]);
+                charmodel.applyAnimationFrame(AnimSequence.animationsequences[((Mob) (localPlayer)).standAnimation].anIntArray353[0]);
                 charmodel.setLightingVectors(64, 850, -30, -50, -30, true);
-                widget.anInt233 = 5;
-                widget.anInt234 = 0;
-                Widget.method208(0, aBoolean994, 5, charmodel);
+                widget.unactiveAnimFetchType = 5;
+                widget.unactiveAnimModelId = 0;
+                Widget.cacheModel(0, 5, charmodel);
             }
             return;
         }
-        if(code == 324)
+        if(actionCode == 324)
         {
             if(aClass30_Sub2_Sub1_Sub1_931 == null)
             {
-                aClass30_Sub2_Sub1_Sub1_931 = widget.aClass30_Sub2_Sub1_Sub1_207;
-                aClass30_Sub2_Sub1_Sub1_932 = widget.aClass30_Sub2_Sub1_Sub1_260;
+                aClass30_Sub2_Sub1_Sub1_931 = widget.inactiveSprite;
+                aClass30_Sub2_Sub1_Sub1_932 = widget.activeSprite;
             }
             if(aBoolean1047)
             {
-                widget.aClass30_Sub2_Sub1_Sub1_207 = aClass30_Sub2_Sub1_Sub1_932;
+                widget.inactiveSprite = aClass30_Sub2_Sub1_Sub1_932;
                 return;
             } else
             {
-                widget.aClass30_Sub2_Sub1_Sub1_207 = aClass30_Sub2_Sub1_Sub1_931;
+                widget.inactiveSprite = aClass30_Sub2_Sub1_Sub1_931;
                 return;
             }
         }
-        if(code == 325)
+        if(actionCode == 325)
         {
             if(aClass30_Sub2_Sub1_Sub1_931 == null)
             {
-                aClass30_Sub2_Sub1_Sub1_931 = widget.aClass30_Sub2_Sub1_Sub1_207;
-                aClass30_Sub2_Sub1_Sub1_932 = widget.aClass30_Sub2_Sub1_Sub1_260;
+                aClass30_Sub2_Sub1_Sub1_931 = widget.inactiveSprite;
+                aClass30_Sub2_Sub1_Sub1_932 = widget.activeSprite;
             }
             if(aBoolean1047)
             {
-                widget.aClass30_Sub2_Sub1_Sub1_207 = aClass30_Sub2_Sub1_Sub1_931;
+                widget.inactiveSprite = aClass30_Sub2_Sub1_Sub1_931;
                 return;
             } else
             {
-                widget.aClass30_Sub2_Sub1_Sub1_207 = aClass30_Sub2_Sub1_Sub1_932;
+                widget.inactiveSprite = aClass30_Sub2_Sub1_Sub1_932;
                 return;
             }
         }
-        if(code == 600)
+        if(actionCode == 600)
         {
-            widget.aString248 = aString881;
+            widget.inactiveText = aString881;
             if(loopCycle % 20 < 10)
             {
-                widget.aString248 += "|";
+                widget.inactiveText += "|";
                 return;
             } else
             {
-                widget.aString248 += " ";
+                widget.inactiveText += " ";
                 return;
             }
         }
-        if(code == 613)
+        if(actionCode == 613)
             if(rights >= 1)
             {
                 if(aBoolean1158)
                 {
-                    widget.anInt232 = 0xff0000;
-                    widget.aString248 = "Moderator option: Mute player for 48 hours: <ON>";
+                    widget.inactiveTextColor = 0xff0000;
+                    widget.inactiveText = "Moderator option: Mute player for 48 hours: <ON>";
                 } else
                 {
-                    widget.anInt232 = 0xffffff;
-                    widget.aString248 = "Moderator option: Mute player for 48 hours: <OFF>";
+                    widget.inactiveTextColor = 0xffffff;
+                    widget.inactiveText = "Moderator option: Mute player for 48 hours: <OFF>";
                 }
             } else
             {
-                widget.aString248 = "";
+                widget.inactiveText = "";
             }
-        if(code == 650 || code == 655)
+        if(actionCode == 650 || actionCode == 655)
             if(anInt1193 != 0)
             {
                 String s;
@@ -5367,40 +5364,40 @@ public class Main extends ApplicationApplet {
                     s = "yesterday";
                 else
                     s = pastlaginamountdays + " days ago";
-                widget.aString248 = "You last logged in " + s + " from: " + Signlink.lookupAddress;
+                widget.inactiveText = "You last logged in " + s + " from: " + Signlink.lookupAddress;
             } else
             {
-                widget.aString248 = "";
+                widget.inactiveText = "";
             }
-        if(code == 651)
+        if(actionCode == 651)
         {
             if(anInt1154 == 0)
             {
-                widget.aString248 = "0 unread messages";
-                widget.anInt232 = 0xffff00;
+                widget.inactiveText = "0 unread messages";
+                widget.inactiveTextColor = 0xffff00;
             }
             if(anInt1154 == 1)
             {
-                widget.aString248 = "1 unread message";
-                widget.anInt232 = 65280;
+                widget.inactiveText = "1 unread message";
+                widget.inactiveTextColor = 65280;
             }
             if(anInt1154 > 1)
             {
-                widget.aString248 = anInt1154 + " unread messages";
-                widget.anInt232 = 65280;
+                widget.inactiveText = anInt1154 + " unread messages";
+                widget.inactiveTextColor = 65280;
             }
         }
-        if(code == 652)
+        if(actionCode == 652)
             if(anInt1167 == 201)
             {
                 if(anInt1120 == 1)
-                    widget.aString248 = "@yel@This is a non-members world: @whi@Since you are a member we";
+                    widget.inactiveText = "@yel@This is a non-members world: @whi@Since you are a member we";
                 else
-                    widget.aString248 = "";
+                    widget.inactiveText = "";
             } else
             if(anInt1167 == 200)
             {
-                widget.aString248 = "You have not yet set any password recovery questions.";
+                widget.inactiveText = "You have not yet set any password recovery questions.";
             } else
             {
                 String s1;
@@ -5411,38 +5408,38 @@ public class Main extends ApplicationApplet {
                     s1 = "Yesterday";
                 else
                     s1 = anInt1167 + " days ago";
-                widget.aString248 = s1 + " you changed your recovery questions";
+                widget.inactiveText = s1 + " you changed your recovery questions";
             }
-        if(code == 653)
+        if(actionCode == 653)
             if(anInt1167 == 201)
             {
                 if(anInt1120 == 1)
-                    widget.aString248 = "@whi@recommend you use a members world instead. You may use";
+                    widget.inactiveText = "@whi@recommend you use a members world instead. You may use";
                 else
-                    widget.aString248 = "";
+                    widget.inactiveText = "";
             } else
             if(anInt1167 == 200)
-                widget.aString248 = "We strongly recommend you do so now to secure your account.";
+                widget.inactiveText = "We strongly recommend you do so now to secure your account.";
             else
-                widget.aString248 = "If you do not remember making this change then cancel it immediately";
-        if(code == 654)
+                widget.inactiveText = "If you do not remember making this change then cancel it immediately";
+        if(actionCode == 654)
         {
             if(anInt1167 == 201)
                 if(anInt1120 == 1)
                 {
-                    widget.aString248 = "@whi@this world but member benefits are unavailable whilst here.";
+                    widget.inactiveText = "@whi@this world but member benefits are unavailable whilst here.";
                     return;
                 } else
                 {
-                    widget.aString248 = "";
+                    widget.inactiveText = "";
                     return;
                 }
             if(anInt1167 == 200)
             {
-                widget.aString248 = "Do this from the 'account management' area on our front webpage";
+                widget.inactiveText = "Do this from the 'account management' area on our front webpage";
                 return;
             }
-            widget.aString248 = "Do this from the 'account management' area on our front webpage";
+            widget.inactiveText = "Do this from the 'account management' area on our front webpage";
         }
     }
 
@@ -5536,90 +5533,90 @@ public class Main extends ApplicationApplet {
         msgbody_stack[0] = s;
     }
 
-    public void handleTabClicking(int i)
+    public void handleTabs(int i)
     {
         i = 72 / i;
         if(super.anInt26 == 1)
         {
-            if(super.curpressed_x >= 539 && super.curpressed_x <= 573 && super.curpressed_y >= 169 && super.curpressed_y < 205 && tab_interfaces[0] != -1)
+            if(super.pressedX >= 539 && super.pressedX <= 573 && super.pressedY >= 169 && super.pressedY < 205 && tab_interfaces[0] != -1)
             {
                 aBoolean1153 = true;
                 current_tab = 0;
                 update_tabs = true;
             }
-            if(super.curpressed_x >= 569 && super.curpressed_x <= 599 && super.curpressed_y >= 168 && super.curpressed_y < 205 && tab_interfaces[1] != -1)
+            if(super.pressedX >= 569 && super.pressedX <= 599 && super.pressedY >= 168 && super.pressedY < 205 && tab_interfaces[1] != -1)
             {
                 aBoolean1153 = true;
                 current_tab = 1;
                 update_tabs = true;
             }
-            if(super.curpressed_x >= 597 && super.curpressed_x <= 627 && super.curpressed_y >= 168 && super.curpressed_y < 205 && tab_interfaces[2] != -1)
+            if(super.pressedX >= 597 && super.pressedX <= 627 && super.pressedY >= 168 && super.pressedY < 205 && tab_interfaces[2] != -1)
             {
                 aBoolean1153 = true;
                 current_tab = 2;
                 update_tabs = true;
             }
-            if(super.curpressed_x >= 625 && super.curpressed_x <= 669 && super.curpressed_y >= 168 && super.curpressed_y < 203 && tab_interfaces[3] != -1)
+            if(super.pressedX >= 625 && super.pressedX <= 669 && super.pressedY >= 168 && super.pressedY < 203 && tab_interfaces[3] != -1)
             {
                 aBoolean1153 = true;
                 current_tab = 3;
                 update_tabs = true;
             }
-            if(super.curpressed_x >= 666 && super.curpressed_x <= 696 && super.curpressed_y >= 168 && super.curpressed_y < 205 && tab_interfaces[4] != -1)
+            if(super.pressedX >= 666 && super.pressedX <= 696 && super.pressedY >= 168 && super.pressedY < 205 && tab_interfaces[4] != -1)
             {
                 aBoolean1153 = true;
                 current_tab = 4;
                 update_tabs = true;
             }
-            if(super.curpressed_x >= 694 && super.curpressed_x <= 724 && super.curpressed_y >= 168 && super.curpressed_y < 205 && tab_interfaces[5] != -1)
+            if(super.pressedX >= 694 && super.pressedX <= 724 && super.pressedY >= 168 && super.pressedY < 205 && tab_interfaces[5] != -1)
             {
                 aBoolean1153 = true;
                 current_tab = 5;
                 update_tabs = true;
             }
-            if(super.curpressed_x >= 722 && super.curpressed_x <= 756 && super.curpressed_y >= 169 && super.curpressed_y < 205 && tab_interfaces[6] != -1)
+            if(super.pressedX >= 722 && super.pressedX <= 756 && super.pressedY >= 169 && super.pressedY < 205 && tab_interfaces[6] != -1)
             {
                 aBoolean1153 = true;
                 current_tab = 6;
                 update_tabs = true;
             }
-            if(super.curpressed_x >= 540 && super.curpressed_x <= 574 && super.curpressed_y >= 466 && super.curpressed_y < 502 && tab_interfaces[7] != -1)
+            if(super.pressedX >= 540 && super.pressedX <= 574 && super.pressedY >= 466 && super.pressedY < 502 && tab_interfaces[7] != -1)
             {
                 aBoolean1153 = true;
                 current_tab = 7;
                 update_tabs = true;
             }
-            if(super.curpressed_x >= 572 && super.curpressed_x <= 602 && super.curpressed_y >= 466 && super.curpressed_y < 503 && tab_interfaces[8] != -1)
+            if(super.pressedX >= 572 && super.pressedX <= 602 && super.pressedY >= 466 && super.pressedY < 503 && tab_interfaces[8] != -1)
             {
                 aBoolean1153 = true;
                 current_tab = 8;
                 update_tabs = true;
             }
-            if(super.curpressed_x >= 599 && super.curpressed_x <= 629 && super.curpressed_y >= 466 && super.curpressed_y < 503 && tab_interfaces[9] != -1)
+            if(super.pressedX >= 599 && super.pressedX <= 629 && super.pressedY >= 466 && super.pressedY < 503 && tab_interfaces[9] != -1)
             {
                 aBoolean1153 = true;
                 current_tab = 9;
                 update_tabs = true;
             }
-            if(super.curpressed_x >= 627 && super.curpressed_x <= 671 && super.curpressed_y >= 467 && super.curpressed_y < 502 && tab_interfaces[10] != -1)
+            if(super.pressedX >= 627 && super.pressedX <= 671 && super.pressedY >= 467 && super.pressedY < 502 && tab_interfaces[10] != -1)
             {
                 aBoolean1153 = true;
                 current_tab = 10;
                 update_tabs = true;
             }
-            if(super.curpressed_x >= 669 && super.curpressed_x <= 699 && super.curpressed_y >= 466 && super.curpressed_y < 503 && tab_interfaces[11] != -1)
+            if(super.pressedX >= 669 && super.pressedX <= 699 && super.pressedY >= 466 && super.pressedY < 503 && tab_interfaces[11] != -1)
             {
                 aBoolean1153 = true;
                 current_tab = 11;
                 update_tabs = true;
             }
-            if(super.curpressed_x >= 696 && super.curpressed_x <= 726 && super.curpressed_y >= 466 && super.curpressed_y < 503 && tab_interfaces[12] != -1)
+            if(super.pressedX >= 696 && super.pressedX <= 726 && super.pressedY >= 466 && super.pressedY < 503 && tab_interfaces[12] != -1)
             {
                 aBoolean1153 = true;
                 current_tab = 12;
                 update_tabs = true;
             }
-            if(super.curpressed_x >= 724 && super.curpressed_x <= 758 && super.curpressed_y >= 466 && super.curpressed_y < 502 && tab_interfaces[13] != -1)
+            if(super.pressedX >= 724 && super.pressedX <= 758 && super.pressedY >= 466 && super.pressedY < 502 && tab_interfaces[13] != -1)
             {
                 aBoolean1153 = true;
                 current_tab = 13;
@@ -5633,7 +5630,7 @@ public class Main extends ApplicationApplet {
         if(chat_imagefetcher != null)
             return;
         method118(3);
-        super.aClass15_13 = null;
+        super.appletImageFetcher = null;
         logo_imagefetcher = null;
         bottomleftmid_imagefetcher = null;
         aClass15_1109 = null;
@@ -5655,7 +5652,7 @@ public class Main extends ApplicationApplet {
             loadClient();
         aClass15_1124 = new ImageFetcher(269, 37, getDrawableComponent(), 0);
         aClass15_1125 = new ImageFetcher(249, 45, getDrawableComponent(), 0);
-        aBoolean1255 = true;
+        paintRequested = true;
     }
 
     public String method80(boolean flag)
@@ -5663,7 +5660,7 @@ public class Main extends ApplicationApplet {
         isOnlineGame &= flag;
         if(Signlink.applet != null)
             return Signlink.applet.getDocumentBase().getHost().toLowerCase();
-        if(super.frame != null)
+        if(super.appletFrame != null)
             return "runescape.com";
         else
             return super.getDocumentBase().getHost().toLowerCase();
@@ -5676,7 +5673,7 @@ public class Main extends ApplicationApplet {
             loadClient();
         if(l > 4225 && l < 0x15f90)
         {
-            int yaw = camerayaw + anInt1209 & 0x7ff;
+            int yaw = cameraYaw + anInt1209 & 0x7ff;
             int sine = Model.sinetable[yaw];
             int cosine = Model.cosinetable[yaw];
             sine = (sine * 256) / (anInt1170 + 256);
@@ -5703,37 +5700,37 @@ public class Main extends ApplicationApplet {
         interfaceopcodestack[0] = 1107;
         anInt1133 = 1;
         method129(false);
-        anInt886 = 0;
-        if(super.mouse_x > 4 && super.mouse_y > 4 && super.mouse_x < 516 && super.mouse_y < 338)
+        currentWidgetId = 0;
+        if(super.newMouseX > 4 && super.newMouseY > 4 && super.newMouseX < 516 && super.newMouseY < 338)
             if(anInt857 != -1)
-                handleInterfaceOptions(4, 13037, Widget.widgets[anInt857], super.mouse_x, 4, super.mouse_y, 0);
+                handleInterfaceOptions(4, 13037, Widget.widgets[anInt857], super.newMouseX, 4, super.newMouseY, 0);
             else
                 method71(33660);
-        if(anInt886 != anInt1026)
-            anInt1026 = anInt886;
-        anInt886 = 0;
-        if(super.mouse_x > 553 && super.mouse_y > 205 && super.mouse_x < 743 && super.mouse_y < 466)
+        if(currentWidgetId != anInt1026)
+            anInt1026 = currentWidgetId;
+        currentWidgetId = 0;
+        if(super.newMouseX > 553 && super.newMouseY > 205 && super.newMouseX < 743 && super.newMouseY < 466)
             if(anInt1189 != -1)
-                handleInterfaceOptions(553, 13037, Widget.widgets[anInt1189], super.mouse_x, 205, super.mouse_y, 0);
+                handleInterfaceOptions(553, 13037, Widget.widgets[anInt1189], super.newMouseX, 205, super.newMouseY, 0);
             else
             if(tab_interfaces[current_tab] != -1)
-                handleInterfaceOptions(553, 13037, Widget.widgets[tab_interfaces[current_tab]], super.mouse_x, 205, super.mouse_y, 0);
-        if(anInt886 != anInt1048)
+                handleInterfaceOptions(553, 13037, Widget.widgets[tab_interfaces[current_tab]], super.newMouseX, 205, super.newMouseY, 0);
+        if(currentWidgetId != anInt1048)
         {
             aBoolean1153 = true;
-            anInt1048 = anInt886;
+            anInt1048 = currentWidgetId;
         }
-        anInt886 = 0;
-        if(super.mouse_x > 17 && super.mouse_y > 357 && super.mouse_x < 496 && super.mouse_y < 453)
+        currentWidgetId = 0;
+        if(super.newMouseX > 17 && super.newMouseY > 357 && super.newMouseX < 496 && super.newMouseY < 453)
             if(anInt1276 != -1)
-                handleInterfaceOptions(17, 13037, Widget.widgets[anInt1276], super.mouse_x, 357, super.mouse_y, 0);
+                handleInterfaceOptions(17, 13037, Widget.widgets[anInt1276], super.newMouseX, 357, super.newMouseY, 0);
             else
-            if(super.mouse_y < 434 && super.mouse_x < 426)
-                method74(super.mouse_x - 17, super.mouse_y - 357, 9);
-        if(anInt1276 != -1 && anInt886 != anInt1039)
+            if(super.newMouseY < 434 && super.newMouseX < 426)
+                method74(super.newMouseX - 17, super.newMouseY - 357, 9);
+        if(anInt1276 != -1 && currentWidgetId != anInt1039)
         {
             aBoolean1223 = true;
-            anInt1039 = anInt886;
+            anInt1039 = currentWidgetId;
         }
         boolean flag = false;
         packetSize += i;
@@ -5776,8 +5773,8 @@ public class Main extends ApplicationApplet {
         Signlink.errorMessage = username;
         try {
             if(!isReconnecting) {
-                aString1266 = "";
-                aString1267 = "Connecting to server...";
+                loginMessage0 = "";
+                loginMessage1 = "Connecting to server...";
                 drawTitleScreen(true, false);
             }
             bufferedConnection = new BufferedConnection(this, -978, createSocket(43594 + portOffset));
@@ -5809,7 +5806,7 @@ public class Main extends ApplicationApplet {
                 gameBuffer.putDword(Signlink.uid);
                 gameBuffer.putString(username);
                 gameBuffer.putString(password);
-                gameBuffer.applyRsa(aBigInteger1032, aBigInteger856);
+                gameBuffer.applyRsa(publicKey, modulus);
                 loginBuffer.offset = 0;
                 if(isReconnecting)
                     loginBuffer.put(18);
@@ -5842,11 +5839,11 @@ public class Main extends ApplicationApplet {
             {
                 rights = bufferedConnection.read();
                 flagged = bufferedConnection.read() == 1;
-                lastpressed_t = 0L;
+                lastPressedTimestamp = 0L;
                 anInt1022 = 0;
-                watchdog.position = 0;
+                monitor.position = 0;
                 super.aBoolean17 = true;
-                aBoolean954 = true;
+                focusPacketToggle = true;
                 isOnlineGame = true;
                 gameBuffer.offset = 0;
                 inbuffer.offset = 0;
@@ -5861,7 +5858,7 @@ public class Main extends ApplicationApplet {
                 markertype = 0;
                 anInt1133 = 0;
                 aBoolean885 = false;
-                super.idle_counter = 0;
+                super.idleCounter = 0;
                 for(int j1 = 0; j1 < 100; j1++)
                     msgbody_stack[j1] = null;
                 anInt1282 = 0;
@@ -5873,23 +5870,23 @@ public class Main extends ApplicationApplet {
                 anInt896 = (int)(Math.random() * 80D) - 40;
                 anInt1209 = (int)(Math.random() * 120D) - 60;
                 anInt1170 = (int)(Math.random() * 30D) - 20;
-                camerayaw = (int)(Math.random() * 20D) - 10 & 0x7ff;
+                cameraYaw = (int)(Math.random() * 20D) - 10 & 0x7ff;
                 anInt1021 = 0;
                 anInt985 = -1;
                 anInt1261 = 0;
                 anInt1262 = 0;
-                anInt891 = 0;
+                playerOffset = 0;
                 anInt836 = 0;
                 for(int i2 = 0; i2 < maxplayers; i2++)
                 {
-                    players[i2] = null;
-                    appearancebuffers[i2] = null;
+                    playerArray[i2] = null;
+                    appearanceBuffers[i2] = null;
                 }
 
                 for(int k2 = 0; k2 < 16384; k2++)
                     npcs[k2] = null;
 
-                localplayer = players[localindex] = new Player();
+                localPlayer = playerArray[localPlayerIndex] = new Player();
                 aClass19_1013.clear();
                 gfxs_storage.clear();
                 for(int l2 = 0; l2 < 4; l2++)
@@ -5922,7 +5919,7 @@ public class Main extends ApplicationApplet {
                 aBoolean1047 = true;
                 method45(0);
                 for(int j3 = 0; j3 < 5; j3++)
-                    anIntArray990[j3] = 0;
+                    characterColorIds[j3] = 0;
 
                 for(int l3 = 0; l3 < 5; l3++)
                 {
@@ -5933,7 +5930,7 @@ public class Main extends ApplicationApplet {
                 anInt1175 = 0;
                 anInt1134 = 0;
                 anInt986 = 0;
-                stepcounters = 0;
+                stepCounter = 0;
                 anInt924 = 0;
                 anInt1188 = 0;
                 anInt1155 = 0;
@@ -5945,74 +5942,74 @@ public class Main extends ApplicationApplet {
             }
             if(loginState == 3)
             {
-                aString1266 = "";
-                aString1267 = "Invalid username or password.";
+                loginMessage0 = "";
+                loginMessage1 = "Invalid username or password.";
                 return;
             }
             if(loginState == 4)
             {
-                aString1266 = "Your account has been disabled.";
-                aString1267 = "Please check your message-centre for details.";
+                loginMessage0 = "Your account has been disabled.";
+                loginMessage1 = "Please check your message-centre for details.";
                 return;
             }
             if(loginState == 5)
             {
-                aString1266 = "Your account is already logged in.";
-                aString1267 = "Try again in 60 secs...";
+                loginMessage0 = "Your account is already logged in.";
+                loginMessage1 = "Try again in 60 secs...";
                 return;
             }
             if(loginState == 6)
             {
-                aString1266 = "RuneScape has been updated!";
-                aString1267 = "Please reload this page.";
+                loginMessage0 = "RuneScape has been updated!";
+                loginMessage1 = "Please reload this page.";
                 return;
             }
             if(loginState == 7)
             {
-                aString1266 = "This world is full.";
-                aString1267 = "Please use a different world.";
+                loginMessage0 = "This world is full.";
+                loginMessage1 = "Please use a different world.";
                 return;
             }
             if(loginState == 8)
             {
-                aString1266 = "Unable to connect.";
-                aString1267 = "Login server offline.";
+                loginMessage0 = "Unable to connect.";
+                loginMessage1 = "Login server offline.";
                 return;
             }
             if(loginState == 9)
             {
-                aString1266 = "Login limit exceeded.";
-                aString1267 = "Too many connections from your address.";
+                loginMessage0 = "Login limit exceeded.";
+                loginMessage1 = "Too many connections from your address.";
                 return;
             }
             if(loginState == 10)
             {
-                aString1266 = "Unable to connect.";
-                aString1267 = "Bad session id.";
+                loginMessage0 = "Unable to connect.";
+                loginMessage1 = "Bad session id.";
                 return;
             }
             if(loginState == 11)
             {
-                aString1267 = "Login server rejected session.";
-                aString1267 = "Please try again.";
+                loginMessage0 = "Login server rejected session.";
+                loginMessage1 = "Please try again.";
                 return;
             }
             if(loginState == 12)
             {
-                aString1266 = "You need a members account to login to this world.";
-                aString1267 = "Please subscribe, or use a different world.";
+                loginMessage0 = "You need a members account to login to this world.";
+                loginMessage1 = "Please subscribe, or use a different world.";
                 return;
             }
             if(loginState == 13)
             {
-                aString1266 = "Could not complete login.";
-                aString1267 = "Please try using a different world.";
+                loginMessage0 = "Could not complete login.";
+                loginMessage1 = "Please try using a different world.";
                 return;
             }
             if(loginState == 14)
             {
-                aString1266 = "The server is being updated.";
-                aString1267 = "Please wait 1 minute and try again.";
+                loginMessage0 = "The server is being updated.";
+                loginMessage1 = "Please wait 1 minute and try again.";
                 return;
             }
             if(loginState == 15)
@@ -6029,33 +6026,33 @@ public class Main extends ApplicationApplet {
                 anInt1104 = 0;
                 anInt1133 = 0;
                 aBoolean885 = false;
-                aLong824 = System.currentTimeMillis();
+                timestamp = System.currentTimeMillis();
                 return;
             }
             if(loginState == 16)
             {
-                aString1266 = "Login attempts exceeded.";
-                aString1267 = "Please wait 1 minute and try again.";
+                loginMessage0 = "Login attempts exceeded.";
+                loginMessage1 = "Please wait 1 minute and try again.";
                 return;
             }
             if(loginState == 17)
             {
-                aString1266 = "You are standing in a members-only area.";
-                aString1267 = "To play on this world move to a free area first";
+                loginMessage0 = "You are standing in a members-only area.";
+                loginMessage1 = "To play on this world move to a free area first";
                 return;
             }
             if(loginState == 20)
             {
-                aString1266 = "Invalid loginserver requested";
-                aString1267 = "Please try using a different world.";
+                loginMessage0 = "Invalid loginserver requested";
+                loginMessage1 = "Please try using a different world.";
                 return;
             }
             if(loginState == 21)
             {
                 for(int k1 = bufferedConnection.read(); k1 >= 0; k1--)
                 {
-                    aString1266 = "You have only just left another world";
-                    aString1267 = "Your profile will be transferred in: " + k1 + " seconds";
+                    loginMessage0 = "You have only just left another world";
+                    loginMessage1 = "Your profile will be transferred in: " + k1 + " seconds";
                     drawTitleScreen(true, false);
                     try
                     {
@@ -6079,26 +6076,26 @@ public class Main extends ApplicationApplet {
                         handleLogin(username, password, isReconnecting);
                         return;
                     } else {
-                        aString1266 = "No response from loginserver";
-                        aString1267 = "Please wait 1 minute and try again.";
+                        loginMessage0 = "No response from loginserver";
+                        loginMessage1 = "Please wait 1 minute and try again.";
                         return;
                     }
                 } else {
-                    aString1266 = "No response from server";
-                    aString1267 = "Please try using a different world.";
+                    loginMessage0 = "No response from server";
+                    loginMessage1 = "Please try using a different world.";
                     return;
                 }
             } else {
                 System.out.println("response: " + loginState);
-                aString1266 = "Unexpected server response";
-                aString1267 = "Please try using a different world.";
+                loginMessage0 = "Unexpected server response";
+                loginMessage1 = "Please try using a different world.";
                 return;
             }
         }
         catch(IOException ex) {
-            aString1266 = "";
+            loginMessage0 = "";
         }
-        aString1267 = "Error connecting to server.";
+        loginMessage1 = "Error connecting to server.";
     }
 
     public boolean sendWalkPacket(int type, int j, int k, int l, int i1, int j1, int k1,
@@ -6126,7 +6123,7 @@ public class Main extends ApplicationApplet {
         walkingstepsy[steppos++] = j1;
         boolean flag1 = false;
         int steparrsize = walkingstepsx.length;
-        int ai[][] = collisionmaps[cheight].index;
+        int ai[][] = planeFlags[currentZ].flagBuffer;
         while(stepoff != steppos)
         {
             stepx = walkingstepsx[stepoff];
@@ -6139,18 +6136,18 @@ public class Main extends ApplicationApplet {
             }
             if(i1 != 0)
             {
-                if((i1 < 5 || i1 == 10) && collisionmaps[cheight].method219(k2, stepx, stepy, 0, j, i1 - 1, i2))
+                if((i1 < 5 || i1 == 10) && planeFlags[currentZ].method219(k2, stepx, stepy, 0, j, i1 - 1, i2))
                 {
                     flag1 = true;
                     break;
                 }
-                if(i1 < 10 && collisionmaps[cheight].method220(k2, i2, stepy, i1 - 1, j, stepx, 0))
+                if(i1 < 10 && planeFlags[currentZ].method220(k2, i2, stepy, i1 - 1, j, stepx, 0))
                 {
                     flag1 = true;
                     break;
                 }
             }
-            if(k1 != 0 && k != 0 && collisionmaps[cheight].method221((byte)1, i2, k2, stepx, k, l1, k1, stepy))
+            if(k1 != 0 && k != 0 && planeFlags[currentZ].method221((byte)1, i2, k2, stepx, k, l1, k1, stepy))
             {
                 flag1 = true;
                 break;
@@ -6283,12 +6280,12 @@ public class Main extends ApplicationApplet {
             stepoff--;
             int k6 = walkingstepsx[stepoff];
             int i7 = walkingstepsy[stepoff];
-            stepcounters += amtsteps;
-            if(stepcounters >= 92)
+            stepCounter += amtsteps;
+            if(stepCounter >= 92)
             {
                 gameBuffer.putPacket(36);
                 gameBuffer.putDword(0);
-                stepcounters = 0;
+                stepCounter = 0;
             }
             if(type == 0)
             {
@@ -6316,7 +6313,7 @@ public class Main extends ApplicationApplet {
             }
 
             gameBuffer.putWordLE(i7 + palettey);
-            gameBuffer.putByteA(super.active_keycodes[5] != 1 ? 0 : 1);
+            gameBuffer.putByteA(super.activeKeycodes[5] != 1 ? 0 : 1);
             return true;
         }
         return type != 1;
@@ -6326,8 +6323,8 @@ public class Main extends ApplicationApplet {
     {
         for(int j = 0; j < amtplayerupdatestack; j++)
         {
-            int k = playerupdate_stack[j];
-            NPC class30_sub2_sub4_sub1_sub1 = npcs[k];
+            int k = pFlagUpdateList[j];
+            Npc class30_sub2_sub4_sub1_sub1 = npcs[k];
             int l = buffer0.getUbyte();
 			/* Animation */
             if((l & 0x10) != 0)
@@ -6401,17 +6398,17 @@ public class Main extends ApplicationApplet {
                 class30_sub2_sub4_sub1_sub1.anInt1533 = buffer0.getUbyteB();
                 class30_sub2_sub4_sub1_sub1.anInt1534 = buffer0.getUbyteA();
             }
-			/* Switch NPC */
+			/* Switch Npc */
             if((l & 2) != 0)
             {
-                class30_sub2_sub4_sub1_sub1.definition = NPCDefinition.getNPCDefinition(buffer0.getUwordLE128());
-                class30_sub2_sub4_sub1_sub1.halftile_offsets = class30_sub2_sub4_sub1_sub1.definition.npc_halftileoffsets;
+                class30_sub2_sub4_sub1_sub1.definition = NpcDefinition.getNPCDefinition(buffer0.getUwordLE128());
+                class30_sub2_sub4_sub1_sub1.halfOffsets = class30_sub2_sub4_sub1_sub1.definition.npc_halftileoffsets;
                 class30_sub2_sub4_sub1_sub1.rotation = class30_sub2_sub4_sub1_sub1.definition.spawndirection;
-                class30_sub2_sub4_sub1_sub1.walk_anim = class30_sub2_sub4_sub1_sub1.definition.npcdef_walkanim;
-                class30_sub2_sub4_sub1_sub1.turn180_anim = class30_sub2_sub4_sub1_sub1.definition.npcdef_turn180anim;
-                class30_sub2_sub4_sub1_sub1.turn90cw_anim = class30_sub2_sub4_sub1_sub1.definition.npcdef_turn90cw;
-                class30_sub2_sub4_sub1_sub1.turn90ccw_anim = class30_sub2_sub4_sub1_sub1.definition.npcdef_turn90ccw;
-                class30_sub2_sub4_sub1_sub1.stand_anim = class30_sub2_sub4_sub1_sub1.definition.npcdef_standanim;
+                class30_sub2_sub4_sub1_sub1.walkAnimation = class30_sub2_sub4_sub1_sub1.definition.npcdef_walkanim;
+                class30_sub2_sub4_sub1_sub1.turnAnimation180 = class30_sub2_sub4_sub1_sub1.definition.npcdef_turn180anim;
+                class30_sub2_sub4_sub1_sub1.turnCwAnimation90 = class30_sub2_sub4_sub1_sub1.definition.npcdef_turn90cw;
+                class30_sub2_sub4_sub1_sub1.turnCcwAnimation90 = class30_sub2_sub4_sub1_sub1.definition.npcdef_turn90ccw;
+                class30_sub2_sub4_sub1_sub1.standAnimation = class30_sub2_sub4_sub1_sub1.definition.npcdef_standanim;
             }
             if((l & 4) != 0)
             {
@@ -6423,7 +6420,7 @@ public class Main extends ApplicationApplet {
         isOnlineGame &= flag;
     }
 
-    public void method87(NPCDefinition class5, int i, boolean flag, int j, int k)
+    public void method87(NpcDefinition class5, int i, boolean flag, int j, int k)
     {
         if(anInt1133 >= 400)
             return;
@@ -6437,10 +6434,10 @@ public class Main extends ApplicationApplet {
         if(flag)
             aBoolean919 = !aBoolean919;
         if(class5.level != 0)
-            s = s + getLevelColor(localplayer.combatlevel, class5.level, true) + " (level-" + class5.level + ")";
+            s = s + getLevelColor(localPlayer.combatLevel, class5.level, true) + " (level-" + class5.level + ")";
         if(anInt1282 == 1)
         {
-            interfacestringstack[anInt1133] = "Use " + aString1286 + " with @yel@" + s;
+            interfacestringstack[anInt1133] = "Use " + usedItemName + " with @yel@" + s;
             interfaceopcodestack[anInt1133] = 582;
             interfacestack_c[anInt1133] = i;
             interfacestack_a[anInt1133] = k;
@@ -6491,7 +6488,7 @@ public class Main extends ApplicationApplet {
                     if(class5.options[i1] != null && class5.options[i1].equalsIgnoreCase("attack"))
                     {
                         char c = '\0';
-                        if(class5.level > localplayer.combatlevel)
+                        if(class5.level > localPlayer.combatLevel)
                             c = '\u07D0';
                         interfacestringstack[anInt1133] = class5.options[i1] + " @yel@" + s;
                         if(i1 == 0)
@@ -6522,20 +6519,20 @@ public class Main extends ApplicationApplet {
 
     public void method88(int i, int j, Player class30_sub2_sub4_sub1_sub2, boolean flag, int k)
     {
-        if(class30_sub2_sub4_sub1_sub2 == localplayer)
+        if(class30_sub2_sub4_sub1_sub2 == localPlayer)
             return;
         if(anInt1133 >= 400)
             return;
         if(flag)
             return;
         String s;
-        if(class30_sub2_sub4_sub1_sub2.skilltotal == 0)
-            s = class30_sub2_sub4_sub1_sub2.name + getLevelColor(localplayer.combatlevel, class30_sub2_sub4_sub1_sub2.combatlevel, true) + " (level-" + class30_sub2_sub4_sub1_sub2.combatlevel + ")";
+        if(class30_sub2_sub4_sub1_sub2.skillTotal == 0)
+            s = class30_sub2_sub4_sub1_sub2.name + getLevelColor(localPlayer.combatLevel, class30_sub2_sub4_sub1_sub2.combatLevel, true) + " (level-" + class30_sub2_sub4_sub1_sub2.combatLevel + ")";
         else
-            s = class30_sub2_sub4_sub1_sub2.name + " (skill-" + class30_sub2_sub4_sub1_sub2.skilltotal + ")";
+            s = class30_sub2_sub4_sub1_sub2.name + " (skill-" + class30_sub2_sub4_sub1_sub2.skillTotal + ")";
         if(anInt1282 == 1)
         {
-            interfacestringstack[anInt1133] = "Use " + aString1286 + " with @whi@" + s;
+            interfacestringstack[anInt1133] = "Use " + usedItemName + " with @whi@" + s;
             interfaceopcodestack[anInt1133] = 491;
             interfacestack_c[anInt1133] = j;
             interfacestack_a[anInt1133] = i;
@@ -6562,10 +6559,10 @@ public class Main extends ApplicationApplet {
                     char c = '\0';
                     if(aStringArray1127[l].equalsIgnoreCase("attack"))
                     {
-                        if(class30_sub2_sub4_sub1_sub2.combatlevel > localplayer.combatlevel)
+                        if(class30_sub2_sub4_sub1_sub2.combatLevel > localPlayer.combatLevel)
                             c = '\u07D0';
-                        if(localplayer.anInt1701 != 0 && class30_sub2_sub4_sub1_sub2.anInt1701 != 0)
-                            if(localplayer.anInt1701 == class30_sub2_sub4_sub1_sub2.anInt1701)
+                        if(localPlayer.itemModel != 0 && class30_sub2_sub4_sub1_sub2.itemModel != 0)
+                            if(localPlayer.itemModel == class30_sub2_sub4_sub1_sub2.itemModel)
                                 c = '\u07D0';
                             else
                                 c = '\0';
@@ -6628,7 +6625,7 @@ public class Main extends ApplicationApplet {
         class30_sub1.anInt1300 = l;
     }
 
-    public void updateSounds_(boolean flag)
+    public void updateSounds(boolean flag)
     {
         if(flag)
             packetId = -1;
@@ -6644,12 +6641,12 @@ public class Main extends ApplicationApplet {
                             flag1 = true;
                     } else
                     {
-                        ByteBuffer buffer0 = Sound.method241(anIntArray1241[i], anIntArray1207[i], false);
-                        if(System.currentTimeMillis() + (long)(buffer0.offset / 22) > aLong1172 + (long)(anInt1257 / 22))
+                        ByteBuffer buffer = Sound.method241(anIntArray1241[i], anIntArray1207[i], false);
+                        if(System.currentTimeMillis() + (long)(buffer.offset / 22) > aLong1172 + (long)(anInt1257 / 22))
                         {
-                            anInt1257 = buffer0.offset;
+                            anInt1257 = buffer.offset;
                             aLong1172 = System.currentTimeMillis();
-                            if(method59(buffer0.payload, (byte)116, buffer0.offset))
+                            if(writeWaveFile(buffer.payload, buffer.offset))
                             {
                                 anInt874 = anIntArray1207[i];
                                 anInt1289 = anIntArray1241[i];
@@ -6697,7 +6694,7 @@ public class Main extends ApplicationApplet {
 
     public void loadClient()
     {
-        drawLoadingBar(20, (byte)4, "Starting up");
+        drawLoadingBar("Starting up", 20);
         if(Signlink.sunjava)
             super.mindel = 5;
         if(aBoolean993)
@@ -6732,7 +6729,7 @@ public class Main extends ApplicationApplet {
         if(Signlink.mainCacheRandomAccessFile != null)
         {
             for(int i = 0; i < 5; i++)
-                fileIndexes[i] = new FileIndex(Signlink.mainCacheRandomAccessFile, Signlink.cacheRandomAccessFiles[i], i + 1, 0xffffff);
+                fileIndexes[i] = new FileIndex(Signlink.mainCacheRandomAccessFile, Signlink.cacheRandomAccessFiles[i], i + 1, 0xffffffff);
         }
         try
         {
@@ -6741,7 +6738,7 @@ public class Main extends ApplicationApplet {
             p11Font = new BitmapFont(false, "p11_full", 0, titlescreen_archive);
             p12Font = new BitmapFont(false, "p12_full", 0, titlescreen_archive);
             b12Font = new BitmapFont(false, "b12_full", 0, titlescreen_archive);
-            q8_font = new BitmapFont(true, "q8_full", 0, titlescreen_archive);
+            q8Font = new BitmapFont(true, "q8_full", 0, titlescreen_archive);
             drawTitleBackround(0);
             method51(215);
             ArchivePackage class44 = getArchivePackage(2, "config", "config", jaggrabArchiveCrcs[2], 30);
@@ -6750,14 +6747,14 @@ public class Main extends ApplicationApplet {
             ArchivePackage class44_3 = getArchivePackage(6, "textures", "textures", jaggrabArchiveCrcs[6], 45);
             ArchivePackage class44_4 = getArchivePackage(7, "chat system", "wordenc", jaggrabArchiveCrcs[7], 50);
             ArchivePackage class44_5 = getArchivePackage(8, "sound effects", "sounds", jaggrabArchiveCrcs[8], 55);
-            main_tilesettings = new byte[4][104][104];
-            main_heightmap = new int[4][105][105];
-            pallet = new Palette(104, 104, 4, main_heightmap);
+            tileFlags = new byte[4][104][104];
+            tileHeightmap = new int[4][105][105];
+            pallet = new Palette(104, 104, 4, tileHeightmap);
             for(int j = 0; j < 4; j++)
-                collisionmaps[j] = new CollisionMap(104, 104);
+                planeFlags[j] = new PlaneFlags(104, 104);
             aClass30_Sub2_Sub1_Sub1_1263 = new DirectColorSprite(512, 512);
             ArchivePackage class44_6 = getArchivePackage(5, "update list", "versionlist", jaggrabArchiveCrcs[5], 60);
-            drawLoadingBar(60, (byte)4, "Connecting to update server");
+            drawLoadingBar("Connecting to update server", 60);
             ondemandhandler = new OndemandHandler();
             ondemandhandler.parseVersionList(class44_6, this);
             AnimFrame.initialize(ondemandhandler.getAmountAnims());
@@ -6781,7 +6778,7 @@ public class Main extends ApplicationApplet {
                     }
                 }
             }
-            drawLoadingBar(65, (byte)4, "Requesting animations");
+            drawLoadingBar("Requesting animations", 65);
             int k = ondemandhandler.getAmountArchives(1);
             for(int i1 = 0; i1 < k; i1++)
                 ondemandhandler.requestPriority(1, i1);
@@ -6789,7 +6786,7 @@ public class Main extends ApplicationApplet {
             {
                 int j1 = k - ondemandhandler.amount();
                 if(j1 > 0)
-                    drawLoadingBar(65, (byte)4, "Loading animations - " + (j1 * 100) / k + "%");
+                    drawLoadingBar("Loading animations - " + (j1 * 100) / k + "%", 65);
                 loadFinalizedRequest(false);
                 try
                 {
@@ -6802,7 +6799,7 @@ public class Main extends ApplicationApplet {
                     return;
                 }
             }
-            drawLoadingBar(70, (byte)4, "Requesting models");
+            drawLoadingBar("Requesting models", 70);
             k = ondemandhandler.getAmountArchives(0);
             for(int k1 = 0; k1 < k; k1++)
             {
@@ -6816,7 +6813,7 @@ public class Main extends ApplicationApplet {
             {
                 int i2 = k - ondemandhandler.amount();
                 if(i2 > 0)
-                    drawLoadingBar(70, (byte)4, "Loading models - " + (i2 * 100) / k + "%");
+                    drawLoadingBar("Loading models - " + (i2 * 100) / k + "%", 70);
                 loadFinalizedRequest(false);
                 try
                 {
@@ -6826,7 +6823,7 @@ public class Main extends ApplicationApplet {
             }
             if(fileIndexes[0] != null)
             {
-                drawLoadingBar(75, (byte)4, "Requesting maps");
+                drawLoadingBar("Requesting maps", 75);
                 ondemandhandler.requestPriority(3, ondemandhandler.getMapArchive(47, 48, 0));
                 ondemandhandler.requestPriority(3, ondemandhandler.getMapArchive(47, 48, 1));
                 ondemandhandler.requestPriority(3, ondemandhandler.getMapArchive(48, 48, 0));
@@ -6844,7 +6841,7 @@ public class Main extends ApplicationApplet {
                 {
                     int j2 = k - ondemandhandler.amount();
                     if(j2 > 0)
-                        drawLoadingBar(75, (byte)4, "Loading maps - " + (j2 * 100) / k + "%");
+                        drawLoadingBar("Loading maps - " + (j2 * 100) / k + "%", 75);
                     loadFinalizedRequest(false);
                     try
                     {
@@ -6893,7 +6890,7 @@ public class Main extends ApplicationApplet {
                         ondemandhandler.setArchivePriority(2, i3, (byte)1);
 
             }
-            drawLoadingBar(80, (byte)4, "Unpacking media");
+            drawLoadingBar("Unpacking media", 80);
             invback = new IndexedColorSprite(graphics_archive, "invback", 0);
             chatback = new IndexedColorSprite(graphics_archive, "chatback", 0);
             mapback = new IndexedColorSprite(graphics_archive, "mapback", 0);
@@ -6948,21 +6945,21 @@ public class Main extends ApplicationApplet {
             redstone2 = new IndexedColorSprite(graphics_archive, "redstone2", 0);
             redstone3 = new IndexedColorSprite(graphics_archive, "redstone3", 0);
             redstone1_2 = new IndexedColorSprite(graphics_archive, "redstone1", 0);
-            redstone1_2.method358(0);
+            redstone1_2.indexReflectX();
             redstone2_2 = new IndexedColorSprite(graphics_archive, "redstone2", 0);
-            redstone2_2.method358(0);
+            redstone2_2.indexReflectX();
             redstone1_3 = new IndexedColorSprite(graphics_archive, "redstone1", 0);
-            redstone1_3.method359(true);
+            redstone1_3.indexReflectY();
             redstone2_3 = new IndexedColorSprite(graphics_archive, "redstone2", 0);
-            redstone2_3.method359(true);
+            redstone2_3.indexReflectY();
             redstone3_2 = new IndexedColorSprite(graphics_archive, "redstone3", 0);
-            redstone3_2.method359(true);
+            redstone3_2.indexReflectY();
             redstone1_4 = new IndexedColorSprite(graphics_archive, "redstone1", 0);
-            redstone1_4.method358(0);
-            redstone1_4.method359(true);
+            redstone1_4.indexReflectX();
+            redstone1_4.indexReflectY();
             redstone2_4 = new IndexedColorSprite(graphics_archive, "redstone2", 0);
-            redstone2_4.method358(0);
-            redstone2_4.method359(true);
+            redstone2_4.indexReflectX();
+            redstone2_4.indexReflectY();
             for(int l4 = 0; l4 < 2; l4++)
                 mod_icons[l4] = new IndexedColorSprite(graphics_archive, "mod_icons", l4);
 			/* */
@@ -7010,44 +7007,44 @@ public class Main extends ApplicationApplet {
                 if(mapfunction[i6] != null)
                     mapfunction[i6].intensify(i5 + l5, j5 + l5, k5 + l5);
                 if(mapscene[i6] != null)
-                    mapscene[i6].intensifyColorIndex(i5 + l5, j5 + l5, k5 + l5, 0);
+                    mapscene[i6].intensify(i5 + l5, j5 + l5, k5 + l5, 0);
             }
 
-            drawLoadingBar(83, (byte)4, "Unpacking textures");
+            drawLoadingBar("Unpacking textures", 83);
             TriangleRasterizer.unpackTextures(class44_3);
             TriangleRasterizer.method372(0.80000000000000004D, aByte1200);
             TriangleRasterizer.initialize(20, true);
-            drawLoadingBar(86, (byte)4, "Unpacking config");
+            drawLoadingBar("Unpacking config", 86);
             AnimSequence.unpackAnimSequences(class44);
             ObjectDefinition.initialize(class44);
-            Floor.method260(0, class44);
+            FloorDefinition.unpackDefinitions(class44);
             ItemDefinition.amountitems(class44);
-            NPCDefinition.unpackNpcDefs(class44);
-            CharModel.method535(0, class44);
+            NpcDefinition.unpackNpcDefs(class44);
+            IdentityKit.method535(0, class44);
             SpotAnim.method264(0, class44);
             VarpFile.method546(0, class44);
-            VarbitFile.method533(0, class44);
+            VarbitFile.unpackArchives(0, class44);
             ItemDefinition.aBoolean182 = members;
             if(!lowMemory)
             {
-                drawLoadingBar(90, (byte)4, "Unpacking sounds");
+                drawLoadingBar("Unpacking sounds", 90);
                 byte abyte0[] = class44_5.getArchive("sounds.dat", null);
                 ByteBuffer buffer0 = new ByteBuffer(abyte0);
                 Sound.method240(0, buffer0);
             }
-            drawLoadingBar(95, (byte)4, "Unpacking interfaces");
+            drawLoadingBar("Unpacking interfaces", 95);
             BitmapFont aclass30_sub2_sub1_sub4[] = {
-                p11Font, p12Font, b12Font, q8_font
+                p11Font, p12Font, b12Font, q8Font
             };
-            Widget.unpackWidgets(class44_1, aclass30_sub2_sub1_sub4, graphics_archive);
-            drawLoadingBar(100, (byte)4, "Preparing game engine");
+            Widget.loadWidgets(class44_1, aclass30_sub2_sub1_sub4, graphics_archive);
+            drawLoadingBar("Preparing game engine", 100);
             for(int j6 = 0; j6 < 33; j6++)
             {
                 int k6 = 999;
                 int i7 = 0;
                 for(int k7 = 0; k7 < 34; k7++)
                 {
-                    if(mapback.colorindex[k7 + j6 * mapback.indexwidth_] == 0)
+                    if(mapback.buffer[k7 + j6 * mapback.indexWidth] == 0)
                     {
                         if(k6 == 999)
                             k6 = k7;
@@ -7069,7 +7066,7 @@ public class Main extends ApplicationApplet {
                 int l7 = 0;
                 for(int j8 = 25; j8 < 172; j8++)
                 {
-                    if(mapback.colorindex[j8 + l6 * mapback.indexwidth_] == 0 && (j8 > 34 || l6 > 34))
+                    if(mapback.buffer[j8 + l6 * mapback.indexWidth] == 0 && (j8 > 34 || l6 > 34))
                     {
                         if(j7 == 999)
                             j7 = j8;
@@ -7102,11 +7099,11 @@ public class Main extends ApplicationApplet {
 
             Palette.method310(500, 800, 512, 334, ai, aBoolean1231);
             Censor.unpackCensor(class44_4);
-            watchdog = new Monitor(this, anInt1096);
-            createThread(watchdog, 10);
+            monitor = new Monitor(this, anInt1096);
+            createThread(monitor, 10);
             GameObject.main = this;
             ObjectDefinition.main = this;
-            NPCDefinition.main = this;
+            NpcDefinition.main = this;
             return;
         } catch(Exception exception) {
 			exception.printStackTrace();
@@ -7115,76 +7112,73 @@ public class Main extends ApplicationApplet {
         aBoolean926 = true;
     }
 
-    public void method91(ByteBuffer buffer0, int i, byte byte0)
+    public void populatePlayerList(ByteBuffer buffer0, int i, byte byte0)
     {
-        if(byte0 == 8)
-            byte0 = 0;
-        else
-            anInt1119 = -50;
         while(buffer0.bitOffset + 10 < i * 8) 
         {
             int j = buffer0.getBits(11);
             if(j == 2047)
                 break;
-            if(players[j] == null)
+            System.out.println("New player populated into system! " + j);
+            if(playerArray[j] == null)
             {
-                players[j] = new Player();
-                if(appearancebuffers[j] != null)
-                    players[j].parseAppearanceUpdate(0, appearancebuffers[j]);
+                playerArray[j] = new Player();
+                if(appearanceBuffers[j] != null)
+                    playerArray[j].parseAppearance(appearanceBuffers[j]);
             }
-            anIntArray892[anInt891++] = j;
-            Player class30_sub2_sub4_sub1_sub2 = players[j];
+            addedPlayers[playerOffset++] = j;
+            Player class30_sub2_sub4_sub1_sub2 = playerArray[j];
             class30_sub2_sub4_sub1_sub2.anInt1537 = loopCycle;
             int k = buffer0.getBits(1);
             if(k == 1)
-                playerupdate_stack[amtplayerupdatestack++] = j;
+                pFlagUpdateList[amtplayerupdatestack++] = j;
             int l = buffer0.getBits(1);
-            int i1 = buffer0.getBits(5);
-            if(i1 > 15)
-                i1 -= 32;
-            int j1 = buffer0.getBits(5);
-            if(j1 > 15)
-                j1 -= 32;
-            class30_sub2_sub4_sub1_sub2.updateMobPosition(((Mob) (localplayer)).palettex_stack[0] + j1, ((Mob) (localplayer)).palettey_stack[0] + i1, l == 1, false);
+            int dy = buffer0.getBits(5);
+            if(dy > 15)
+                dy -= 32;
+            int dx = buffer0.getBits(5);
+            if(dx > 15)
+                dx -= 32;
+            class30_sub2_sub4_sub1_sub2.updateMobPosition(((Mob) (localPlayer)).xList[0] + dx, ((Mob) (localPlayer)).yList[0] + dy, l == 1);
         }
         buffer0.endBitAccess();
     }
 
-    public void handleMinimapClicking(boolean flag)
+    public void handleMinimap(boolean flag)
     {
         isOnlineGame &= flag;
         if(anInt1021 != 0)
             return;
         if(super.anInt26 == 1)
         {
-            int i = super.curpressed_x - 25 - 550;
-            int j = super.curpressed_y - 5 - 4;
+            int i = super.pressedX - 25 - 550;
+            int j = super.pressedY - 5 - 4;
             if(i >= 0 && j >= 0 && i < 146 && j < 151)
             {
 				/* Divide by 2 */
                 i -= 73;
                 j -= 75;
-                int k = camerayaw + anInt1209 & 0x7ff;
+                int k = cameraYaw + anInt1209 & 0x7ff;
                 int i1 = TriangleRasterizer.SINE_TABLE[k];
                 int j1 = TriangleRasterizer.COSINE_TABLE[k];
                 i1 = i1 * (anInt1170 + 256) >> 8;
                 j1 = j1 * (anInt1170 + 256) >> 8;
                 int k1 = j * i1 + i * j1 >> 11;
                 int l1 = j * j1 - i * i1 >> 11;
-                int i2 = ((Mob) (localplayer)).fineposx + k1 >> 7;
-                int j2 = ((Mob) (localplayer)).fineposy - l1 >> 7;
-                boolean flag1 = sendWalkPacket(1, 0, 0, -11308, 0, ((Mob) (localplayer)).palettey_stack[0], 0, 0, j2, ((Mob) (localplayer)).palettex_stack[0], true, i2);
+                int i2 = ((Mob) (localPlayer)).fineX + k1 >> 7;
+                int j2 = ((Mob) (localPlayer)).fineY - l1 >> 7;
+                boolean flag1 = sendWalkPacket(1, 0, 0, -11308, 0, ((Mob) (localPlayer)).yList[0], 0, 0, j2, ((Mob) (localPlayer)).xList[0], true, i2);
                 if(flag1)
                 {
                     gameBuffer.put(i);
                     gameBuffer.put(j);
-                    gameBuffer.putWord(camerayaw);
+                    gameBuffer.putWord(cameraYaw);
                     gameBuffer.put(57);
                     gameBuffer.put(anInt1209);
                     gameBuffer.put(anInt1170);
                     gameBuffer.put(89);
-                    gameBuffer.putWord(((Mob) (localplayer)).fineposx);
-                    gameBuffer.putWord(((Mob) (localplayer)).fineposy);
+                    gameBuffer.putWord(((Mob) (localPlayer)).fineX);
+                    gameBuffer.putWord(((Mob) (localPlayer)).fineY);
                     gameBuffer.put(anInt1264);
                     gameBuffer.put(63);
                 }
@@ -7292,7 +7286,7 @@ public class Main extends ApplicationApplet {
             return Signlink.applet.getCodeBase();
         try
         {
-            if(super.frame != null)
+            if(super.appletFrame != null)
                 return new URL("http://127.0.0.1:" + (80 + portOffset));
         }
         catch(Exception ex) { 
@@ -7300,12 +7294,12 @@ public class Main extends ApplicationApplet {
         return super.getCodeBase();
     }
 
-    public void updateNPCsOrentation(int i)
+    public void updateNpcs(int i)
     {
         for(int j = 0; j < anInt836; j++)
         {
-            int k = updatenpcs[j];
-            NPC class30_sub2_sub4_sub1_sub1 = npcs[k];
+            int k = localNpcIds[j];
+            Npc class30_sub2_sub4_sub1_sub1 = npcs[k];
             if(class30_sub2_sub4_sub1_sub1 != null)
                 updateMobOrentation(46988, class30_sub2_sub4_sub1_sub1.definition.npc_halftileoffsets, class30_sub2_sub4_sub1_sub1);
         }
@@ -7318,24 +7312,24 @@ public class Main extends ApplicationApplet {
     {
         if(i != 46988)
             packetId = -1;
-        if(class30_sub2_sub4_sub1.fineposx < 128 || class30_sub2_sub4_sub1.fineposy < 128 || class30_sub2_sub4_sub1.fineposx >= 13184 || class30_sub2_sub4_sub1.fineposy >= 13184)
+        if(class30_sub2_sub4_sub1.fineX < 128 || class30_sub2_sub4_sub1.fineY < 128 || class30_sub2_sub4_sub1.fineX >= 13184 || class30_sub2_sub4_sub1.fineY >= 13184)
         {
             class30_sub2_sub4_sub1.animid_request = -1;
             class30_sub2_sub4_sub1.anInt1520 = -1;
             class30_sub2_sub4_sub1.forcewlk_sp1 = 0;
             class30_sub2_sub4_sub1.forcewlk_sp2 = 0;
-            class30_sub2_sub4_sub1.fineposx = class30_sub2_sub4_sub1.palettex_stack[0] * 128 + class30_sub2_sub4_sub1.halftile_offsets * 64;
-            class30_sub2_sub4_sub1.fineposy = class30_sub2_sub4_sub1.palettey_stack[0] * 128 + class30_sub2_sub4_sub1.halftile_offsets * 64;
+            class30_sub2_sub4_sub1.fineX = class30_sub2_sub4_sub1.xList[0] * 128 + class30_sub2_sub4_sub1.halfOffsets * 64;
+            class30_sub2_sub4_sub1.fineY = class30_sub2_sub4_sub1.yList[0] * 128 + class30_sub2_sub4_sub1.halfOffsets * 64;
             class30_sub2_sub4_sub1.method446(true);
         }
-        if(class30_sub2_sub4_sub1 == localplayer && (class30_sub2_sub4_sub1.fineposx < 1536 || class30_sub2_sub4_sub1.fineposy < 1536 || class30_sub2_sub4_sub1.fineposx >= 11776 || class30_sub2_sub4_sub1.fineposy >= 11776))
+        if(class30_sub2_sub4_sub1 == localPlayer && (class30_sub2_sub4_sub1.fineX < 1536 || class30_sub2_sub4_sub1.fineY < 1536 || class30_sub2_sub4_sub1.fineX >= 11776 || class30_sub2_sub4_sub1.fineY >= 11776))
         {
             class30_sub2_sub4_sub1.animid_request = -1;
             class30_sub2_sub4_sub1.anInt1520 = -1;
             class30_sub2_sub4_sub1.forcewlk_sp1 = 0;
             class30_sub2_sub4_sub1.forcewlk_sp2 = 0;
-            class30_sub2_sub4_sub1.fineposx = class30_sub2_sub4_sub1.palettex_stack[0] * 128 + class30_sub2_sub4_sub1.halftile_offsets * 64;
-            class30_sub2_sub4_sub1.fineposy = class30_sub2_sub4_sub1.palettey_stack[0] * 128 + class30_sub2_sub4_sub1.halftile_offsets * 64;
+            class30_sub2_sub4_sub1.fineX = class30_sub2_sub4_sub1.xList[0] * 128 + class30_sub2_sub4_sub1.halfOffsets * 64;
+            class30_sub2_sub4_sub1.fineY = class30_sub2_sub4_sub1.yList[0] * 128 + class30_sub2_sub4_sub1.halfOffsets * 64;
             class30_sub2_sub4_sub1.method446(true);
         }
         if(class30_sub2_sub4_sub1.forcewlk_sp1 > loopCycle)
@@ -7352,12 +7346,12 @@ public class Main extends ApplicationApplet {
     public void method97(Mob class30_sub2_sub4_sub1, boolean flag)
     {
         int i = class30_sub2_sub4_sub1.forcewlk_sp1 - loopCycle;
-        int j = class30_sub2_sub4_sub1.forcewlk_startx * 128 + class30_sub2_sub4_sub1.halftile_offsets * 64;
-        int k = class30_sub2_sub4_sub1.forcewlk_starty * 128 + class30_sub2_sub4_sub1.halftile_offsets * 64;
-        class30_sub2_sub4_sub1.fineposx += (j - class30_sub2_sub4_sub1.fineposx) / i;
+        int j = class30_sub2_sub4_sub1.forcewlk_startx * 128 + class30_sub2_sub4_sub1.halfOffsets * 64;
+        int k = class30_sub2_sub4_sub1.forcewlk_starty * 128 + class30_sub2_sub4_sub1.halfOffsets * 64;
+        class30_sub2_sub4_sub1.fineX += (j - class30_sub2_sub4_sub1.fineX) / i;
         if(!flag)
             return;
-        class30_sub2_sub4_sub1.fineposy += (k - class30_sub2_sub4_sub1.fineposy) / i;
+        class30_sub2_sub4_sub1.fineY += (k - class30_sub2_sub4_sub1.fineY) / i;
         class30_sub2_sub4_sub1.anInt1503 = 0;
         if(class30_sub2_sub4_sub1.forcewlk_dir == 0)
             class30_sub2_sub4_sub1.anInt1510 = 1024;
@@ -7375,12 +7369,12 @@ public class Main extends ApplicationApplet {
         {
             int i = class30_sub2_sub4_sub1.forcewlk_sp2 - class30_sub2_sub4_sub1.forcewlk_sp1;
             int j = loopCycle - class30_sub2_sub4_sub1.forcewlk_sp1;
-            int k = class30_sub2_sub4_sub1.forcewlk_startx * 128 + class30_sub2_sub4_sub1.halftile_offsets * 64;
-            int l = class30_sub2_sub4_sub1.forcewlk_starty * 128 + class30_sub2_sub4_sub1.halftile_offsets * 64;
-            int i1 = class30_sub2_sub4_sub1.forcewlk_endx * 128 + class30_sub2_sub4_sub1.halftile_offsets * 64;
-            int j1 = class30_sub2_sub4_sub1.forcewlk_endy * 128 + class30_sub2_sub4_sub1.halftile_offsets * 64;
-            class30_sub2_sub4_sub1.fineposx = (k * (i - j) + i1 * j) / i;
-            class30_sub2_sub4_sub1.fineposy = (l * (i - j) + j1 * j) / i;
+            int k = class30_sub2_sub4_sub1.forcewlk_startx * 128 + class30_sub2_sub4_sub1.halfOffsets * 64;
+            int l = class30_sub2_sub4_sub1.forcewlk_starty * 128 + class30_sub2_sub4_sub1.halfOffsets * 64;
+            int i1 = class30_sub2_sub4_sub1.forcewlk_endx * 128 + class30_sub2_sub4_sub1.halfOffsets * 64;
+            int j1 = class30_sub2_sub4_sub1.forcewlk_endy * 128 + class30_sub2_sub4_sub1.halfOffsets * 64;
+            class30_sub2_sub4_sub1.fineX = (k * (i - j) + i1 * j) / i;
+            class30_sub2_sub4_sub1.fineY = (l * (i - j) + j1 * j) / i;
         }
         class30_sub2_sub4_sub1.anInt1503 = 0;
         if(class30_sub2_sub4_sub1.forcewlk_dir == 0)
@@ -7398,7 +7392,7 @@ public class Main extends ApplicationApplet {
 
     public void method99(byte byte0, Mob class30_sub2_sub4_sub1)
     {
-        class30_sub2_sub4_sub1.anInt1517 = class30_sub2_sub4_sub1.stand_anim;
+        class30_sub2_sub4_sub1.anInt1517 = class30_sub2_sub4_sub1.standAnimation;
         if(class30_sub2_sub4_sub1.stack_position_mob == 0)
         {
             class30_sub2_sub4_sub1.anInt1503 = 0;
@@ -7418,14 +7412,14 @@ public class Main extends ApplicationApplet {
                 return;
             }
         }
-        int i = class30_sub2_sub4_sub1.fineposx;
-        int j = class30_sub2_sub4_sub1.fineposy;
-        int k = class30_sub2_sub4_sub1.palettex_stack[class30_sub2_sub4_sub1.stack_position_mob - 1] * 128 + class30_sub2_sub4_sub1.halftile_offsets * 64;
-        int l = class30_sub2_sub4_sub1.palettey_stack[class30_sub2_sub4_sub1.stack_position_mob - 1] * 128 + class30_sub2_sub4_sub1.halftile_offsets * 64;
+        int i = class30_sub2_sub4_sub1.fineX;
+        int j = class30_sub2_sub4_sub1.fineY;
+        int k = class30_sub2_sub4_sub1.xList[class30_sub2_sub4_sub1.stack_position_mob - 1] * 128 + class30_sub2_sub4_sub1.halfOffsets * 64;
+        int l = class30_sub2_sub4_sub1.yList[class30_sub2_sub4_sub1.stack_position_mob - 1] * 128 + class30_sub2_sub4_sub1.halfOffsets * 64;
         if(k - i > 256 || k - i < -256 || l - j > 256 || l - j < -256)
         {
-            class30_sub2_sub4_sub1.fineposx = k;
-            class30_sub2_sub4_sub1.fineposy = l;
+            class30_sub2_sub4_sub1.fineX = k;
+            class30_sub2_sub4_sub1.fineY = l;
             return;
         }
         if(i < k)
@@ -7455,17 +7449,17 @@ public class Main extends ApplicationApplet {
         int i1 = class30_sub2_sub4_sub1.anInt1510 - class30_sub2_sub4_sub1.anInt1552 & 0x7ff;
         if(i1 > 1024)
             i1 -= 2048;
-        int j1 = class30_sub2_sub4_sub1.turn180_anim;
+        int j1 = class30_sub2_sub4_sub1.turnAnimation180;
         if(i1 >= -256 && i1 <= 256)
-            j1 = class30_sub2_sub4_sub1.walk_anim;
+            j1 = class30_sub2_sub4_sub1.walkAnimation;
         else
         if(i1 >= 256 && i1 < 768)
-            j1 = class30_sub2_sub4_sub1.turn90ccw_anim;
+            j1 = class30_sub2_sub4_sub1.turnCcwAnimation90;
         else
         if(i1 >= -768 && i1 <= -256)
-            j1 = class30_sub2_sub4_sub1.turn90cw_anim;
+            j1 = class30_sub2_sub4_sub1.turnCwAnimation90;
         if(j1 == -1)
-            j1 = class30_sub2_sub4_sub1.walk_anim;
+            j1 = class30_sub2_sub4_sub1.walkAnimation;
         class30_sub2_sub4_sub1.anInt1517 = j1;
         int k1 = 4;
         if(class30_sub2_sub4_sub1.anInt1552 != class30_sub2_sub4_sub1.anInt1510 && class30_sub2_sub4_sub1.anInt1502 == -1 && class30_sub2_sub4_sub1.rotation != 0)
@@ -7481,33 +7475,33 @@ public class Main extends ApplicationApplet {
         }
         if(class30_sub2_sub4_sub1.running_stack[class30_sub2_sub4_sub1.stack_position_mob - 1])
             k1 <<= 1;
-        if(k1 >= 8 && class30_sub2_sub4_sub1.anInt1517 == class30_sub2_sub4_sub1.walk_anim && class30_sub2_sub4_sub1.run_anim != -1)
-            class30_sub2_sub4_sub1.anInt1517 = class30_sub2_sub4_sub1.run_anim;
+        if(k1 >= 8 && class30_sub2_sub4_sub1.anInt1517 == class30_sub2_sub4_sub1.walkAnimation && class30_sub2_sub4_sub1.runAnimation != -1)
+            class30_sub2_sub4_sub1.anInt1517 = class30_sub2_sub4_sub1.runAnimation;
         if(i < k)
         {
-            class30_sub2_sub4_sub1.fineposx += k1;
-            if(class30_sub2_sub4_sub1.fineposx > k)
-                class30_sub2_sub4_sub1.fineposx = k;
+            class30_sub2_sub4_sub1.fineX += k1;
+            if(class30_sub2_sub4_sub1.fineX > k)
+                class30_sub2_sub4_sub1.fineX = k;
         } else
         if(i > k)
         {
-            class30_sub2_sub4_sub1.fineposx -= k1;
-            if(class30_sub2_sub4_sub1.fineposx < k)
-                class30_sub2_sub4_sub1.fineposx = k;
+            class30_sub2_sub4_sub1.fineX -= k1;
+            if(class30_sub2_sub4_sub1.fineX < k)
+                class30_sub2_sub4_sub1.fineX = k;
         }
         if(j < l)
         {
-            class30_sub2_sub4_sub1.fineposy += k1;
-            if(class30_sub2_sub4_sub1.fineposy > l)
-                class30_sub2_sub4_sub1.fineposy = l;
+            class30_sub2_sub4_sub1.fineY += k1;
+            if(class30_sub2_sub4_sub1.fineY > l)
+                class30_sub2_sub4_sub1.fineY = l;
         } else
         if(j > l)
         {
-            class30_sub2_sub4_sub1.fineposy -= k1;
-            if(class30_sub2_sub4_sub1.fineposy < l)
-                class30_sub2_sub4_sub1.fineposy = l;
+            class30_sub2_sub4_sub1.fineY -= k1;
+            if(class30_sub2_sub4_sub1.fineY < l)
+                class30_sub2_sub4_sub1.fineY = l;
         }
-        if(class30_sub2_sub4_sub1.fineposx == k && class30_sub2_sub4_sub1.fineposy == l)
+        if(class30_sub2_sub4_sub1.fineX == k && class30_sub2_sub4_sub1.fineY == l)
         {
             class30_sub2_sub4_sub1.stack_position_mob--;
             if(class30_sub2_sub4_sub1.anInt1542 > 0)
@@ -7523,11 +7517,11 @@ public class Main extends ApplicationApplet {
             return;
         if(class30_sub2_sub4_sub1.anInt1502 != -1 && class30_sub2_sub4_sub1.anInt1502 < 32768)
         {
-            NPC class30_sub2_sub4_sub1_sub1 = npcs[class30_sub2_sub4_sub1.anInt1502];
+            Npc class30_sub2_sub4_sub1_sub1 = npcs[class30_sub2_sub4_sub1.anInt1502];
             if(class30_sub2_sub4_sub1_sub1 != null)
             {
-                int i1 = class30_sub2_sub4_sub1.fineposx - ((Mob) (class30_sub2_sub4_sub1_sub1)).fineposx;
-                int k1 = class30_sub2_sub4_sub1.fineposy - ((Mob) (class30_sub2_sub4_sub1_sub1)).fineposy;
+                int i1 = class30_sub2_sub4_sub1.fineX - ((Mob) (class30_sub2_sub4_sub1_sub1)).fineX;
+                int k1 = class30_sub2_sub4_sub1.fineY - ((Mob) (class30_sub2_sub4_sub1_sub1)).fineY;
                 if(i1 != 0 || k1 != 0)
                     class30_sub2_sub4_sub1.anInt1510 = (int)(Math.atan2(i1, k1) * 325.94900000000001D) & 0x7ff;
             }
@@ -7535,21 +7529,21 @@ public class Main extends ApplicationApplet {
         if(class30_sub2_sub4_sub1.anInt1502 >= 32768)
         {
             int j = class30_sub2_sub4_sub1.anInt1502 - 32768;
-            if(j == anInt884)
-                j = localindex;
-            Player class30_sub2_sub4_sub1_sub2 = players[j];
+            if(j == localPlayerId)
+                j = localPlayerIndex;
+            Player class30_sub2_sub4_sub1_sub2 = playerArray[j];
             if(class30_sub2_sub4_sub1_sub2 != null)
             {
-                int l1 = class30_sub2_sub4_sub1.fineposx - ((Mob) (class30_sub2_sub4_sub1_sub2)).fineposx;
-                int i2 = class30_sub2_sub4_sub1.fineposy - ((Mob) (class30_sub2_sub4_sub1_sub2)).fineposy;
+                int l1 = class30_sub2_sub4_sub1.fineX - ((Mob) (class30_sub2_sub4_sub1_sub2)).fineX;
+                int i2 = class30_sub2_sub4_sub1.fineY - ((Mob) (class30_sub2_sub4_sub1_sub2)).fineY;
                 if(l1 != 0 || i2 != 0)
                     class30_sub2_sub4_sub1.anInt1510 = (int)(Math.atan2(l1, i2) * 325.94900000000001D) & 0x7ff;
             }
         }
         if((class30_sub2_sub4_sub1.anInt1538 != 0 || class30_sub2_sub4_sub1.anInt1539 != 0) && (class30_sub2_sub4_sub1.stack_position_mob == 0 || class30_sub2_sub4_sub1.anInt1503 > 0))
         {
-            int k = class30_sub2_sub4_sub1.fineposx - (class30_sub2_sub4_sub1.anInt1538 - palettex - palettex) * 64;
-            int j1 = class30_sub2_sub4_sub1.fineposy - (class30_sub2_sub4_sub1.anInt1539 - palettey - palettey) * 64;
+            int k = class30_sub2_sub4_sub1.fineX - (class30_sub2_sub4_sub1.anInt1538 - palettex - palettex) * 64;
+            int j1 = class30_sub2_sub4_sub1.fineY - (class30_sub2_sub4_sub1.anInt1539 - palettey - palettey) * 64;
             if(k != 0 || j1 != 0)
                 class30_sub2_sub4_sub1.anInt1510 = (int)(Math.atan2(k, j1) * 325.94900000000001D) & 0x7ff;
             class30_sub2_sub4_sub1.anInt1538 = 0;
@@ -7566,14 +7560,14 @@ public class Main extends ApplicationApplet {
             else
                 class30_sub2_sub4_sub1.anInt1552 += class30_sub2_sub4_sub1.rotation;
             class30_sub2_sub4_sub1.anInt1552 &= 0x7ff;
-            if(class30_sub2_sub4_sub1.anInt1517 == class30_sub2_sub4_sub1.stand_anim && class30_sub2_sub4_sub1.anInt1552 != class30_sub2_sub4_sub1.anInt1510)
+            if(class30_sub2_sub4_sub1.anInt1517 == class30_sub2_sub4_sub1.standAnimation && class30_sub2_sub4_sub1.anInt1552 != class30_sub2_sub4_sub1.anInt1510)
             {
-                if(class30_sub2_sub4_sub1.standturn_anim != -1)
+                if(class30_sub2_sub4_sub1.standTurnAnimation != -1)
                 {
-                    class30_sub2_sub4_sub1.anInt1517 = class30_sub2_sub4_sub1.standturn_anim;
+                    class30_sub2_sub4_sub1.anInt1517 = class30_sub2_sub4_sub1.standTurnAnimation;
                     return;
                 }
-                class30_sub2_sub4_sub1.anInt1517 = class30_sub2_sub4_sub1.walk_anim;
+                class30_sub2_sub4_sub1.anInt1517 = class30_sub2_sub4_sub1.walkAnimation;
             }
         }
     }
@@ -7643,26 +7637,26 @@ public class Main extends ApplicationApplet {
     {
         if(!flag)
             anInt939 = packetencryption.poll();
-        if(aBoolean1255)
+        if(paintRequested)
         {
-            aBoolean1255 = false;
-            backleft1_imagefetcher.updateGraphics(4, 23680, super.graphics, 0);
-            backleft2_imagefetcher.updateGraphics(357, 23680, super.graphics, 0);
-            backright1_imagefetcher.updateGraphics(4, 23680, super.graphics, 722);
-            backright2_imagefetcher.updateGraphics(205, 23680, super.graphics, 743);
-            backtop1_imagefetcher.updateGraphics(0, 23680, super.graphics, 0);
-            backvmid1_imagefetcher.updateGraphics(4, 23680, super.graphics, 516);
-            backvmid2_imagefetcher.updateGraphics(205, 23680, super.graphics, 516);
-            backvmid3_imagefetcher.updateGraphics(357, 23680, super.graphics, 496);
-            backhmid2_imagefetcher.updateGraphics(338, 23680, super.graphics, 0);
+            paintRequested = false;
+            backleft1_imagefetcher.updateGraphics(4, 23680, super.appletGraphics, 0);
+            backleft2_imagefetcher.updateGraphics(357, 23680, super.appletGraphics, 0);
+            backright1_imagefetcher.updateGraphics(4, 23680, super.appletGraphics, 722);
+            backright2_imagefetcher.updateGraphics(205, 23680, super.appletGraphics, 743);
+            backtop1_imagefetcher.updateGraphics(0, 23680, super.appletGraphics, 0);
+            backvmid1_imagefetcher.updateGraphics(4, 23680, super.appletGraphics, 516);
+            backvmid2_imagefetcher.updateGraphics(205, 23680, super.appletGraphics, 516);
+            backvmid3_imagefetcher.updateGraphics(357, 23680, super.appletGraphics, 496);
+            backhmid2_imagefetcher.updateGraphics(338, 23680, super.appletGraphics, 0);
             aBoolean1153 = true;
             aBoolean1223 = true;
             update_tabs = true;
             updatetoolbar = true;
             if(landscape_stage != 2)
             {
-                toplefttext_imagefetcher.updateGraphics(4, 23680, super.graphics, 4);
-                aClass15_1164.updateGraphics(4, 23680, super.graphics, 550);
+                toplefttext_imagefetcher.updateGraphics(4, 23680, super.appletGraphics, 4);
+                aClass15_1164.updateGraphics(4, 23680, super.appletGraphics, 550);
             }
         }
         if(landscape_stage == 2)
@@ -7687,8 +7681,8 @@ public class Main extends ApplicationApplet {
         if(anInt1276 == -1)
         {
             aClass9_1059.anInt224 = anInt1211 - anInt1089 - 77;
-            if(super.mouse_x > 448 && super.mouse_x < 560 && super.mouse_y > 332)
-                method65(463, 77, super.mouse_x - 17, super.mouse_y - 357, aClass9_1059, 0, false, anInt1211, 0);
+            if(super.newMouseX > 448 && super.newMouseX < 560 && super.newMouseY > 332)
+                method65(463, 77, super.newMouseX - 17, super.newMouseY - 357, aClass9_1059, 0, false, anInt1211, 0);
             int i = anInt1211 - 77 - aClass9_1059.anInt224;
             if(i < 0)
                 i = 0;
@@ -7722,7 +7716,7 @@ public class Main extends ApplicationApplet {
         if(landscape_stage == 2)
         {
             drawMinimap(false);
-            aClass15_1164.updateGraphics(4, 23680, super.graphics, 550);
+            aClass15_1164.updateGraphics(4, 23680, super.appletGraphics, 550);
         }
         if(anInt1054 != -1)
             update_tabs = true;
@@ -7771,7 +7765,7 @@ public class Main extends ApplicationApplet {
                 if(tab_interfaces[6] != -1 && (anInt1054 != 6 || loopCycle % 20 < 10))
                     sideicons[6].renderImage(208, 16083, 13);
             }
-            aClass15_1125.updateGraphics(160, 23680, super.graphics, 516);
+            aClass15_1125.updateGraphics(160, 23680, super.appletGraphics, 516);
             aClass15_1124.initialize(0);
             backbase2.renderImage(0, 16083, 0);
             if(anInt1189 == -1)
@@ -7806,7 +7800,7 @@ public class Main extends ApplicationApplet {
                 if(tab_interfaces[13] != -1 && (anInt1054 != 13 || loopCycle % 20 < 10))
                     sideicons[12].renderImage(226, 16083, 2);
             }
-            aClass15_1124.updateGraphics(466, 23680, super.graphics, 496);
+            aClass15_1124.updateGraphics(466, 23680, super.appletGraphics, 496);
             toplefttext_imagefetcher.initialize(0);
         }
         if(updatetoolbar)
@@ -7838,7 +7832,7 @@ public class Main extends ApplicationApplet {
             if(anInt1248 == 2)
                 p12Font.drawCenteredXText(0xff0000, 324, anInt939, "Off", 41, true);
             p12Font.drawCenteredXText(0xffffff, 458, anInt939, "Report abuse", 33, true);
-            toolbartext_imagefetcher.updateGraphics(453, 23680, super.graphics, 0);
+            toolbartext_imagefetcher.updateGraphics(453, 23680, super.appletGraphics, 0);
             toplefttext_imagefetcher.initialize(0);
         }
         anInt945 = 0;
@@ -7846,7 +7840,7 @@ public class Main extends ApplicationApplet {
 
     public boolean method103(Widget class9, boolean flag)
     {
-        int i = class9.actioncode;
+        int i = class9.actionCode;
         if(flag)
             loadClient();
         if(i >= 1 && i <= 200 || i >= 701 && i <= 900)
@@ -7871,7 +7865,7 @@ public class Main extends ApplicationApplet {
         }
         if(i >= 401 && i <= 500)
         {
-            interfacestringstack[anInt1133] = "Remove @whi@" + class9.aString248;
+            interfacestringstack[anInt1133] = "Remove @whi@" + class9.inactiveText;
             interfaceopcodestack[anInt1133] = 322;
             anInt1133++;
             return true;
@@ -7886,7 +7880,7 @@ public class Main extends ApplicationApplet {
         StillGraphic class30_sub2_sub4_sub3 = (StillGraphic)gfxs_storage.getFirst();
         isOnlineGame &= flag;
         for(; class30_sub2_sub4_sub3 != null; class30_sub2_sub4_sub3 = (StillGraphic)gfxs_storage.getNextFront())
-            if(class30_sub2_sub4_sub3.anInt1560 != cheight || class30_sub2_sub4_sub3.destroy_gfx)
+            if(class30_sub2_sub4_sub3.anInt1560 != currentZ || class30_sub2_sub4_sub3.destroy_gfx)
                 class30_sub2_sub4_sub3.removeDeque();
             else
             if(loopCycle >= class30_sub2_sub4_sub3.runcycle)
@@ -7902,67 +7896,67 @@ public class Main extends ApplicationApplet {
 
     public void drawWidget(Widget widget, int offsetx, int offsety, int offsety$)
     {
-        if(widget.widgettype != 0 || widget.childrenwidgets == null)
+        if(widget.type != 0 || widget.childrenIds == null)
             return;
-        if(widget.aBoolean266 && anInt1026 != widget.widgetid && anInt1048 != widget.widgetid && anInt1039 != widget.widgetid)
+        if(widget.isActive && anInt1026 != widget.widgetId && anInt1048 != widget.widgetId && anInt1039 != widget.widgetId)
             return;
-        int prevwidthoffset = BasicRasterizer.widthOffset;
-        int prevheightoffset = BasicRasterizer.heightOffset;
-        int prevwidth = BasicRasterizer.width;
-        int prevheight = BasicRasterizer.height;
+        int rasterWidthOffset = BasicRasterizer.widthOffset;
+        int rasterHeightOffset = BasicRasterizer.heightOffset;
+        int rasterWidth = BasicRasterizer.width;
+        int rasterHeight = BasicRasterizer.height;
         BasicRasterizer.setDimensions(offsetx + widget.width, offsetx, offsety + widget.height, offsety);
-        int amountchildren = widget.childrenwidgets.length;
+        int amountchildren = widget.childrenIds.length;
         for(int child = 0; child < amountchildren; child++)
         {
-            int x = widget.positionx[child] + offsetx;
-            int y = (widget.positiony[child] + offsety) - offsety$;
-            Widget childwidget = Widget.widgets[widget.childrenwidgets[child]];
-            x += childwidget.anInt263;
-            y += childwidget.anInt265;
-            if(childwidget.actioncode > 0)
-                handleWidgetActionCode(950, childwidget);
-            if(childwidget.widgettype == 0)
+            int x = widget.childrenOffX[child] + offsetx;
+            int y = (widget.childrenOffY[child] + offsety) - offsety$;
+            Widget childWidget = Widget.widgets[widget.childrenIds[child]];
+            x += childWidget.offsetX;
+            y += childWidget.offsetY;
+            if(childWidget.actionCode > 0)
+                handleWidgetActionCode(childWidget);
+            if(childWidget.type == 0)
             {
-                if(childwidget.anInt224 > childwidget.anInt261 - childwidget.height)
-                    childwidget.anInt224 = childwidget.anInt261 - childwidget.height;
-                if(childwidget.anInt224 < 0)
-                    childwidget.anInt224 = 0;
-                drawWidget(childwidget, x, y, childwidget.anInt224);
-                if(childwidget.anInt261 > childwidget.height)
-                    drawScrollBar(519, childwidget.height, childwidget.anInt224, y, x + childwidget.width, childwidget.anInt261);
+                if(childWidget.anInt224 > childWidget.currentHeight - childWidget.height)
+                    childWidget.anInt224 = childWidget.currentHeight - childWidget.height;
+                if(childWidget.anInt224 < 0)
+                    childWidget.anInt224 = 0;
+                drawWidget(childWidget, x, y, childWidget.anInt224);
+                if(childWidget.currentHeight > childWidget.height)
+                    drawScrollBar(519, childWidget.height, childWidget.anInt224, y, x + childWidget.width, childWidget.currentHeight);
             } else
-            if(childwidget.widgettype != 1)
-                if(childwidget.widgettype == 2)
+            if(childWidget.type != 1)
+                if(childWidget.type == 2)
                 {
-                    int i3 = 0;
-                    for(int y$ = 0; y$ < childwidget.height; y$++)
+                    int spriteOffset = 0;
+                    for(int y$ = 0; y$ < childWidget.height; y$++)
                     {
-                        for(int x$ = 0; x$ < childwidget.width; x$++)
+                        for(int x$ = 0; x$ < childWidget.width; x$++)
                         {
-                            int k5 = x + x$ * (32 + childwidget.anInt231);
-                            int j6 = y + y$ * (32 + childwidget.anInt244);
-                            if(i3 < 20)
+                            int drawX = x + x$ * (32 + childWidget.xOff);
+                            int drawY = y + y$ * (32 + childWidget.yOff);
+                            if(spriteOffset < 20)
                             {
-                                k5 += childwidget.anIntArray215[i3];
-                                j6 += childwidget.anIntArray247[i3];
+                                drawX += childWidget.anIntArray215[spriteOffset];
+                                drawY += childWidget.anIntArray247[spriteOffset];
                             }
-                            if(childwidget.itemarray[i3] > 0)
+                            if(childWidget.itemIds[spriteOffset] > 0)
                             {
                                 int k6 = 0;
                                 int j7 = 0;
-                                int itemid = childwidget.itemarray[i3] - 1;
-                                if(k5 > BasicRasterizer.widthOffset - 32 && k5 < BasicRasterizer.width && j6 > BasicRasterizer.heightOffset - 32 && j6 < BasicRasterizer.height || anInt1086 != 0 && moveitem_startslot == i3)
+                                int itemid = childWidget.itemIds[spriteOffset] - 1;
+                                if(drawX > BasicRasterizer.widthOffset - 32 && drawX < BasicRasterizer.width && drawY > BasicRasterizer.heightOffset - 32 && drawY < BasicRasterizer.height || anInt1086 != 0 && moveitem_startslot == spriteOffset)
                                 {
                                     int l9 = 0;
-                                    if(anInt1282 == 1 && anInt1283 == i3 && anInt1284 == childwidget.widgetid)
+                                    if(anInt1282 == 1 && anInt1283 == spriteOffset && anInt1284 == childWidget.widgetId)
                                         l9 = 0xffffff;
-                                    DirectColorSprite sprite = ItemDefinition.asSprite(itemid, childwidget.itemamounts[i3], l9, 9);
+                                    DirectColorSprite sprite = ItemDefinition.asSprite(itemid, childWidget.itemAmounts[spriteOffset], l9, 9);
                                     if(sprite != null)
                                     {
-                                        if(anInt1086 != 0 && moveitem_startslot == i3 && moveitem_frameid == childwidget.widgetid)
+                                        if(anInt1086 != 0 && moveitem_startslot == spriteOffset && moveitem_frameid == childWidget.widgetId)
                                         {
-                                            k6 = super.mouse_x - anInt1087;
-                                            j7 = super.mouse_y - anInt1088;
+                                            k6 = super.newMouseX - anInt1087;
+                                            j7 = super.newMouseY - anInt1088;
                                             if(k6 < 5 && k6 > -5)
                                                 k6 = 0;
                                             if(j7 < 5 && j7 > -5)
@@ -7972,107 +7966,107 @@ public class Main extends ApplicationApplet {
                                                 k6 = 0;
                                                 j7 = 0;
                                             }
-                                            sprite.drawBlended(k5 + k6, j6 + j7, 128, aBoolean1043);
-                                            if(j6 + j7 < BasicRasterizer.heightOffset && childwidget.anInt224 > 0)
+                                            sprite.drawBlended(drawX + k6, drawY + j7, 128, aBoolean1043);
+                                            if(drawY + j7 < BasicRasterizer.heightOffset && childWidget.anInt224 > 0)
                                             {
-                                                int i10 = (anInt945 * (BasicRasterizer.heightOffset - j6 - j7)) / 3;
+                                                int i10 = (anInt945 * (BasicRasterizer.heightOffset - drawY - j7)) / 3;
                                                 if(i10 > anInt945 * 10)
                                                     i10 = anInt945 * 10;
-                                                if(i10 > childwidget.anInt224)
-                                                    i10 = childwidget.anInt224;
-                                                childwidget.anInt224 -= i10;
+                                                if(i10 > childWidget.anInt224)
+                                                    i10 = childWidget.anInt224;
+                                                childWidget.anInt224 -= i10;
                                                 anInt1088 += i10;
                                             }
-                                            if(j6 + j7 + 32 > BasicRasterizer.height && childwidget.anInt224 < childwidget.anInt261 - childwidget.height)
+                                            if(drawY + j7 + 32 > BasicRasterizer.height && childWidget.anInt224 < childWidget.currentHeight - childWidget.height)
                                             {
-                                                int j10 = (anInt945 * ((j6 + j7 + 32) - BasicRasterizer.height)) / 3;
+                                                int j10 = (anInt945 * ((drawY + j7 + 32) - BasicRasterizer.height)) / 3;
                                                 if(j10 > anInt945 * 10)
                                                     j10 = anInt945 * 10;
-                                                if(j10 > childwidget.anInt261 - childwidget.height - childwidget.anInt224)
-                                                    j10 = childwidget.anInt261 - childwidget.height - childwidget.anInt224;
-                                                childwidget.anInt224 += j10;
+                                                if(j10 > childWidget.currentHeight - childWidget.height - childWidget.anInt224)
+                                                    j10 = childWidget.currentHeight - childWidget.height - childWidget.anInt224;
+                                                childWidget.anInt224 += j10;
                                                 anInt1088 -= j10;
                                             }
                                         } else
-                                        if(anInt1246 != 0 && anInt1245 == i3 && anInt1244 == childwidget.widgetid)
-                                            sprite.drawBlended(k5, j6, 128, aBoolean1043);
+                                        if(anInt1246 != 0 && anInt1245 == spriteOffset && anInt1244 == childWidget.widgetId)
+                                            sprite.drawBlended(drawX, drawY, 128, aBoolean1043);
                                         else
-                                            sprite.draw(k5, 16083, j6);
-                                        if(sprite.spriteWidth == 33 || childwidget.itemamounts[i3] != 1)
+                                            sprite.draw(drawX, 16083, drawY);
+                                        if(sprite.spriteWidth == 33 || childWidget.itemAmounts[spriteOffset] != 1)
                                         {
-                                            int k10 = childwidget.itemamounts[i3];
-                                            p11Font.drawText(0, amountToAmountStr(-33245, k10), j6 + 10 + j7, 822, k5 + 1 + k6);
-                                            p11Font.drawText(0xffff00, amountToAmountStr(-33245, k10), j6 + 9 + j7, 822, k5 + k6);
+                                            int k10 = childWidget.itemAmounts[spriteOffset];
+                                            p11Font.drawText(0, amountToAmountStr(-33245, k10), drawY + 10 + j7, 822, drawX + 1 + k6);
+                                            p11Font.drawText(0xffff00, amountToAmountStr(-33245, k10), drawY + 9 + j7, 822, drawX + k6);
                                         }
                                     }
                                 }
                             } else
-                            if(childwidget.sprites != null && i3 < 20)
+                            if(childWidget.sprites != null && spriteOffset < 20)
                             {
-                                DirectColorSprite class30_sub2_sub1_sub1_1 = childwidget.sprites[i3];
-                                if(class30_sub2_sub1_sub1_1 != null)
-                                    class30_sub2_sub1_sub1_1.draw(k5, 16083, j6);
+                                DirectColorSprite sprite = childWidget.sprites[spriteOffset];
+                                if(sprite != null)
+                                    sprite.draw(drawX, 16083, drawY);
                             }
-                            i3++;
+                            spriteOffset++;
                         }
 
                     }
 
                 } else
-                if(childwidget.widgettype == 3)
+                if(childWidget.type == 3)
                 {
                     boolean flag = false;
-                    if(anInt1039 == childwidget.widgetid || anInt1048 == childwidget.widgetid || anInt1026 == childwidget.widgetid)
+                    if(anInt1039 == childWidget.widgetId || anInt1048 == childWidget.widgetId || anInt1026 == childWidget.widgetId)
                         flag = true;
                     int j3;
-                    if(isWidgetHiddenActive(childwidget, false))
+                    if(executeWidgetScripts(childWidget))
                     {
-                        j3 = childwidget.anInt219;
-                        if(flag && childwidget.anInt239 != 0)
-                            j3 = childwidget.anInt239;
+                        j3 = childWidget.activeTextColor;
+                        if(flag && childWidget.anInt239 != 0)
+                            j3 = childWidget.anInt239;
                     } else
                     {
-                        j3 = childwidget.anInt232;
-                        if(flag && childwidget.anInt216 != 0)
-                            j3 = childwidget.anInt216;
+                        j3 = childWidget.inactiveTextColor;
+                        if(flag && childWidget.anInt216 != 0)
+                            j3 = childWidget.anInt216;
                     }
-                    if(childwidget.oalpha == 0)
+                    if(childWidget.alpha == 0)
                     {
-                        if(childwidget.aBoolean227)
-                            BasicRasterizer.drawQuad( x, y, childwidget.width, childwidget.height, j3);
+                        if(childWidget.isSolidQuad)
+                            BasicRasterizer.drawQuad( x, y, childWidget.width, childWidget.height, j3);
                         else
-                            BasicRasterizer.drawQuadrilateralOutline(x, y, childwidget.width, childwidget.height, j3);
+                            BasicRasterizer.drawQuadrilateralOutline(x, y, childWidget.width, childWidget.height, j3);
                     } else
-                    if(childwidget.aBoolean227)
-                        BasicRasterizer.drawQuad(x, y, childwidget.width, childwidget.height, 256 - (childwidget.oalpha & 0xff), j3);
+                    if(childWidget.isSolidQuad)
+                        BasicRasterizer.drawQuad(x, y, childWidget.width, childWidget.height, 256 - (childWidget.alpha & 0xff), j3);
                     else
-                        BasicRasterizer.drawQuadOutline(x, y, childwidget.width, childwidget.height, 256 - (childwidget.oalpha & 0xff), j3);
+                        BasicRasterizer.drawQuadOutline(x, y, childWidget.width, childWidget.height, 256 - (childWidget.alpha & 0xff), j3);
                 } else
-                if(childwidget.widgettype == 4)
+                if(childWidget.type == 4)
                 {
-                    BitmapFont font = childwidget.itemfont;
-                    String s = childwidget.aString248;
+                    BitmapFont font = childWidget.textFont;
+                    String s = childWidget.inactiveText;
                     boolean flag1 = false;
-                    if(anInt1039 == childwidget.widgetid || anInt1048 == childwidget.widgetid || anInt1026 == childwidget.widgetid)
+                    if(anInt1039 == childWidget.widgetId || anInt1048 == childWidget.widgetId || anInt1026 == childWidget.widgetId)
                         flag1 = true;
                     int color;
-                    if(isWidgetHiddenActive(childwidget, false))
+                    if(executeWidgetScripts(childWidget))
                     {
-                        color = childwidget.anInt219;
-                        if(flag1 && childwidget.anInt239 != 0)
-                            color = childwidget.anInt239;
-                        if(childwidget.hiddentext.length() > 0)
-                            s = childwidget.hiddentext;
+                        color = childWidget.activeTextColor;
+                        if(flag1 && childWidget.anInt239 != 0)
+                            color = childWidget.anInt239;
+                        if(childWidget.activeText.length() > 0)
+                            s = childWidget.activeText;
                     } else
                     {
-                        color = childwidget.anInt232;
-                        if(flag1 && childwidget.anInt216 != 0)
-                            color = childwidget.anInt216;
+                        color = childWidget.inactiveTextColor;
+                        if(flag1 && childWidget.anInt216 != 0)
+                            color = childWidget.anInt216;
                     }
-                    if(childwidget.textfieldtype == 6 && aBoolean1149)
+                    if(childWidget.fieldType == 6 && aBoolean1149)
                     {
                         s = "Please wait...";
-                        color = childwidget.anInt232;
+                        color = childWidget.inactiveTextColor;
                     }
                     if(BasicRasterizer.bufferWidth == 479)
                     {
@@ -8090,35 +8084,35 @@ public class Main extends ApplicationApplet {
                                 int k7 = s.indexOf("%1");
                                 if(k7 == -1)
                                     break;
-                                s = s.substring(0, k7) + method93(369, calcWidgetState(341, childwidget, 0)) + s.substring(k7 + 2);
+                                s = s.substring(0, k7) + method93(369, handleWidgetScript(childWidget, 0)) + s.substring(k7 + 2);
                             } while(true);
                             do
                             {
                                 int l7 = s.indexOf("%2");
                                 if(l7 == -1)
                                     break;
-                                s = s.substring(0, l7) + method93(369, calcWidgetState(341, childwidget, 1)) + s.substring(l7 + 2);
+                                s = s.substring(0, l7) + method93(369, handleWidgetScript(childWidget, 1)) + s.substring(l7 + 2);
                             } while(true);
                             do
                             {
                                 int i8 = s.indexOf("%3");
                                 if(i8 == -1)
                                     break;
-                                s = s.substring(0, i8) + method93(369, calcWidgetState(341, childwidget, 2)) + s.substring(i8 + 2);
+                                s = s.substring(0, i8) + method93(369, handleWidgetScript(childWidget, 2)) + s.substring(i8 + 2);
                             } while(true);
                             do
                             {
                                 int j8 = s.indexOf("%4");
                                 if(j8 == -1)
                                     break;
-                                s = s.substring(0, j8) + method93(369, calcWidgetState(341, childwidget, 3)) + s.substring(j8 + 2);
+                                s = s.substring(0, j8) + method93(369, handleWidgetScript(childWidget, 3)) + s.substring(j8 + 2);
                             } while(true);
                             do
                             {
                                 int k8 = s.indexOf("%5");
                                 if(k8 == -1)
                                     break;
-                                s = s.substring(0, k8) + method93(369, calcWidgetState(341, childwidget, 4)) + s.substring(k8 + 2);
+                                s = s.substring(0, k8) + method93(369, handleWidgetScript(childWidget, 4)) + s.substring(k8 + 2);
                             } while(true);
                         }
                         int l8 = s.indexOf("\\n");
@@ -8132,71 +8126,71 @@ public class Main extends ApplicationApplet {
                             text = s;
                             s = "";
                         }
-                        if(childwidget.centerx)
-                            font.drawCenteredXText(color, x + childwidget.width / 2, anInt939, text, l6, childwidget.shadowtext);
+                        if(childWidget.isTextCentered)
+                            font.drawCenteredXText(color, x + childWidget.width / 2, anInt939, text, l6, childWidget.drawTextShadow);
                         else
-                            font.drawText2(false, childwidget.shadowtext, x, color, text, l6);
+                            font.drawText2(false, childWidget.drawTextShadow, x, color, text, l6);
                     }
 
                 } else
-                if(childwidget.widgettype == 5)
+                if(childWidget.type == 5)
                 {
-                    DirectColorSprite class30_sub2_sub1_sub1;
-                    if(isWidgetHiddenActive(childwidget, false))
-                        class30_sub2_sub1_sub1 = childwidget.aClass30_Sub2_Sub1_Sub1_260;
+                    DirectColorSprite sprite;
+                    if(executeWidgetScripts(childWidget))
+                        sprite = childWidget.activeSprite;
                     else
-                        class30_sub2_sub1_sub1 = childwidget.aClass30_Sub2_Sub1_Sub1_207;
-                    if(class30_sub2_sub1_sub1 != null)
-                        class30_sub2_sub1_sub1.draw(x, 16083, y);
+                        sprite = childWidget.inactiveSprite;
+                    if(sprite != null)
+                        sprite.draw(x, 16083, y);
                 } else
-                if(childwidget.widgettype == 6)
+                if(childWidget.type == 6)
                 {
-                    int k3 = TriangleRasterizer.midwidth;
-                    int j4 = TriangleRasterizer.midheight;
-                    TriangleRasterizer.midwidth = x + childwidget.width / 2;
-                    TriangleRasterizer.midheight = y + childwidget.height / 2;
-                    int i5 = TriangleRasterizer.SINE_TABLE[childwidget.anInt270] * childwidget.anInt269 >> 16;
-                    int l5 = TriangleRasterizer.COSINE_TABLE[childwidget.anInt270] * childwidget.anInt269 >> 16;
-                    boolean flag2 = isWidgetHiddenActive(childwidget, false);
-                    int i7;
-                    if(flag2)
-                        i7 = childwidget.anInt258;
+                    int cW = TriangleRasterizer.centerWidth;
+                    int cH = TriangleRasterizer.centerHeight;
+                    TriangleRasterizer.centerWidth = x + childWidget.width / 2;
+                    TriangleRasterizer.centerHeight = y + childWidget.height / 2;
+                    int i5 = TriangleRasterizer.SINE_TABLE[childWidget.rotationAngleX] * childWidget.rotationOrigin >> 16;
+                    int l5 = TriangleRasterizer.COSINE_TABLE[childWidget.rotationAngleX] * childWidget.rotationOrigin >> 16;
+                    boolean isActive = executeWidgetScripts(childWidget);
+                    int animId;
+                    if(isActive)
+                        animId = childWidget.activeAnimId;
                     else
-                        i7 = childwidget.anInt257;
+                        animId = childWidget.inactiveAnimId;
                     Model model;
-                    if(i7 == -1)
+                    if(animId == -1)
                     {
-                        model = childwidget.method209(0, -1, -1, flag2);
+                        model = childWidget.getAnimatedModel(-1, -1, isActive);
                     } else
                     {
-                        AnimSequence sequence = AnimSequence.animationsequences[i7];
-                        model = childwidget.method209(0, sequence.anIntArray354[childwidget.anInt246], sequence.anIntArray353[childwidget.anInt246], flag2);
+                        AnimSequence sequence = AnimSequence.animationsequences[animId];
+                        model = childWidget.getAnimatedModel(sequence.anIntArray354[childWidget.anInt246], sequence.anIntArray353[childWidget.anInt246], isActive);
                     }
                     if(model != null)
-                        model.drawModel(0, childwidget.anInt271, 0, childwidget.anInt270, 0, i5, l5);
-                    TriangleRasterizer.midwidth = k3;
-                    TriangleRasterizer.midheight = j4;
+                        model.drawModel(0, childWidget.rotationAngleY, 0, childWidget.rotationAngleX, 0, i5, l5);
+                    TriangleRasterizer.centerWidth = cW;
+                    TriangleRasterizer.centerHeight = cH;
                 } else
-                if(childwidget.widgettype == 7)
+                if(childWidget.type == 7)
                 {
-                    BitmapFont class30_sub2_sub1_sub4_1 = childwidget.itemfont;
+                    BitmapFont class30_sub2_sub1_sub4_1 = childWidget.textFont;
                     int k4 = 0;
-                    for(int j5 = 0; j5 < childwidget.height; j5++)
+                    for(int j5 = 0; j5 < childWidget.height; j5++)
                     {
-                        for(int i6 = 0; i6 < childwidget.width; i6++)
+                        for(int i6 = 0; i6 < childWidget.width; i6++)
                         {
-                            if(childwidget.itemarray[k4] > 0)
+                            if(childWidget.itemIds[k4] > 0)
                             {
-                                ItemDefinition class8 = ItemDefinition.getItemDefinition(childwidget.itemarray[k4] - 1);
-                                String s2 = class8.name;
-                                if(class8.aBoolean176 || childwidget.itemamounts[k4] != 1)
-                                    s2 = s2 + " x" + method14(childwidget.itemamounts[k4], 0);
-                                int i9 = x + i6 * (115 + childwidget.anInt231);
-                                int k9 = y + j5 * (12 + childwidget.anInt244);
-                                if(childwidget.centerx)
-                                    class30_sub2_sub1_sub4_1.drawCenteredXText(childwidget.anInt232, i9 + childwidget.width / 2, anInt939, s2, k9, childwidget.shadowtext);
+                                ItemDefinition class8 = ItemDefinition.getItemDefinition(childWidget.itemIds[k4] - 1);
+                                String s2 = class8.withItemName;
+                                if(class8.aBoolean176 || childWidget.itemAmounts[k4] != 1)
+                                    s2 = s2 + " x" + method14(childWidget.itemAmounts[k4], 0);
+                                int i9 = x + i6 * (115 + childWidget.xOff);
+                                int k9 = y + j5 * (12 + childWidget.yOff);
+                                if(childWidget.isTextCentered)
+                                    class30_sub2_sub1_sub4_1.drawCenteredXText(childWidget.inactiveTextColor, i9 + childWidget.width / 2, anInt939, s2, k9, childWidget.drawTextShadow);
                                 else
-                                    class30_sub2_sub1_sub4_1.drawText2(false, childwidget.shadowtext, i9, childwidget.anInt232, s2, k9);
+                                    class30_sub2_sub1_sub4_1.drawText2(false, childWidget.drawTextShadow, i9, childWidget.inactiveTextColor, s2, k9);
                             }
                             k4++;
                         }
@@ -8205,8 +8199,7 @@ public class Main extends ApplicationApplet {
 
                 }
         }
-
-        BasicRasterizer.setDimensions(prevwidth, prevwidthoffset, prevheight, prevheightoffset);
+        BasicRasterizer.setDimensions(rasterWidth, rasterWidthOffset, rasterHeight, rasterHeightOffset);
     }
 
     public void method106(IndexedColorSprite class30_sub2_sub1_sub2, int i)
@@ -8243,13 +8236,13 @@ public class Main extends ApplicationApplet {
         if(class30_sub2_sub1_sub2 != null)
         {
             int l1 = 0;
-            for(int j2 = 0; j2 < class30_sub2_sub1_sub2.indexheight_; j2++)
+            for(int j2 = 0; j2 < class30_sub2_sub1_sub2.indexHeight; j2++)
             {
-                for(int l2 = 0; l2 < class30_sub2_sub1_sub2.indexwidth_; l2++)
-                    if(class30_sub2_sub1_sub2.colorindex[l1++] != 0)
+                for(int l2 = 0; l2 < class30_sub2_sub1_sub2.indexWidth; l2++)
+                    if(class30_sub2_sub1_sub2.buffer[l1++] != 0)
                     {
-                        int i3 = l2 + 16 + class30_sub2_sub1_sub2.anInt1454;
-                        int j3 = j2 + 16 + class30_sub2_sub1_sub2.anInt1455;
+                        int i3 = l2 + 16 + class30_sub2_sub1_sub2.offsetX;
+                        int j3 = j2 + 16 + class30_sub2_sub1_sub2.offsetY;
                         int k3 = i3 + (j3 << 7);
                         anIntArray1190[k3] = 0;
                     }
@@ -8259,87 +8252,84 @@ public class Main extends ApplicationApplet {
         }
     }
 
-    public void parsePlayerUpdateMasks(int i, int j, ByteBuffer buffer0, byte byte0, Player class30_sub2_sub4_sub1_sub2)
+    public void parsePlayerUpdateFlags(int flags, int id, ByteBuffer buffer, Player player)
     {
-        if(byte0 != 25)
-            grounditems = null;
-		/* Force walk */
-        if((i & 0x400) != 0)
+        if((flags & 0x400) != 0)
         {
-            class30_sub2_sub4_sub1_sub2.forcewlk_startx = buffer0.getUbyteB();
-            class30_sub2_sub4_sub1_sub2.forcewlk_starty = buffer0.getUbyteB();
-            class30_sub2_sub4_sub1_sub2.forcewlk_endx = buffer0.getUbyteB();
-            class30_sub2_sub4_sub1_sub2.forcewlk_endy = buffer0.getUbyteB();
-            class30_sub2_sub4_sub1_sub2.forcewlk_sp1 = buffer0.getUwordLE128() + loopCycle;
-            class30_sub2_sub4_sub1_sub2.forcewlk_sp2 = buffer0.getUword128() + loopCycle;
-            class30_sub2_sub4_sub1_sub2.forcewlk_dir = buffer0.getUbyteB();
-            class30_sub2_sub4_sub1_sub2.method446(true);
+            player.forcewlk_startx = buffer.getUbyteB();
+            player.forcewlk_starty = buffer.getUbyteB();
+            player.forcewlk_endx = buffer.getUbyteB();
+            player.forcewlk_endy = buffer.getUbyteB();
+            player.forcewlk_sp1 = buffer.getUwordLE128() + loopCycle;
+            player.forcewlk_sp2 = buffer.getUword128() + loopCycle;
+            player.forcewlk_dir = buffer.getUbyteB();
+            player.method446(true);
         }
-        if((i & 0x100) != 0)
+        if((flags & 0x100) != 0)
         {
-            class30_sub2_sub4_sub1_sub2.anInt1520 = buffer0.getUwordLE();
-            int k = buffer0.getDword();
-            class30_sub2_sub4_sub1_sub2.anInt1524 = k >> 16;
-            class30_sub2_sub4_sub1_sub2.anInt1523 = loopCycle + (k & 0xffff);
-            class30_sub2_sub4_sub1_sub2.anInt1521 = 0;
-            class30_sub2_sub4_sub1_sub2.anInt1522 = 0;
-            if(((Mob) (class30_sub2_sub4_sub1_sub2)).anInt1523 > loopCycle)
-                class30_sub2_sub4_sub1_sub2.anInt1521 = -1;
-            if(((Mob) (class30_sub2_sub4_sub1_sub2)).anInt1520 == 65535)
-                class30_sub2_sub4_sub1_sub2.anInt1520 = -1;
+            player.anInt1520 = buffer.getUwordLE();
+            int k = buffer.getDword();
+            player.anInt1524 = k >> 16;
+            player.anInt1523 = loopCycle + (k & 0xffff);
+            player.anInt1521 = 0;
+            player.anInt1522 = 0;
+            if(((Mob) (player)).anInt1523 > loopCycle)
+                player.anInt1521 = -1;
+            if(((Mob) (player)).anInt1520 == 65535)
+                player.anInt1520 = -1;
         }
 		/* Animation */
-        if((i & 8) != 0)
+        if((flags & 8) != 0)
         {
-            int l = buffer0.getUwordLE();
+            int l = buffer.getUwordLE();
             if(l == 65535)
                 l = -1;
-            int i2 = buffer0.getUbyteA();
-            if(l == ((Mob) (class30_sub2_sub4_sub1_sub2)).animid_request && l != -1)
+            int i2 = buffer.getUbyteA();
+            if(l == ((Mob) (player)).animid_request && l != -1)
             {
                 int i3 = AnimSequence.animationsequences[l].anInt365;
                 if(i3 == 1) {
-                    class30_sub2_sub4_sub1_sub2.anInt1527 = 0;
-                    class30_sub2_sub4_sub1_sub2.anInt1528 = 0;
-                    class30_sub2_sub4_sub1_sub2.animdelay_request = i2;
-                    class30_sub2_sub4_sub1_sub2.anInt1530 = 0;
+                    player.anInt1527 = 0;
+                    player.anInt1528 = 0;
+                    player.animdelay_request = i2;
+                    player.anInt1530 = 0;
                 }
                 if(i3 == 2)
-                    class30_sub2_sub4_sub1_sub2.anInt1530 = 0;
+                    player.anInt1530 = 0;
             } else
-            if(l == -1 || ((Mob) (class30_sub2_sub4_sub1_sub2)).animid_request == -1 || AnimSequence.animationsequences[l].anInt359 >= AnimSequence.animationsequences[((Mob) (class30_sub2_sub4_sub1_sub2)).animid_request].anInt359)
+            if(l == -1 || ((Mob) (player)).animid_request == -1 || AnimSequence.animationsequences[l].anInt359 >= AnimSequence.animationsequences[((Mob) (player)).animid_request].anInt359)
             {
-                class30_sub2_sub4_sub1_sub2.animid_request = l;
-                class30_sub2_sub4_sub1_sub2.anInt1527 = 0;
-                class30_sub2_sub4_sub1_sub2.anInt1528 = 0;
-                class30_sub2_sub4_sub1_sub2.animdelay_request = i2;
-                class30_sub2_sub4_sub1_sub2.anInt1530 = 0;
-                class30_sub2_sub4_sub1_sub2.anInt1542 = ((Mob) (class30_sub2_sub4_sub1_sub2)).stack_position_mob;
+                player.animid_request = l;
+                player.anInt1527 = 0;
+                player.anInt1528 = 0;
+                player.animdelay_request = i2;
+                player.anInt1530 = 0;
+                player.anInt1542 = ((Mob) (player)).stack_position_mob;
             }
         }
-        if((i & 4) != 0)
+        if((flags & 4) != 0)
         {
-            class30_sub2_sub4_sub1_sub2.chat_txt = buffer0.getString();
-            if(((Mob) (class30_sub2_sub4_sub1_sub2)).chat_txt.charAt(0) == '~')
+            player.chat_txt = buffer.getString();
+            if(((Mob) (player)).chat_txt.charAt(0) == '~')
             {
-                class30_sub2_sub4_sub1_sub2.chat_txt = ((Mob) (class30_sub2_sub4_sub1_sub2)).chat_txt.substring(1);
-                pushMessage(((Mob) (class30_sub2_sub4_sub1_sub2)).chat_txt, 2, class30_sub2_sub4_sub1_sub2.name, aBoolean991);
+                player.chat_txt = ((Mob) (player)).chat_txt.substring(1);
+                pushMessage(((Mob) (player)).chat_txt, 2, player.name, aBoolean991);
             } else
-            if(class30_sub2_sub4_sub1_sub2 == localplayer)
-                pushMessage(((Mob) (class30_sub2_sub4_sub1_sub2)).chat_txt, 2, class30_sub2_sub4_sub1_sub2.name, aBoolean991);
-            class30_sub2_sub4_sub1_sub2.anInt1513 = 0;
-            class30_sub2_sub4_sub1_sub2.anInt1531 = 0;
-            class30_sub2_sub4_sub1_sub2.anInt1535 = 150;
+            if(player == localPlayer)
+                pushMessage(((Mob) (player)).chat_txt, 2, player.name, aBoolean991);
+            player.anInt1513 = 0;
+            player.anInt1531 = 0;
+            player.anInt1535 = 150;
         }
-        if((i & 0x80) != 0)
+        if((flags & 0x80) != 0)
         {
-            int i1 = buffer0.getUwordLE();
-            int j2 = buffer0.getUbyte();
-            int j3 = buffer0.getUbyteA();
-            int k3 = buffer0.offset;
-            if(class30_sub2_sub4_sub1_sub2.name != null && class30_sub2_sub4_sub1_sub2.updated)
+            int i1 = buffer.getUwordLE();
+            int j2 = buffer.getUbyte();
+            int j3 = buffer.getUbyteA();
+            int k3 = buffer.offset;
+            if(player.name != null && player.updated)
             {
-                long l3 = TextTools.stringToLong(class30_sub2_sub4_sub1_sub2.name);
+                long l3 = TextTools.stringToLong(player.name);
                 boolean flag = false;
                 if(j2 <= 1)
                 {
@@ -8356,66 +8346,66 @@ public class Main extends ApplicationApplet {
                     try
                     {
                         aClass30_Sub2_Sub2_834.offset = 0;
-                        buffer0.getReverse(aClass30_Sub2_Sub2_834.payload, 0, j3);
+                        buffer.getReverse(aClass30_Sub2_Sub2_834.payload, 0, j3);
                         aClass30_Sub2_Sub2_834.offset = 0;
                         String s = ChatUtils.method525(j3, true, aClass30_Sub2_Sub2_834);
                         s = Censor.censor(s, 0);
-                        class30_sub2_sub4_sub1_sub2.chat_txt = s;
-                        class30_sub2_sub4_sub1_sub2.anInt1513 = i1 >> 8;
-                        class30_sub2_sub4_sub1_sub2.anInt1531 = i1 & 0xff;
-                        class30_sub2_sub4_sub1_sub2.anInt1535 = 150;
+                        player.chat_txt = s;
+                        player.anInt1513 = i1 >> 8;
+                        player.anInt1531 = i1 & 0xff;
+                        player.anInt1535 = 150;
                         if(j2 == 2 || j2 == 3)
-                            pushMessage(s, 1, "@cr2@" + class30_sub2_sub4_sub1_sub2.name, aBoolean991);
+                            pushMessage(s, 1, "@cr2@" + player.name, aBoolean991);
                         else
                         if(j2 == 1)
-                            pushMessage(s, 1, "@cr1@" + class30_sub2_sub4_sub1_sub2.name, aBoolean991);
+                            pushMessage(s, 1, "@cr1@" + player.name, aBoolean991);
                         else
-                            pushMessage(s, 2, class30_sub2_sub4_sub1_sub2.name, aBoolean991);
+                            pushMessage(s, 2, player.name, aBoolean991);
                     }
                     catch(Exception exception)
                     {
                         Signlink.reportError("cde2");
                     }
             }
-            buffer0.offset = k3 + j3;
+            buffer.offset = k3 + j3;
         }
-        if((i & 1) != 0)
+        if((flags & 1) != 0)
         {
-            class30_sub2_sub4_sub1_sub2.anInt1502 = buffer0.getUwordLE();
-            if(((Mob) (class30_sub2_sub4_sub1_sub2)).anInt1502 == 65535)
-                class30_sub2_sub4_sub1_sub2.anInt1502 = -1;
+            player.anInt1502 = buffer.getUwordLE();
+            if(((Mob) (player)).anInt1502 == 65535)
+                player.anInt1502 = -1;
         }
-        if((i & 0x10) != 0)
+        if((flags & 0x10) != 0)
         {
-            int j1 = buffer0.getUbyteA();
-            byte abyte0[] = new byte[j1];
-            ByteBuffer class30_sub2_sub2_1 = new ByteBuffer(abyte0);
-            buffer0.get(abyte0, 0, j1);
-            appearancebuffers[j] = class30_sub2_sub2_1;
-            class30_sub2_sub4_sub1_sub2.parseAppearanceUpdate(0, class30_sub2_sub2_1);
+            int size = buffer.getUbyteA();
+            byte src[] = new byte[size];
+            ByteBuffer appearanceBuffer = new ByteBuffer(src);
+            buffer.get(src, 0, size);
+            appearanceBuffers[id] = appearanceBuffer;
+            player.parseAppearance(appearanceBuffer);
         }
-        if((i & 2) != 0)
+        if((flags & 2) != 0)
         {
-            class30_sub2_sub4_sub1_sub2.anInt1538 = buffer0.getUwordLE128();
-            class30_sub2_sub4_sub1_sub2.anInt1539 = buffer0.getUwordLE();
+            player.anInt1538 = buffer.getUwordLE128();
+            player.anInt1539 = buffer.getUwordLE();
         }
-        if((i & 0x20) != 0)
+        if((flags & 0x20) != 0)
         {
-            int k1 = buffer0.getUbyte();
-            int k2 = buffer0.getByte128();
-            class30_sub2_sub4_sub1_sub2.pushHit(-35698, k2, k1, loopCycle);
-            class30_sub2_sub4_sub1_sub2.anInt1532 = loopCycle + 300;
-            class30_sub2_sub4_sub1_sub2.anInt1533 = buffer0.getUbyteA();
-            class30_sub2_sub4_sub1_sub2.anInt1534 = buffer0.getUbyte();
+            int k1 = buffer.getUbyte();
+            int k2 = buffer.getByte128();
+            player.pushHit(-35698, k2, k1, loopCycle);
+            player.anInt1532 = loopCycle + 300;
+            player.anInt1533 = buffer.getUbyteA();
+            player.anInt1534 = buffer.getUbyte();
         }
-        if((i & 0x200) != 0)
+        if((flags & 0x200) != 0)
         {
-            int l1 = buffer0.getUbyte();
-            int l2 = buffer0.getUbyteB();
-            class30_sub2_sub4_sub1_sub2.pushHit(-35698, l2, l1, loopCycle);
-            class30_sub2_sub4_sub1_sub2.anInt1532 = loopCycle + 300;
-            class30_sub2_sub4_sub1_sub2.anInt1533 = buffer0.getUbyte();
-            class30_sub2_sub4_sub1_sub2.anInt1534 = buffer0.getUbyteA();
+            int l1 = buffer.getUbyte();
+            int l2 = buffer.getUbyteB();
+            player.pushHit(-35698, l2, l1, loopCycle);
+            player.anInt1532 = loopCycle + 300;
+            player.anInt1533 = buffer.getUbyte();
+            player.anInt1534 = buffer.getUbyteA();
         }
     }
 
@@ -8425,8 +8415,8 @@ public class Main extends ApplicationApplet {
             packetId = -1;
         try
         {
-            int finex = ((Mob) (localplayer)).fineposx + anInt1278;
-            int finey = ((Mob) (localplayer)).fineposy + anInt1131;
+            int finex = ((Mob) (localPlayer)).fineX + anInt1278;
+            int finey = ((Mob) (localPlayer)).fineY + anInt1131;
             if(anInt1014 - finex < -500 || anInt1014 - finex > 500 || anInt1015 - finey < -500 || anInt1015 - finey > 500)
             {
                 anInt1014 = finex;
@@ -8437,32 +8427,32 @@ public class Main extends ApplicationApplet {
             if(anInt1015 != finey)
                 anInt1015 += (finey - anInt1015) / 16;
             /* Left */
-            if(super.active_keycodes[1] == 1)
+            if(super.activeKeycodes[1] == 1)
                 camerayawrate += (-24 - camerayawrate) / 2;
             /* Right */
             else
-            if(super.active_keycodes[2] == 1)
+            if(super.activeKeycodes[2] == 1)
                 camerayawrate += (24 - camerayawrate) / 2;
             /* Up */
             else
                 camerayawrate /= 2;
-            if(super.active_keycodes[3] == 1)
+            if(super.activeKeycodes[3] == 1)
                 camerayrate += (12 - camerayrate) / 2;
             /* Down */
             else
-            if(super.active_keycodes[4] == 1)
+            if(super.activeKeycodes[4] == 1)
                 camerayrate += (-12 - camerayrate) / 2;
             else
                 camerayrate /= 2;
-            camerayaw = camerayaw + camerayawrate / 2 & 0x7ff;
-            camerapitch += camerayrate / 2;
-            if(camerapitch < 128)
-                camerapitch = 128;
-            if(camerapitch > 383)
-                camerapitch = 383;
+            cameraYaw = cameraYaw + camerayawrate / 2 & 0x7ff;
+            cameraPitch += camerayrate / 2;
+            if(cameraPitch < 128)
+                cameraPitch = 128;
+            if(cameraPitch > 383)
+                cameraPitch = 383;
             int l = anInt1014 >> 7;
             int i1 = anInt1015 >> 7;
-            int j1 = calculateTileHeight(anInt1014, anInt1015, cheight);
+            int j1 = calculateTileHeight(anInt1014, anInt1015, currentZ);
             int k1 = 0;
             if(l > 3 && i1 > 3 && l < 100 && i1 < 100)
             {
@@ -8470,10 +8460,10 @@ public class Main extends ApplicationApplet {
                 {
                     for(int k2 = i1 - 4; k2 <= i1 + 4; k2++)
                     {
-                        int l2 = cheight;
-                        if(l2 < 3 && (main_tilesettings[1][l1][k2] & 2) == 2)
+                        int l2 = currentZ;
+                        if(l2 < 3 && (tileFlags[1][l1][k2] & 2) == 2)
                             l2++;
-                        int i3 = j1 - main_heightmap[l2][l1][k2];
+                        int i3 = j1 - tileHeightmap[l2][l1][k2];
                         if(i3 > k1)
                             k1 = i3;
                     }
@@ -8519,7 +8509,7 @@ public class Main extends ApplicationApplet {
         }
         catch(Exception _ex)
         {
-            Signlink.reportError("glfc_ex " + ((Mob) (localplayer)).fineposx + "," + ((Mob) (localplayer)).fineposy + "," + anInt1014 + "," + anInt1015 + "," + chunkx_ + "," + chunky_ + "," + palettex + "," + palettey);
+            Signlink.reportError("glfc_ex " + ((Mob) (localPlayer)).fineX + "," + ((Mob) (localPlayer)).fineY + "," + anInt1014 + "," + anInt1015 + "," + chunkx_ + "," + chunky_ + "," + palettex + "," + palettey);
             throw new RuntimeException("eek");
         }
     }
@@ -8549,7 +8539,7 @@ public class Main extends ApplicationApplet {
 
         if(flag)
             gameBuffer.put(138);
-        return s.equalsIgnoreCase(localplayer.name);
+        return s.equalsIgnoreCase(localPlayer.name);
     }
 
     public static String getLevelColor(int i, int j, boolean junk)
@@ -8697,25 +8687,25 @@ public class Main extends ApplicationApplet {
         throw new RuntimeException();
     }
 
-    public void updatePlayersOrientations(byte byte0)
+    public void updatePlayers(byte byte0)
     {
         if(byte0 != aByte973)
             return;
-        for(int i = -1; i < anInt891; i++)
+        for(int i = -1; i < playerOffset; i++)
         {
             int j;
             if(i == -1)
-                j = localindex;
+                j = localPlayerIndex;
             else
-                j = anIntArray892[i];
-            Player class30_sub2_sub4_sub1_sub2 = players[j];
+                j = addedPlayers[i];
+            Player class30_sub2_sub4_sub1_sub2 = playerArray[j];
             if(class30_sub2_sub4_sub1_sub2 != null)
                 updateMobOrentation(46988, 1, class30_sub2_sub4_sub1_sub2);
         }
 
     }
 
-    public void updateSpawnedObjects_(byte byte0)
+    public void updateObjects(byte byte0)
     {
         if(byte0 == 8)
             byte0 = 0;
@@ -8767,14 +8757,14 @@ public class Main extends ApplicationApplet {
 
         i += 8;
         int l = 15 * anInt1133 + 21;
-        if(super.curpressed_x > 4 && super.curpressed_y > 4 && super.curpressed_x < 516 && super.curpressed_y < 338)
+        if(super.pressedX > 4 && super.pressedY > 4 && super.pressedX < 516 && super.pressedY < 338)
         {
-            int i1 = super.curpressed_x - 4 - i / 2;
+            int i1 = super.pressedX - 4 - i / 2;
             if(i1 + i > 512)
                 i1 = 512 - i;
             if(i1 < 0)
                 i1 = 0;
-            int l1 = super.curpressed_y - 4;
+            int l1 = super.pressedY - 4;
             if(l1 + l > 334)
                 l1 = 334 - l;
             if(l1 < 0)
@@ -8786,15 +8776,15 @@ public class Main extends ApplicationApplet {
             anInt951 = i;
             anInt952 = 15 * anInt1133 + 22;
         }
-        if(super.curpressed_x > 553 && super.curpressed_y > 205 && super.curpressed_x < 743 && super.curpressed_y < 466)
+        if(super.pressedX > 553 && super.pressedY > 205 && super.pressedX < 743 && super.pressedY < 466)
         {
-            int j1 = super.curpressed_x - 553 - i / 2;
+            int j1 = super.pressedX - 553 - i / 2;
             if(j1 < 0)
                 j1 = 0;
             else
             if(j1 + i > 190)
                 j1 = 190 - i;
-            int i2 = super.curpressed_y - 205;
+            int i2 = super.pressedY - 205;
             if(i2 < 0)
                 i2 = 0;
             else
@@ -8807,15 +8797,15 @@ public class Main extends ApplicationApplet {
             anInt951 = i;
             anInt952 = 15 * anInt1133 + 22;
         }
-        if(super.curpressed_x > 17 && super.curpressed_y > 357 && super.curpressed_x < 496 && super.curpressed_y < 453)
+        if(super.pressedX > 17 && super.pressedY > 357 && super.pressedX < 496 && super.pressedY < 453)
         {
-            int k1 = super.curpressed_x - 17 - i / 2;
+            int k1 = super.pressedX - 17 - i / 2;
             if(k1 < 0)
                 k1 = 0;
             else
             if(k1 + i > 479)
                 k1 = 479 - i;
-            int j2 = super.curpressed_y - 357;
+            int j2 = super.pressedY - 357;
             if(j2 < 0)
                 j2 = 0;
             else
@@ -8830,52 +8820,49 @@ public class Main extends ApplicationApplet {
         }
     }
 
-    public void method117(ByteBuffer buffer0, int i, byte byte0)
+    public void parseLocalPlayerMovement(ByteBuffer buffer, int i, byte byte0)
     {
-        buffer0.initBitAccess();
-        if(byte0 == 5)
-            byte0 = 0;
-        else
-            packetId = buffer0.getUbyte();
-        int j = buffer0.getBits(1);
-        if(j == 0)
+        buffer.initBitAccess();
+        int doUpdate = buffer.getBits(1);
+        if(doUpdate == 0)
             return;
-        int k = buffer0.getBits(2);
-        if(k == 0)
+        int updateType = buffer.getBits(2);
+        System.out.println("Local update type: " + updateType);
+        if(updateType == 0)
         {
-            playerupdate_stack[amtplayerupdatestack++] = localindex;
+            pFlagUpdateList[amtplayerupdatestack++] = localPlayerIndex;
             return;
         }
-        if(k == 1)
+        if(updateType == 1)
         {
-            int l = buffer0.getBits(3);
-            localplayer.handleMobMovment(false, (byte)20, l);
-            int k1 = buffer0.getBits(1);
-            if(k1 == 1)
-                playerupdate_stack[amtplayerupdatestack++] = localindex;
+            int l = buffer.getBits(3);
+            localPlayer.handleMobMovment(false, l);
+            int doMaskUpdate = buffer.getBits(1);
+            if(doMaskUpdate == 1)
+                pFlagUpdateList[amtplayerupdatestack++] = localPlayerIndex;
             return;
         }
-        if(k == 2)
+        if(updateType == 2)
         {
-            int i1 = buffer0.getBits(3);
-            localplayer.handleMobMovment(true, (byte)20, i1);
-            int l1 = buffer0.getBits(3);
-            localplayer.handleMobMovment(true, (byte)20, l1);
-            int j2 = buffer0.getBits(1);
-            if(j2 == 1)
-                playerupdate_stack[amtplayerupdatestack++] = localindex;
+            int runDelta0 = buffer.getBits(3);
+            localPlayer.handleMobMovment(true, runDelta0);
+            int runDelta1 = buffer.getBits(3);
+            localPlayer.handleMobMovment(true, runDelta1);
+            int doMaskUpdate = buffer.getBits(1);
+            if(doMaskUpdate == 1)
+                pFlagUpdateList[amtplayerupdatestack++] = localPlayerIndex;
             return;
         }
-        if(k == 3)
+        if(updateType == 3)
         {
-            cheight = buffer0.getBits(2);
-            int j1 = buffer0.getBits(1);
-            int i2 = buffer0.getBits(1);
-            if(i2 == 1)
-                playerupdate_stack[amtplayerupdatestack++] = localindex;
-            int k2 = buffer0.getBits(7);
-            int l2 = buffer0.getBits(7);
-            localplayer.updateMobPosition(l2, k2, j1 == 1, false);
+            currentZ = buffer.getBits(2);
+            int teleported = buffer.getBits(1);
+            int doMaskUpdate = buffer.getBits(1);
+            if(doMaskUpdate == 1)
+                pFlagUpdateList[amtplayerupdatestack++] = localPlayerIndex;
+            int yOff = buffer.getBits(7); 
+            int xOff = buffer.getBits(7);
+            localPlayer.updateMobPosition(xOff, yOff, teleported == 1);
         }
     }
 
@@ -8914,21 +8901,21 @@ public class Main extends ApplicationApplet {
         if(flag)
             throw new NullPointerException();
         Widget class9 = Widget.widgets[j];
-        for(int k = 0; k < class9.childrenwidgets.length; k++)
+        for(int k = 0; k < class9.childrenIds.length; k++)
         {
-            if(class9.childrenwidgets[k] == -1)
+            if(class9.childrenIds[k] == -1)
                 break;
-            Widget class9_1 = Widget.widgets[class9.childrenwidgets[k]];
-            if(class9_1.widgettype == 1)
-                flag1 |= method119(i, false, class9_1.widgetid);
-            if(class9_1.widgettype == 6 && (class9_1.anInt257 != -1 || class9_1.anInt258 != -1))
+            Widget class9_1 = Widget.widgets[class9.childrenIds[k]];
+            if(class9_1.type == 1)
+                flag1 |= method119(i, false, class9_1.widgetId);
+            if(class9_1.type == 6 && (class9_1.inactiveAnimId != -1 || class9_1.activeAnimId != -1))
             {
-                boolean flag2 = isWidgetHiddenActive(class9_1, false);
+                boolean flag2 = executeWidgetScripts(class9_1);
                 int l;
                 if(flag2)
-                    l = class9_1.anInt258;
+                    l = class9_1.activeAnimId;
                 else
-                    l = class9_1.anInt257;
+                    l = class9_1.inactiveAnimId;
                 if(l != -1)
                 {
                     AnimSequence class20 = AnimSequence.animationsequences[l];
@@ -8959,10 +8946,10 @@ public class Main extends ApplicationApplet {
         {
             int camx = camerax >> 7;
             int camy = cameray >> 7;
-            int plrx = ((Mob) (localplayer)).fineposx >> 7;
-            int plry = ((Mob) (localplayer)).fineposy >> 7;
-            if((main_tilesettings[cheight][camx][camy] & 4) != 0)
-                j = cheight;
+            int plrx = ((Mob) (localPlayer)).fineX >> 7;
+            int plry = ((Mob) (localPlayer)).fineY >> 7;
+            if((tileFlags[currentZ][camx][camy] & 4) != 0)
+                j = currentZ;
             int dx;
             if(plrx > camx)
                 dx = plrx - camx;
@@ -8984,8 +8971,8 @@ public class Main extends ApplicationApplet {
                     else
                     if(camx > plrx)
                         camx--;
-                    if((main_tilesettings[cheight][camx][camy] & 4) != 0)
-                        j = cheight;
+                    if((tileFlags[currentZ][camx][camy] & 4) != 0)
+                        j = currentZ;
                     k2 += i2;
                     if(k2 >= 0x10000)
                     {
@@ -8995,8 +8982,8 @@ public class Main extends ApplicationApplet {
                         else
                         if(camy > plry)
                             camy--;
-                        if((main_tilesettings[cheight][camx][camy] & 4) != 0)
-                            j = cheight;
+                        if((tileFlags[currentZ][camx][camy] & 4) != 0)
+                            j = currentZ;
                     }
                 }
             } else
@@ -9010,8 +8997,8 @@ public class Main extends ApplicationApplet {
                     else
                     if(camy > plry)
                         camy--;
-                    if((main_tilesettings[cheight][camx][camy] & 4) != 0)
-                        j = cheight;
+                    if((tileFlags[currentZ][camx][camy] & 4) != 0)
+                        j = currentZ;
                     l2 += j2;
                     if(l2 >= 0x10000)
                     {
@@ -9021,22 +9008,22 @@ public class Main extends ApplicationApplet {
                         else
                         if(camx > plrx)
                             camx--;
-                        if((main_tilesettings[cheight][camx][camy] & 4) != 0)
-                            j = cheight;
+                        if((tileFlags[currentZ][camx][camy] & 4) != 0)
+                            j = currentZ;
                     }
                 }
             }
         }
-        if((main_tilesettings[cheight][((Mob) (localplayer)).fineposx >> 7][((Mob) (localplayer)).fineposy >> 7] & 4) != 0)
-            j = cheight;
+        if((tileFlags[currentZ][((Mob) (localPlayer)).fineX >> 7][((Mob) (localPlayer)).fineY >> 7] & 4) != 0)
+            j = currentZ;
         return j;
     }
 
     public int calculateCameraHeight2()
     {
-        int j = calculateTileHeight(camerax, cameray, cheight);
-        if(j - cameraz < 800 && (main_tilesettings[cheight][camerax >> 7][cameray >> 7] & 4) != 0)
-            return cheight;
+        int j = calculateTileHeight(camerax, cameray, currentZ);
+        if(j - cameraz < 800 && (tileFlags[currentZ][camerax >> 7][cameray >> 7] & 4) != 0)
+            return currentZ;
         else
             return 3;
     }
@@ -9090,49 +9077,48 @@ public class Main extends ApplicationApplet {
             Signlink.midiFileName = "voladjust";
     }
 
-    public int calcWidgetState(int i, Widget class9, int j)
+    public int handleWidgetScript(Widget widget, int script)
     {
-        if(class9.anIntArrayArray226 == null || j >= class9.anIntArrayArray226.length)
+        if(widget.scriptOpcodes == null || script >= widget.scriptOpcodes.length)
             return -2;
         try
         {
-            int opcodes[] = class9.anIntArrayArray226[j];
+            int ops[] = widget.scriptOpcodes[script];
             int k = 0;
-            int opcodeoffset = 0;
+            int opOffset = 0;
             int i1 = 0;
             do
             {
-                int opcode = opcodes[opcodeoffset++];
+                int opcode = ops[opOffset++];
                 int value = 0;
                 byte byte0 = 0;
                 if(opcode == 0)
                     return k;
                 if(opcode == 1)
-                    value = skilllevels[opcodes[opcodeoffset++]];
+                    value = skillLevels[ops[opOffset++]];
                 if(opcode == 2)
-                    value = anIntArray1044[opcodes[opcodeoffset++]];
+                    value = anIntArray1044[ops[opOffset++]];
                 if(opcode == 3)
-                    value = skillxp[opcodes[opcodeoffset++]];
+                    value = skillExperience[ops[opOffset++]];
                 if(opcode == 4)
                 {
-                    Widget class9_1 = Widget.widgets[opcodes[opcodeoffset++]];
-                    int itemid = opcodes[opcodeoffset++];
-                    if(itemid >= 0 && itemid < ItemDefinition.anInt203 && (!ItemDefinition.getItemDefinition(itemid).aBoolean161 || members))
+                    Widget widget_ = Widget.widgets[ops[opOffset++]];
+                    int itemid = ops[opOffset++];
+                    if(itemid >= 0 && itemid < ItemDefinition.maximumId && (!ItemDefinition.getItemDefinition(itemid).aBoolean161 || members))
                     {
-                        for(int j3 = 0; j3 < class9_1.itemarray.length; j3++)
-                            if(class9_1.itemarray[j3] == itemid + 1)
-                                value += class9_1.itemamounts[j3];
-
+                        for(int j3 = 0; j3 < widget_.itemIds.length; j3++)
+                            if(widget_.itemIds[j3] == itemid + 1)
+                                value += widget_.itemAmounts[j3];
                     }
                 }
                 if(opcode == 5)
-                    value = configstates[opcodes[opcodeoffset++]];
+                    value = configstates[ops[opOffset++]];
                 if(opcode == 6)
-                    value = XP_TABLE[anIntArray1044[opcodes[opcodeoffset++]] - 1];
+                    value = XP_TABLE[anIntArray1044[ops[opOffset++]] - 1];
                 if(opcode == 7)
-                    value = (configstates[opcodes[opcodeoffset++]] * 100) / 46875;
+                    value = (configstates[ops[opOffset++]] * 100) / 46875;
                 if(opcode == 8)
-                    value = localplayer.combatlevel;
+                    value = localPlayer.combatLevel;
                 if(opcode == 9)
                 {
                     for(int l1 = 0; l1 < SkillConstants.amt_skills; l1++)
@@ -9141,13 +9127,13 @@ public class Main extends ApplicationApplet {
                 }
                 if(opcode == 10)
                 {
-                    Widget class9_2 = Widget.widgets[opcodes[opcodeoffset++]];
-                    int l2 = opcodes[opcodeoffset++] + 1;
-                    if(l2 >= 0 && l2 < ItemDefinition.anInt203 && (!ItemDefinition.getItemDefinition(l2).aBoolean161 || members))
+                    Widget class9_2 = Widget.widgets[ops[opOffset++]];
+                    int l2 = ops[opOffset++] + 1;
+                    if(l2 >= 0 && l2 < ItemDefinition.maximumId && (!ItemDefinition.getItemDefinition(l2).aBoolean161 || members))
                     {
-                        for(int k3 = 0; k3 < class9_2.itemarray.length; k3++)
+                        for(int k3 = 0; k3 < class9_2.itemIds.length; k3++)
                         {
-                            if(class9_2.itemarray[k3] != l2)
+                            if(class9_2.itemIds[k3] != l2)
                                 continue;
                             value = 0x3b9ac9ff;
                             break;
@@ -9161,14 +9147,14 @@ public class Main extends ApplicationApplet {
                     value = anInt878;
                 if(opcode == 13)
                 {
-                    int i2 = configstates[opcodes[opcodeoffset++]];
-                    int i3 = opcodes[opcodeoffset++];
+                    int i2 = configstates[ops[opOffset++]];
+                    int i3 = ops[opOffset++];
                     value = (i2 & 1 << i3) == 0 ? 0 : 1;
                 }
                 if(opcode == 14)
                 {
-                    int j2 = opcodes[opcodeoffset++];
-                    VarbitFile class37 = VarbitFile.aClass37Array646[j2];
+                    int j2 = ops[opOffset++];
+                    VarbitFile class37 = VarbitFile.varbitArray[j2];
                     int l3 = class37.config_num;
                     int i4 = class37.anInt649;
                     int j4 = class37.anInt650;
@@ -9182,11 +9168,11 @@ public class Main extends ApplicationApplet {
                 if(opcode == 17)
                     byte0 = 3;
                 if(opcode == 18)
-                    value = (((Mob) (localplayer)).fineposx >> 7) + palettex;
+                    value = (((Mob) (localPlayer)).fineX >> 7) + palettex;
                 if(opcode == 19)
-                    value = (((Mob) (localplayer)).fineposy >> 7) + palettey;
+                    value = (((Mob) (localPlayer)).fineY >> 7) + palettey;
                 if(opcode == 20)
-                    value = opcodes[opcodeoffset++];
+                    value = ops[opOffset++];
                 if(byte0 == 0)
                 {
                     if(i1 == 0)
@@ -9216,7 +9202,7 @@ public class Main extends ApplicationApplet {
             return;
         String s;
         if(anInt1282 == 1 && anInt1133 < 2)
-            s = "Use " + aString1286 + " with...";
+            s = "Use " + usedItemName + " with...";
         else
         if(anInt1136 == 1 && anInt1133 < 2)
             s = aString1139 + "...";
@@ -9238,26 +9224,26 @@ public class Main extends ApplicationApplet {
         aClass15_1164.initialize(0);
         if(anInt1021 == 2)
         {
-            byte abyte0[] = mapback.colorindex;
+            byte abyte0[] = mapback.buffer;
             int ai[] = BasicRasterizer.pixelBuffer;
             int k2 = abyte0.length;
             for(int i5 = 0; i5 < k2; i5++)
                 if(abyte0[i5] == 0)
                     ai[i5] = 0;
 
-            compass.draw(33, camerayaw, anIntArray1057, 256, anIntArray968, -236, 25, 0, 0, 33, 25);
+            compass.draw(33, cameraYaw, anIntArray1057, 256, anIntArray968, -236, 25, 0, 0, 33, 25);
             toplefttext_imagefetcher.initialize(0);
             return;
         }
-        int i = camerayaw + anInt1209 & 0x7ff;
-        int j = 48 + ((Mob) (localplayer)).fineposx / 32;
-        int l2 = 464 - ((Mob) (localplayer)).fineposy / 32;
+        int i = cameraYaw + anInt1209 & 0x7ff;
+        int j = 48 + ((Mob) (localPlayer)).fineX / 32;
+        int l2 = 464 - ((Mob) (localPlayer)).fineY / 32;
         aClass30_Sub2_Sub1_Sub1_1263.draw(151, i, anIntArray1229, 256 + anInt1170, anIntArray1052, -236, l2, 5, 25, 146, j);
-        compass.draw(33, camerayaw, anIntArray1057, 256, anIntArray968, -236, 25, 0, 0, 33, 25);
+        compass.draw(33, cameraYaw, anIntArray1057, 256, anIntArray968, -236, 25, 0, 0, 33, 25);
         for(int j5 = 0; j5 < mapfunctionstackpos; j5++)
         {
-            int k = (anIntArray1072[j5] * 4 + 2) - ((Mob) (localplayer)).fineposx / 32;
-            int i3 = (anIntArray1073[j5] * 4 + 2) - ((Mob) (localplayer)).fineposy / 32;
+            int k = (anIntArray1072[j5] * 4 + 2) - ((Mob) (localPlayer)).fineX / 32;
+            int i3 = (anIntArray1073[j5] * 4 + 2) - ((Mob) (localPlayer)).fineY / 32;
             drawOnMinimap(mapfunctionstack[j5], k, i3, false);
         }
 
@@ -9265,11 +9251,11 @@ public class Main extends ApplicationApplet {
         {
             for(int l5 = 0; l5 < 104; l5++)
             {
-                Deque class19 = grounditems[cheight][k5][l5];
+                Deque class19 = grounditems[currentZ][k5][l5];
                 if(class19 != null)
                 {
-                    int l = (k5 * 4 + 2) - ((Mob) (localplayer)).fineposx / 32;
-                    int j3 = (l5 * 4 + 2) - ((Mob) (localplayer)).fineposy / 32;
+                    int l = (k5 * 4 + 2) - ((Mob) (localPlayer)).fineX / 32;
+                    int j3 = (l5 * 4 + 2) - ((Mob) (localPlayer)).fineY / 32;
                     drawOnMinimap(grounditem_mapdotsprite, l, j3, false);
                 }
             }
@@ -9278,28 +9264,28 @@ public class Main extends ApplicationApplet {
 
         for(int i6 = 0; i6 < anInt836; i6++)
         {
-            NPC class30_sub2_sub4_sub1_sub1 = npcs[updatenpcs[i6]];
-            if(class30_sub2_sub4_sub1_sub1 != null && class30_sub2_sub4_sub1_sub1.hasDefinition(aBoolean1224))
+            Npc class30_sub2_sub4_sub1_sub1 = npcs[localNpcIds[i6]];
+            if(class30_sub2_sub4_sub1_sub1 != null && class30_sub2_sub4_sub1_sub1.hasDefinition())
             {
-                NPCDefinition class5 = class30_sub2_sub4_sub1_sub1.definition;
+                NpcDefinition class5 = class30_sub2_sub4_sub1_sub1.definition;
                 if(class5.confignpcs != null)
                     class5 = class5.method161(anInt877);
                 if(class5 != null && class5.displaymapdot && class5.isvisible)
                 {
-                    int i1 = ((Mob) (class30_sub2_sub4_sub1_sub1)).fineposx / 32 - ((Mob) (localplayer)).fineposx / 32;
-                    int k3 = ((Mob) (class30_sub2_sub4_sub1_sub1)).fineposy / 32 - ((Mob) (localplayer)).fineposy / 32;
+                    int i1 = ((Mob) (class30_sub2_sub4_sub1_sub1)).fineX / 32 - ((Mob) (localPlayer)).fineX / 32;
+                    int k3 = ((Mob) (class30_sub2_sub4_sub1_sub1)).fineY / 32 - ((Mob) (localPlayer)).fineY / 32;
                     drawOnMinimap(mapdots1, i1, k3, false);
                 }
             }
         }
 
-        for(int j6 = 0; j6 < anInt891; j6++)
+        for(int j6 = 0; j6 < playerOffset; j6++)
         {
-            Player class30_sub2_sub4_sub1_sub2 = players[anIntArray892[j6]];
-            if(class30_sub2_sub4_sub1_sub2 != null && class30_sub2_sub4_sub1_sub2.hasDefinition(aBoolean1224))
+            Player class30_sub2_sub4_sub1_sub2 = playerArray[addedPlayers[j6]];
+            if(class30_sub2_sub4_sub1_sub2 != null && class30_sub2_sub4_sub1_sub2.hasDefinition())
             {
-                int j1 = ((Mob) (class30_sub2_sub4_sub1_sub2)).fineposx / 32 - ((Mob) (localplayer)).fineposx / 32;
-                int l3 = ((Mob) (class30_sub2_sub4_sub1_sub2)).fineposy / 32 - ((Mob) (localplayer)).fineposy / 32;
+                int j1 = ((Mob) (class30_sub2_sub4_sub1_sub2)).fineX / 32 - ((Mob) (localPlayer)).fineX / 32;
+                int l3 = ((Mob) (class30_sub2_sub4_sub1_sub2)).fineY / 32 - ((Mob) (localPlayer)).fineY / 32;
                 boolean flag1 = false;
                 long l6 = TextTools.stringToLong(class30_sub2_sub4_sub1_sub2.name);
                 for(int k6 = 0; k6 < amt_friendhashes; k6++)
@@ -9311,7 +9297,7 @@ public class Main extends ApplicationApplet {
                 }
 
                 boolean flag2 = false;
-                if(localplayer.anInt1701 != 0 && class30_sub2_sub4_sub1_sub2.anInt1701 != 0 && localplayer.anInt1701 == class30_sub2_sub4_sub1_sub2.anInt1701)
+                if(localPlayer.itemModel != 0 && class30_sub2_sub4_sub1_sub2.itemModel != 0 && localPlayer.itemModel == class30_sub2_sub4_sub1_sub2.itemModel)
                     flag2 = true;
                 if(flag1)
                     drawOnMinimap(mapdots3, j1, l3, false);
@@ -9327,35 +9313,35 @@ public class Main extends ApplicationApplet {
         {
             if(markertype == 1 && nmarker_id >= 0 && nmarker_id < npcs.length)
             {
-                NPC class30_sub2_sub4_sub1_sub1_1 = npcs[nmarker_id];
+                Npc class30_sub2_sub4_sub1_sub1_1 = npcs[nmarker_id];
                 if(class30_sub2_sub4_sub1_sub1_1 != null)
                 {
-                    int k1 = ((Mob) (class30_sub2_sub4_sub1_sub1_1)).fineposx / 32 - ((Mob) (localplayer)).fineposx / 32;
-                    int i4 = ((Mob) (class30_sub2_sub4_sub1_sub1_1)).fineposy / 32 - ((Mob) (localplayer)).fineposy / 32;
+                    int k1 = ((Mob) (class30_sub2_sub4_sub1_sub1_1)).fineX / 32 - ((Mob) (localPlayer)).fineX / 32;
+                    int i4 = ((Mob) (class30_sub2_sub4_sub1_sub1_1)).fineY / 32 - ((Mob) (localPlayer)).fineY / 32;
                     method81(mapmarker1, -760, i4, k1);
                 }
             }
             if(markertype == 2)
             {
-                int l1 = ((markerloc_x - palettex) * 4 + 2) - ((Mob) (localplayer)).fineposx / 32;
-                int j4 = ((markerloc_y - palettey) * 4 + 2) - ((Mob) (localplayer)).fineposy / 32;
+                int l1 = ((markerloc_x - palettex) * 4 + 2) - ((Mob) (localPlayer)).fineX / 32;
+                int j4 = ((markerloc_y - palettey) * 4 + 2) - ((Mob) (localPlayer)).fineY / 32;
                 method81(mapmarker1, -760, j4, l1);
             }
-            if(markertype == 10 && pmarker_id >= 0 && pmarker_id < players.length)
+            if(markertype == 10 && pmarker_id >= 0 && pmarker_id < playerArray.length)
             {
-                Player class30_sub2_sub4_sub1_sub2_1 = players[pmarker_id];
+                Player class30_sub2_sub4_sub1_sub2_1 = playerArray[pmarker_id];
                 if(class30_sub2_sub4_sub1_sub2_1 != null)
                 {
-                    int i2 = ((Mob) (class30_sub2_sub4_sub1_sub2_1)).fineposx / 32 - ((Mob) (localplayer)).fineposx / 32;
-                    int k4 = ((Mob) (class30_sub2_sub4_sub1_sub2_1)).fineposy / 32 - ((Mob) (localplayer)).fineposy / 32;
+                    int i2 = ((Mob) (class30_sub2_sub4_sub1_sub2_1)).fineX / 32 - ((Mob) (localPlayer)).fineX / 32;
+                    int k4 = ((Mob) (class30_sub2_sub4_sub1_sub2_1)).fineY / 32 - ((Mob) (localPlayer)).fineY / 32;
                     method81(mapmarker1, -760, k4, i2);
                 }
             }
         }
         if(anInt1261 != 0)
         {
-            int j2 = (anInt1261 * 4 + 2) - ((Mob) (localplayer)).fineposx / 32;
-            int l4 = (anInt1262 * 4 + 2) - ((Mob) (localplayer)).fineposy / 32;
+            int j2 = (anInt1261 * 4 + 2) - ((Mob) (localPlayer)).fineX / 32;
+            int l4 = (anInt1262 * 4 + 2) - ((Mob) (localPlayer)).fineY / 32;
             drawOnMinimap(mapmarker0, j2, l4, false);
         }
         BasicRasterizer.drawQuad(97, 78, 3, 3, 0xffffff);
@@ -9364,7 +9350,7 @@ public class Main extends ApplicationApplet {
 
     public void calculateSpriteMobXY(boolean junk, Mob mob, int height)
     {
-        calculateSpriteXY(mob.fineposx, height, anInt875, mob.fineposy);
+        calculateSpriteXY(mob.fineX, height, anInt875, mob.fineY);
     }
 
     public void calculateSpriteXY(int x, int h, int junk, int y)
@@ -9375,7 +9361,7 @@ public class Main extends ApplicationApplet {
             spriteY = -1;
             return;
         }
-        int z = calculateTileHeight(x, y, cheight) - h;
+        int z = calculateTileHeight(x, y, currentZ) - h;
         x -= camerax;
         z -= cameraz;
         y -= cameray;
@@ -9393,8 +9379,8 @@ public class Main extends ApplicationApplet {
         z = j2;
         if(y >= 50)
         {
-            spriteX = TriangleRasterizer.midwidth + (x << 9) / y;
-            spriteY = TriangleRasterizer.midheight + (z << 9) / y;
+            spriteX = TriangleRasterizer.centerWidth + (x << 9) / y;
+            spriteY = TriangleRasterizer.centerHeight + (z << 9) / y;
             return;
         } else
         {
@@ -9432,12 +9418,12 @@ public class Main extends ApplicationApplet {
                 if((k == 3 || k == 7) && (k == 7 || anInt845 == 0 || anInt845 == 1 && onFriendsList(false, s)))
                 {
                     int l = 329 - i * 13;
-                    if(super.mouse_x > 4 && super.mouse_y - 4 > l - 10 && super.mouse_y - 4 <= l + 3)
+                    if(super.newMouseX > 4 && super.newMouseY - 4 > l - 10 && super.newMouseY - 4 <= l + 3)
                     {
                         int i1 = p12Font.widthFontMetrics(anInt1116, "From:  " + s + msgbody_stack[j]) + 25;
                         if(i1 > 450)
                             i1 = 450;
-                        if(super.mouse_x < 4 + i1)
+                        if(super.newMouseX < 4 + i1)
                         {
                             if(rights >= 1)
                             {
@@ -9487,33 +9473,31 @@ public class Main extends ApplicationApplet {
         class30_sub1.anInt1294 = j;
     }
 
-    public boolean isWidgetHiddenActive(Widget class9, boolean flag)
+    public boolean executeWidgetScripts(Widget widget)
     {
-        if(class9.updateconditions == null)
+        if(widget.scriptInstructions == null)
             return false;
-        for(int i = 0; i < class9.updateconditions.length; i++)
+        for(int i = 0; i < widget.scriptInstructions.length; i++)
         {
-            int j = calcWidgetState(341, class9, i);
-            int k = class9.updatestates[i];
-            if(class9.updateconditions[i] == 2)
+            int rValue = handleWidgetScript(widget, i);
+            int op = widget.scriptConditions[i];
+            if(widget.scriptInstructions[i] == 2)
             {
-                if(j >= k)
+                if(rValue >= op)
                     return false;
             } else
-            if(class9.updateconditions[i] == 3)
+            if(widget.scriptInstructions[i] == 3)
             {
-                if(j <= k)
+                if(rValue <= op)
                     return false;
             } else
-            if(class9.updateconditions[i] == 4)
+            if(widget.scriptInstructions[i] == 4)
             {
-                if(j == k)
+                if(rValue == op)
                     return false;
-            } else
-            if(j != k)
+            } else if(rValue != op)
                 return false;
         }
-
         return true;
     }
 
@@ -9601,7 +9585,7 @@ public class Main extends ApplicationApplet {
             j1 += j2;
         }
 
-        titletopleft_imagefetcher.updateGraphics(0, 23680, super.graphics, 0);
+        titletopleft_imagefetcher.updateGraphics(0, 23680, super.appletGraphics, 0);
         for(int i2 = 0; i2 < 33920; i2++)
             titletopright_imagefetcher.pixelBuffer[i2] = aClass30_Sub2_Sub1_Sub1_1202.buffer[i2];
 
@@ -9632,73 +9616,73 @@ public class Main extends ApplicationApplet {
             j1 += 128 - k3 - i3;
         }
 
-        titletopright_imagefetcher.updateGraphics(0, 23680, super.graphics, 637);
+        titletopright_imagefetcher.updateGraphics(0, 23680, super.appletGraphics, 637);
         if(byte0 != 9)
             packetId = inbuffer.getUbyte();
     }
 
-    public void method134(byte byte0, int i, ByteBuffer buffer0)
+    public void parsePlayerUpdates(byte byte0, int i, ByteBuffer buffer0)
     {
-        int j = buffer0.getBits(8);
-        if(j < anInt891)
+        int amountPlayers = buffer0.getBits(8);
+        System.out.println("Amount players: "+ amountPlayers);
+        if(amountPlayers < playerOffset)
         {
-            for(int k = j; k < anInt891; k++)
-                playerremove_stack[amtplayerremovestack++] = anIntArray892[k];
+            for(int k = amountPlayers; k < playerOffset; k++)
+                eRmQueue[eRmQueuePosition++] = addedPlayers[k];
 
         }
-        if(j > anInt891)
+        if(amountPlayers > playerOffset)
         {
             Signlink.reportError(username + " Too many players");
             throw new RuntimeException("eek");
         }
-        anInt891 = 0;
-        for(int l = 0; l < j; l++)
+        playerOffset = 0;
+        for(int l = 0; l < amountPlayers; l++)
         {
-            int i1 = anIntArray892[l];
-            Player class30_sub2_sub4_sub1_sub2 = players[i1];
-            int j1 = buffer0.getBits(1);
-            if(j1 == 0)
+            int i1 = addedPlayers[l];
+            Player class30_sub2_sub4_sub1_sub2 = playerArray[i1];
+            int doUpdate = buffer0.getBits(1);
+            System.out.println("APID: " + i1 + ", Do Update?: " + doUpdate);
+            if(doUpdate == 0)
             {
-                anIntArray892[anInt891++] = i1;
+                addedPlayers[playerOffset++] = i1;
                 class30_sub2_sub4_sub1_sub2.anInt1537 = loopCycle;
             } else
             {
-                int k1 = buffer0.getBits(2);
-                if(k1 == 0)
+                int updateType = buffer0.getBits(2);
+                System.out.println("Local update type: " + updateType);
+                if(updateType == 0)
                 {
-                    anIntArray892[anInt891++] = i1;
+                    addedPlayers[playerOffset++] = i1;
                     class30_sub2_sub4_sub1_sub2.anInt1537 = loopCycle;
-                    playerupdate_stack[amtplayerupdatestack++] = i1;
+                    pFlagUpdateList[amtplayerupdatestack++] = i1;
                 } else
-                if(k1 == 1)
+                if(updateType == 1)
                 {
-                    anIntArray892[anInt891++] = i1;
+                    addedPlayers[playerOffset++] = i1;
                     class30_sub2_sub4_sub1_sub2.anInt1537 = loopCycle;
                     int l1 = buffer0.getBits(3);
-                    class30_sub2_sub4_sub1_sub2.handleMobMovment(false, (byte)20, l1);
+                    class30_sub2_sub4_sub1_sub2.handleMobMovment(false, l1);
                     int j2 = buffer0.getBits(1);
                     if(j2 == 1)
-                        playerupdate_stack[amtplayerupdatestack++] = i1;
+                        pFlagUpdateList[amtplayerupdatestack++] = i1;
                 } else
-                if(k1 == 2)
+                if(updateType == 2)
                 {
-                    anIntArray892[anInt891++] = i1;
+                    addedPlayers[playerOffset++] = i1;
                     class30_sub2_sub4_sub1_sub2.anInt1537 = loopCycle;
                     int i2 = buffer0.getBits(3);
-                    class30_sub2_sub4_sub1_sub2.handleMobMovment(true, (byte)20, i2);
+                    class30_sub2_sub4_sub1_sub2.handleMobMovment(true, i2);
                     int k2 = buffer0.getBits(3);
-                    class30_sub2_sub4_sub1_sub2.handleMobMovment(true, (byte)20, k2);
+                    class30_sub2_sub4_sub1_sub2.handleMobMovment(true, k2);
                     int l2 = buffer0.getBits(1);
                     if(l2 == 1)
-                        playerupdate_stack[amtplayerupdatestack++] = i1;
+                        pFlagUpdateList[amtplayerupdatestack++] = i1;
                 } else
-                if(k1 == 3)
-                    playerremove_stack[amtplayerremovestack++] = i1;
+                if(updateType == 3)
+                    eRmQueue[eRmQueuePosition++] = i1;
             }
         }
-
-        if(byte0 != 2)
-            anInt939 = -80;
     }
 
     public void drawTitleScreen(boolean flag, boolean flag1)
@@ -9728,14 +9712,14 @@ public class Main extends ApplicationApplet {
         if(titlescreen_tab == 2)
         {
             int j = c1 / 2 - 40;
-            if(aString1266.length() > 0)
+            if(loginMessage0.length() > 0)
             {
-                b12Font.drawCenteredXText(0xffff00, c / 2, anInt939, aString1266, j - 15, true);
-                b12Font.drawCenteredXText(0xffff00, c / 2, anInt939, aString1267, j, true);
+                b12Font.drawCenteredXText(0xffff00, c / 2, anInt939, loginMessage0, j - 15, true);
+                b12Font.drawCenteredXText(0xffff00, c / 2, anInt939, loginMessage1, j, true);
                 j += 30;
             } else
             {
-                b12Font.drawCenteredXText(0xffff00, c / 2, anInt939, aString1267, j - 7, true);
+                b12Font.drawCenteredXText(0xffff00, c / 2, anInt939, loginMessage1, j - 7, true);
                 j += 30;
             }
             b12Font.drawText2(false, true, c / 2 - 90, 0xffffff, "Username: " + username + ((userpass_swtch == 0) & (loopCycle % 40 < 20) ? "@yel@|" : ""), j);
@@ -9770,16 +9754,16 @@ public class Main extends ApplicationApplet {
             aClass30_Sub2_Sub1_Sub2_967.renderImage(j1 - 73, 16083, i2 - 20);
             b12Font.drawCenteredXText(0xffffff, j1, anInt939, "Cancel", i2 + 5, true);
         }
-        aClass15_1109.updateGraphics(171, 23680, super.graphics, 202);
-        if(aBoolean1255)
+        aClass15_1109.updateGraphics(171, 23680, super.appletGraphics, 202);
+        if(paintRequested)
         {
-            aBoolean1255 = false;
-            logo_imagefetcher.updateGraphics(0, 23680, super.graphics, 128);
-            bottomleftmid_imagefetcher.updateGraphics(371, 23680, super.graphics, 202);
-            aClass15_1112.updateGraphics(265, 23680, super.graphics, 0);
-            aClass15_1113.updateGraphics(265, 23680, super.graphics, 562);
-            aClass15_1114.updateGraphics(171, 23680, super.graphics, 128);
-            aClass15_1115.updateGraphics(171, 23680, super.graphics, 562);
+            paintRequested = false;
+            logo_imagefetcher.updateGraphics(0, 23680, super.appletGraphics, 128);
+            bottomleftmid_imagefetcher.updateGraphics(371, 23680, super.appletGraphics, 202);
+            aClass15_1112.updateGraphics(265, 23680, super.appletGraphics, 0);
+            aClass15_1113.updateGraphics(265, 23680, super.appletGraphics, 562);
+            aClass15_1114.updateGraphics(171, 23680, super.appletGraphics, 128);
+            aClass15_1115.updateGraphics(171, 23680, super.appletGraphics, 562);
         }
     }
 
@@ -9820,8 +9804,8 @@ public class Main extends ApplicationApplet {
         aBoolean962 = false;
     }
 
-    public void method10(byte byte0) {
-        aBoolean1255 = true;
+    public void updateGraphics() {
+        paintRequested = true;
     }
 
     public void parseExtraFiles(int i, ByteBuffer buffer0, int j)
@@ -9838,7 +9822,7 @@ public class Main extends ApplicationApplet {
             int l13 = buffer0.getUword();
             if(j3 >= 0 && i6 >= 0 && j3 < 104 && i6 < 104)
             {
-                Deque class19_1 = grounditems[cheight][j3][i6];
+                Deque class19_1 = grounditems[currentZ][j3][i6];
                 if(class19_1 != null)
                 {
                     for(GroundItem class30_sub2_sub4_sub2_3 = (GroundItem)class19_1.getFirst(); class30_sub2_sub4_sub2_3 != null; class30_sub2_sub4_sub2_3 = (GroundItem)class19_1.getNextFront())
@@ -9863,7 +9847,7 @@ public class Main extends ApplicationApplet {
             int l11 = buffer0.getUbyte();
             int i14 = l11 >> 4 & 0xf;
             int i16 = l11 & 7;
-            if(((Mob) (localplayer)).palettex_stack[0] >= k3 - i14 && ((Mob) (localplayer)).palettex_stack[0] <= k3 + i14 && ((Mob) (localplayer)).palettey_stack[0] >= j6 - i14 && ((Mob) (localplayer)).palettey_stack[0] <= j6 + i14 && aBoolean848 && !lowMemory && anInt1062 < 50)
+            if(((Mob) (localPlayer)).xList[0] >= k3 - i14 && ((Mob) (localPlayer)).xList[0] <= k3 + i14 && ((Mob) (localPlayer)).yList[0] >= j6 - i14 && ((Mob) (localPlayer)).yList[0] <= j6 + i14 && aBoolean848 && !lowMemory && anInt1062 < 50)
             {
                 anIntArray1207[anInt1062] = i9;
                 anIntArray1241[anInt1062] = i16;
@@ -9880,14 +9864,14 @@ public class Main extends ApplicationApplet {
             int j9 = anInt1269 + (l3 & 7);
             int i12 = buffer0.getUword128();
             int j14 = buffer0.getUword();
-            if(k6 >= 0 && j9 >= 0 && k6 < 104 && j9 < 104 && i12 != anInt884)
+            if(k6 >= 0 && j9 >= 0 && k6 < 104 && j9 < 104 && i12 != localPlayerId)
             {
                 GroundItem class30_sub2_sub4_sub2_2 = new GroundItem();
                 class30_sub2_sub4_sub2_2.itemid = i1;
                 class30_sub2_sub4_sub2_2.amount = j14;
-                if(grounditems[cheight][k6][j9] == null)
-                    grounditems[cheight][k6][j9] = new Deque();
-                grounditems[cheight][k6][j9].addLast(class30_sub2_sub4_sub2_2);
+                if(grounditems[currentZ][k6][j9] == null)
+                    grounditems[currentZ][k6][j9] = new Deque();
+                grounditems[currentZ][k6][j9].addLast(class30_sub2_sub4_sub2_2);
                 method25(k6, j9);
             }
             return;
@@ -9900,7 +9884,7 @@ public class Main extends ApplicationApplet {
             int k9 = buffer0.getUword();
             if(i4 >= 0 && l6 >= 0 && i4 < 104 && l6 < 104)
             {
-                Deque class19 = grounditems[cheight][i4][l6];
+                Deque class19 = grounditems[currentZ][i4][l6];
                 if(class19 != null)
                 {
                     for(GroundItem class30_sub2_sub4_sub2 = (GroundItem) class19.getFirst(); class30_sub2_sub4_sub2 != null; class30_sub2_sub4_sub2 = (GroundItem)class19.getNextFront()) {
@@ -9910,7 +9894,7 @@ public class Main extends ApplicationApplet {
                         break;
                     }
                     if(class19.getFirst() == null)
-                        grounditems[cheight][i4][l6] = null;
+                        grounditems[currentZ][i4][l6] = null;
                     method25(i4, l6);
                 }
             }
@@ -9924,17 +9908,17 @@ public class Main extends ApplicationApplet {
             int l9 = buffer0.getUbyteB();
             int j12 = l9 >> 2;
             int k14 = l9 & 3;
-            int j16 = object_types[j12];
+            int j16 = OBJECT_TYPES[j12];
             int j17 = buffer0.getUword128();
             if(j4 >= 0 && i7 >= 0 && j4 < 103 && i7 < 103)
             {
-                int j18 = main_heightmap[cheight][j4][i7];
-                int i19 = main_heightmap[cheight][j4 + 1][i7];
-                int l19 = main_heightmap[cheight][j4 + 1][i7 + 1];
-                int k20 = main_heightmap[cheight][j4][i7 + 1];
+                int j18 = tileHeightmap[currentZ][j4][i7];
+                int i19 = tileHeightmap[currentZ][j4 + 1][i7];
+                int l19 = tileHeightmap[currentZ][j4 + 1][i7 + 1];
+                int k20 = tileHeightmap[currentZ][j4][i7 + 1];
                 if(j16 == 0)
                 {
-                    Wall class10 = pallet.getWall(cheight, j4, i7, false);
+                    Wall class10 = pallet.getWall(currentZ, j4, i7, false);
                     if(class10 != null)
                     {
                         int k21 = class10.anInt280 >> 14 & 0x7fff;
@@ -9951,13 +9935,13 @@ public class Main extends ApplicationApplet {
                 }
                 if(j16 == 1)
                 {
-                    WallDecoration class26 = pallet.getWallDecoration(j4, 866, i7, cheight);
+                    WallDecoration class26 = pallet.getWallDecoration(j4, 866, i7, currentZ);
                     if(class26 != null)
                         class26.wd_entity = new GameObject(class26.wd_objhash >> 14 & 0x7fff, 0, 4, i19, (byte)7, l19, j18, k20, j17, false);
                 }
                 if(j16 == 2)
                 {
-                    GeneralEntity class28 = pallet.method298(j4, i7, (byte)4, cheight);
+                    GeneralEntity class28 = pallet.method298(j4, i7, (byte)4, currentZ);
                     if(j12 == 11)
                         j12 = 10;
                     if(class28 != null)
@@ -9965,7 +9949,7 @@ public class Main extends ApplicationApplet {
                 }
                 if(j16 == 3)
                 {
-                    FloorDecoration class49 = pallet.getFloorDecoration(i7, j4, cheight, 0);
+                    FloorDecoration class49 = pallet.getFloorDecoration(i7, j4, currentZ, 0);
                     if(class49 != null)
                         class49.aActor_814 = new GameObject(class49.anInt815 >> 14 & 0x7fff, k14, 22, i19, (byte)7, l19, j18, k20, j17, false);
                 }
@@ -9974,9 +9958,9 @@ public class Main extends ApplicationApplet {
         }
         if(j == 147) {
             int l1 = buffer0.getUbyteB();
-            int k4 = anInt1268 + (l1 >> 4 & 7);
-            int j7 = anInt1269 + (l1 & 7);
-            int i10 = buffer0.getUword();
+            int x = anInt1268 + (l1 >> 4 & 7);
+            int y = anInt1269 + (l1 & 7);
+            int playerId = buffer0.getUword();
             byte byte0 = buffer0.getByteB();
             int l14 = buffer0.getUwordLE();
             byte byte1 = buffer0.getByteA();
@@ -9984,39 +9968,37 @@ public class Main extends ApplicationApplet {
             int k18 = buffer0.getUbyteB();
             int j19 = k18 >> 2;
             int i20 = k18 & 3;
-            int l20 = object_types[j19];
+            int l20 = OBJECT_TYPES[j19];
             byte byte2 = buffer0.getByte();
-            int l21 = buffer0.getUword();
+            int objectId = buffer0.getUword();
             byte byte3 = buffer0.getByteA();
-            Player class30_sub2_sub4_sub1_sub2;
-            if(i10 == anInt884)
-                class30_sub2_sub4_sub1_sub2 = localplayer;
+            Player player;
+            if(playerId == localPlayerId)
+                player = localPlayer;
             else
-                class30_sub2_sub4_sub1_sub2 = players[i10];
-            if(class30_sub2_sub4_sub1_sub2 != null)
-            {
-                ObjectDefinition class46 = ObjectDefinition.getObjectDefinition(l21);
-                int i22 = main_heightmap[cheight][k4][j7];
-                int j22 = main_heightmap[cheight][k4 + 1][j7];
-                int k22 = main_heightmap[cheight][k4 + 1][j7 + 1];
-                int l22 = main_heightmap[cheight][k4][j7 + 1];
-                Model class30_sub2_sub4_sub6 = class46.method578(j19, i20, i22, j22, k22, l22, -1);
-                if(class30_sub2_sub4_sub6 != null)
-                {
-                    addSpawnObject(404, k17 + 1, -1, 0, l20, j7, 0, cheight, k4, l14 + 1);
-                    class30_sub2_sub4_sub1_sub2.anInt1707 = l14 + loopCycle;
-                    class30_sub2_sub4_sub1_sub2.anInt1708 = k17 + loopCycle;
-                    class30_sub2_sub4_sub1_sub2.aActor_Sub6_1714 = class30_sub2_sub4_sub6;
-                    int i23 = class46.anInt744;
-                    int j23 = class46.objsize;
+                player = playerArray[playerId];
+            if(player != null) {
+                ObjectDefinition model = ObjectDefinition.getObjectDefinition(objectId);
+                int height0 = tileHeightmap[currentZ][x][y];
+                int height1 = tileHeightmap[currentZ][x + 1][y];
+                int height2 = tileHeightmap[currentZ][x + 1][y + 1];
+                int height3 = tileHeightmap[currentZ][x][y + 1];
+                Model translatedModel = model.method578(j19, i20, height0, height1, height2, height3, -1);
+                if(translatedModel != null) {
+                    addSpawnObject(404, k17 + 1, -1, 0, l20, y, 0, currentZ, x, l14 + 1);
+                    player.anInt1707 = l14 + loopCycle;
+                    player.anInt1708 = k17 + loopCycle;
+                    player.aActor_Sub6_1714 = translatedModel;
+                    int i23 = model.anInt744;
+                    int j23 = model.size;
                     if(i20 == 1 || i20 == 3)
                     {
-                        i23 = class46.objsize;
-                        j23 = class46.anInt744;
+                        i23 = model.size;
+                        j23 = model.anInt744;
                     }
-                    class30_sub2_sub4_sub1_sub2.anInt1711 = k4 * 128 + i23 * 64;
-                    class30_sub2_sub4_sub1_sub2.anInt1713 = j7 * 128 + j23 * 64;
-                    class30_sub2_sub4_sub1_sub2.anInt1712 = calculateTileHeight( class30_sub2_sub4_sub1_sub2.anInt1711, class30_sub2_sub4_sub1_sub2.anInt1713, cheight);
+                    player.anInt1711 = x * 128 + i23 * 64;
+                    player.anInt1713 = y * 128 + j23 * 64;
+                    player.anInt1712 = calculateTileHeight( player.anInt1711, player.anInt1713, currentZ);
                     if(byte2 > byte0)
                     {
                         byte byte4 = byte2;
@@ -10029,10 +10011,10 @@ public class Main extends ApplicationApplet {
                         byte3 = byte1;
                         byte1 = byte5;
                     }
-                    class30_sub2_sub4_sub1_sub2.anInt1719 = k4 + byte2;
-                    class30_sub2_sub4_sub1_sub2.anInt1721 = k4 + byte0;
-                    class30_sub2_sub4_sub1_sub2.anInt1720 = j7 + byte3;
-                    class30_sub2_sub4_sub1_sub2.anInt1722 = j7 + byte1;
+                    player.anInt1719 = x + byte2;
+                    player.anInt1721 = x + byte0;
+                    player.anInt1720 = y + byte3;
+                    player.anInt1722 = y + byte1;
                 }
             }
         }
@@ -10044,11 +10026,11 @@ public class Main extends ApplicationApplet {
             int py = anInt1269 + (cxy & 7);
             int oid = buffer0.getUwordLE();
             int rt = buffer0.getUbyteB();
-            int type = rt >> 2;
+            int typeId = rt >> 2;
             int rota = rt & 3;
-            int l17 = object_types[type];
+            int l17 = OBJECT_TYPES[typeId];
             if(px >= 0 && py >= 0 && px < 104 && py < 104)
-                addSpawnObject(404, -1, oid, rota, l17, py, type, cheight, px, 0);
+                addSpawnObject(404, -1, oid, rota, l17, py, typeId, currentZ, px, 0);
             return;
         }
         if(j == 4)
@@ -10063,7 +10045,7 @@ public class Main extends ApplicationApplet {
             {
                 i5 = i5 * 128 + 64;
                 l7 = l7 * 128 + 64;
-                StillGraphic class30_sub2_sub4_sub3 = new StillGraphic(cheight, loopCycle, 6, j15, k10, calculateTileHeight(i5, l7, cheight) - l12, l7, i5);
+                StillGraphic class30_sub2_sub4_sub3 = new StillGraphic(currentZ, loopCycle, 6, j15, k10, calculateTileHeight(i5, l7, currentZ) - l12, l7, i5);
                 gfxs_storage.addLast(class30_sub2_sub4_sub3);
             }
             return;
@@ -10080,9 +10062,9 @@ public class Main extends ApplicationApplet {
                 GroundItem class30_sub2_sub4_sub2_1 = new GroundItem();
                 class30_sub2_sub4_sub2_1.itemid = k2;
                 class30_sub2_sub4_sub2_1.amount = j5;
-                if(grounditems[cheight][l10][i13] == null)
-                    grounditems[cheight][l10][i13] = new Deque();
-                grounditems[cheight][l10][i13].addLast(class30_sub2_sub4_sub2_1);
+                if(grounditems[currentZ][l10][i13] == null)
+                    grounditems[currentZ][l10][i13] = new Deque();
+                grounditems[currentZ][l10][i13].addLast(class30_sub2_sub4_sub2_1);
                 method25(l10, i13);
             }
             return;
@@ -10092,12 +10074,12 @@ public class Main extends ApplicationApplet {
             int l2 = buffer0.getUbyteA();
             int k5 = l2 >> 2;
             int j8 = l2 & 3;
-            int i11 = object_types[k5];
+            int i11 = OBJECT_TYPES[k5];
             int j13 = buffer0.getUbyte();
             int k15 = anInt1268 + (j13 >> 4 & 7);
             int l16 = anInt1269 + (j13 & 7);
             if(k15 >= 0 && l16 >= 0 && k15 < 104 && l16 < 104)
-                addSpawnObject(404, -1, -1, j8, i11, l16, k5, cheight, k15, 0);
+                addSpawnObject(404, -1, -1, j8, i11, l16, k5, currentZ, k15, 0);
             return;
         }
         if(j == 117)
@@ -10121,14 +10103,14 @@ public class Main extends ApplicationApplet {
                 k8 = k8 * 128 + 64;
                 j11 = j11 * 128 + 64;
                 k13 = k13 * 128 + 64;
-                Projectile class30_sub2_sub4_sub4 = new Projectile(i21, l18, 46883, k19 + loopCycle, j20 + loopCycle, j21, cheight, calculateTileHeight(l5, k8, cheight) - i18, k8, l5, l15, i17);
-                class30_sub2_sub4_sub4.method455(k19 + loopCycle, k13, calculateTileHeight(j11, k13, cheight) - l18, j11, (byte)-83);
+                Projectile class30_sub2_sub4_sub4 = new Projectile(i21, l18, 46883, k19 + loopCycle, j20 + loopCycle, j21, currentZ, calculateTileHeight(l5, k8, currentZ) - i18, k8, l5, l15, i17);
+                class30_sub2_sub4_sub4.method455(k19 + loopCycle, k13, calculateTileHeight(j11, k13, currentZ) - l18, j11, (byte)-83);
                 aClass19_1013.addLast(class30_sub2_sub4_sub4);
             }
         }
     }
 
-    public static void setLowMem(byte junk) {
+    public static void initializeLowMemory() {
         Palette.lowmemory = true;
         TriangleRasterizer.lowmemory = true;
         lowMemory = true;
@@ -10142,11 +10124,9 @@ public class Main extends ApplicationApplet {
             anInt1118 = -7;
         buffer0.initBitAccess();
         int k = buffer0.getBits(8);
-        if(k < anInt836)
-        {
+        if(k < anInt836) {
             for(int l = k; l < anInt836; l++)
-                playerremove_stack[amtplayerremovestack++] = updatenpcs[l];
-
+                eRmQueue[eRmQueuePosition++] = localNpcIds[l];
         }
         if(k > anInt836)
         {
@@ -10156,46 +10136,46 @@ public class Main extends ApplicationApplet {
         anInt836 = 0;
         for(int i1 = 0; i1 < k; i1++)
         {
-            int j1 = updatenpcs[i1];
-            NPC class30_sub2_sub4_sub1_sub1 = npcs[j1];
+            int j1 = localNpcIds[i1];
+            Npc class30_sub2_sub4_sub1_sub1 = npcs[j1];
             int k1 = buffer0.getBits(1);
             if(k1 == 0)
             {
-                updatenpcs[anInt836++] = j1;
+                localNpcIds[anInt836++] = j1;
                 class30_sub2_sub4_sub1_sub1.anInt1537 = loopCycle;
             } else
             {
                 int l1 = buffer0.getBits(2);
                 if(l1 == 0)
                 {
-                    updatenpcs[anInt836++] = j1;
+                    localNpcIds[anInt836++] = j1;
                     class30_sub2_sub4_sub1_sub1.anInt1537 = loopCycle;
-                    playerupdate_stack[amtplayerupdatestack++] = j1;
+                    pFlagUpdateList[amtplayerupdatestack++] = j1;
                 } else
                 if(l1 == 1)
                 {
-                    updatenpcs[anInt836++] = j1;
+                    localNpcIds[anInt836++] = j1;
                     class30_sub2_sub4_sub1_sub1.anInt1537 = loopCycle;
                     int i2 = buffer0.getBits(3);
-                    class30_sub2_sub4_sub1_sub1.handleMobMovment(false, (byte)20, i2);
+                    class30_sub2_sub4_sub1_sub1.handleMobMovment(false, i2);
                     int k2 = buffer0.getBits(1);
                     if(k2 == 1)
-                        playerupdate_stack[amtplayerupdatestack++] = j1;
+                        pFlagUpdateList[amtplayerupdatestack++] = j1;
                 } else
                 if(l1 == 2)
                 {
-                    updatenpcs[anInt836++] = j1;
+                    localNpcIds[anInt836++] = j1;
                     class30_sub2_sub4_sub1_sub1.anInt1537 = loopCycle;
                     int j2 = buffer0.getBits(3);
-                    class30_sub2_sub4_sub1_sub1.handleMobMovment(true, (byte)20, j2);
+                    class30_sub2_sub4_sub1_sub1.handleMobMovment(true, j2);
                     int l2 = buffer0.getBits(3);
-                    class30_sub2_sub4_sub1_sub1.handleMobMovment(true, (byte)20, l2);
+                    class30_sub2_sub4_sub1_sub1.handleMobMovment(true, l2);
                     int i3 = buffer0.getBits(1);
                     if(i3 == 1)
-                        playerupdate_stack[amtplayerupdatestack++] = j1;
+                        pFlagUpdateList[amtplayerupdatestack++] = j1;
                 } else
                 if(l1 == 3)
-                    playerremove_stack[amtplayerremovestack++] = j1;
+                    eRmQueue[eRmQueuePosition++] = j1;
             }
         }
 
@@ -10207,19 +10187,19 @@ public class Main extends ApplicationApplet {
             grounditems = null;
         if(titlescreen_tab == 0)
         {
-            int i = super.applet_width / 2 - 80;
-            int l = super.applet_height / 2 + 20;
+            int i = super.appletWidth / 2 - 80;
+            int l = super.appletHeight / 2 + 20;
             l += 20;
-            if(super.anInt26 == 1 && super.curpressed_x >= i - 75 && super.curpressed_x <= i + 75 && super.curpressed_y >= l - 20 && super.curpressed_y <= l + 20)
+            if(super.anInt26 == 1 && super.pressedX >= i - 75 && super.pressedX <= i + 75 && super.pressedY >= l - 20 && super.pressedY <= l + 20)
             {
                 titlescreen_tab = 3;
                 userpass_swtch = 0;
             }
-            i = super.applet_width / 2 + 80;
-            if(super.anInt26 == 1 && super.curpressed_x >= i - 75 && super.curpressed_x <= i + 75 && super.curpressed_y >= l - 20 && super.curpressed_y <= l + 20)
+            i = super.appletWidth / 2 + 80;
+            if(super.anInt26 == 1 && super.pressedX >= i - 75 && super.pressedX <= i + 75 && super.pressedY >= l - 20 && super.pressedY <= l + 20)
             {
-                aString1266 = "";
-                aString1267 = "Enter your username & password.";
+                loginMessage0 = "";
+                loginMessage1 = "Enter your username & password.";
                 titlescreen_tab = 2;
                 userpass_swtch = 0;
                 return;
@@ -10228,28 +10208,28 @@ public class Main extends ApplicationApplet {
         {
             if(titlescreen_tab == 2)
             {
-                int j = super.applet_height / 2 - 40;
+                int j = super.appletHeight / 2 - 40;
                 j += 30;
                 j += 25;
-                if(super.anInt26 == 1 && super.curpressed_y >= j - 15 && super.curpressed_y < j)
+                if(super.anInt26 == 1 && super.pressedY >= j - 15 && super.pressedY < j)
                     userpass_swtch = 0;
                 j += 15;
-                if(super.anInt26 == 1 && super.curpressed_y >= j - 15 && super.curpressed_y < j)
+                if(super.anInt26 == 1 && super.pressedY >= j - 15 && super.pressedY < j)
                     userpass_swtch = 1;
                 j += 15;
-                int i1 = super.applet_width / 2 - 80;
-                int k1 = super.applet_height / 2 + 50;
+                int i1 = super.appletWidth / 2 - 80;
+                int k1 = super.appletHeight / 2 + 50;
                 k1 += 20;
 				/* Login button */
-                if(super.anInt26 == 1 && super.curpressed_x >= i1 - 75 && super.curpressed_x <= i1 + 75 && super.curpressed_y >= k1 - 20 && super.curpressed_y <= k1 + 20)
+                if(super.anInt26 == 1 && super.pressedX >= i1 - 75 && super.pressedX <= i1 + 75 && super.pressedY >= k1 - 20 && super.pressedY <= k1 + 20)
                 {
                     loginAttempts = 0;
                     handleLogin(username, password, false);
                     if(isOnlineGame)
                         return;
                 }
-                i1 = super.applet_width / 2 + 80;
-                if(super.anInt26 == 1 && super.curpressed_x >= i1 - 75 && super.curpressed_x <= i1 + 75 && super.curpressed_y >= k1 - 20 && super.curpressed_y <= k1 + 20)
+                i1 = super.appletWidth / 2 + 80;
+                if(super.anInt26 == 1 && super.pressedX >= i1 - 75 && super.pressedX <= i1 + 75 && super.pressedY >= k1 - 20 && super.pressedY <= k1 + 20)
                 {
                     titlescreen_tab = 0;
                     username = "";
@@ -10257,7 +10237,7 @@ public class Main extends ApplicationApplet {
                 }
                 do
                 {
-                    int l1 = getKey(-796);
+                    int l1 = removeKeyId();
                     if(l1 == -1)
                         break;
                     boolean flag1 = false;
@@ -10298,10 +10278,10 @@ public class Main extends ApplicationApplet {
             }
             if(titlescreen_tab == 3)
             {
-                int k = super.applet_width / 2;
-                int j1 = super.applet_height / 2 + 50;
+                int k = super.appletWidth / 2;
+                int j1 = super.appletHeight / 2 + 50;
                 j1 += 20;
-                if(super.anInt26 == 1 && super.curpressed_x >= k - 75 && super.curpressed_x <= k + 75 && super.curpressed_y >= j1 - 20 && super.curpressed_y <= j1 + 20)
+                if(super.anInt26 == 1 && super.pressedX >= k - 75 && super.pressedX <= k + 75 && super.pressedY >= j1 - 20 && super.pressedY <= j1 + 20)
                     titlescreen_tab = 0;
             }
         }
@@ -10309,7 +10289,7 @@ public class Main extends ApplicationApplet {
 
     public void drawOnMinimap(DirectColorSprite sprite, int x, int y, boolean flag)
     {
-        int yaw = camerayaw + anInt1209 & 0x7ff;
+        int yaw = cameraYaw + anInt1209 & 0x7ff;
         int l = x * x + y * y;
         if(l > 6400)
             return;
@@ -10333,16 +10313,11 @@ public class Main extends ApplicationApplet {
     public void method142(int i, int j, int k, int l, int i1, int j1, int k1, 
             int l1)
     {
-        if(l1 < 4 || l1 > 4)
-            packetId = inbuffer.getUbyte();
         if(i1 >= 1 && i >= 1 && i1 <= 102 && i <= 102)
         {
-            if(lowMemory && j != cheight)
+            if(lowMemory && j != currentZ)
                 return;
             int i2 = 0;
-            byte byte0 = -1;
-            boolean flag = false;
-            boolean flag1 = false;
             if(j1 == 0)
                 i2 = pallet.method300(j, i1, i);
             if(j1 == 1)
@@ -10362,7 +10337,7 @@ public class Main extends ApplicationApplet {
                     pallet.method291(i1, j, i, (byte)-119);
                     ObjectDefinition class46 = ObjectDefinition.getObjectDefinition(j2);
                     if(class46.aBoolean767)
-                        collisionmaps[j].method215(l2, k2, class46.aBoolean757, true, i1, i);
+                        planeFlags[j].method215(l2, k2, class46.aBoolean757, true, i1, i);
                 }
                 if(j1 == 1)
                     pallet.method292(i1, i, j);
@@ -10370,53 +10345,53 @@ public class Main extends ApplicationApplet {
                 {
                     pallet.method293(i1, i, j);
                     ObjectDefinition class46_1 = ObjectDefinition.getObjectDefinition(j2);
-                    if(i1 + class46_1.anInt744 > 103 || i + class46_1.anInt744 > 103 || i1 + class46_1.objsize > 103 || i + class46_1.objsize > 103)
+                    if(i1 + class46_1.anInt744 > 103 || i + class46_1.anInt744 > 103 || i1 + class46_1.size > 103 || i + class46_1.size > 103)
                         return;
                     if(class46_1.aBoolean767)
-                        collisionmaps[j].method216(l2, class46_1.anInt744, i1, i, (byte)6, class46_1.objsize, class46_1.aBoolean757);
+                        planeFlags[j].method216(l2, class46_1.anInt744, i1, i, (byte)6, class46_1.size, class46_1.aBoolean757);
                 }
                 if(j1 == 3)
                 {
                     pallet.method294((byte)9, j, i, i1);
                     ObjectDefinition class46_2 = ObjectDefinition.getObjectDefinition(j2);
                     if(class46_2.aBoolean767 && class46_2.aBoolean778)
-                        collisionmaps[j].method218(360, i, i1);
+                        planeFlags[j].method218(360, i, i1);
                 }
             }
             if(k1 >= 0)
             {
                 int j3 = j;
-                if(j3 < 3 && (main_tilesettings[1][i1][i] & 2) == 2)
+                if(j3 < 3 && (tileFlags[1][i1][i] & 2) == 2)
                     j3++;
-                LandscapeLoader.method188(pallet, k, i, l, j3, collisionmaps[j], main_heightmap, i1, k1, j, (byte)93);
+                LandscapeLoader.method188(pallet, k, i, l, j3, planeFlags[j], tileHeightmap, i1, k1, j, (byte)93);
             }
         }
     }
 
-    public void method143(int i, ByteBuffer buffer0, int junk)
+    public void parsePlayerUpdate(int i, ByteBuffer buffer, int junk)
     {
-        amtplayerremovestack = 0;
+        eRmQueuePosition = 0;
         amtplayerupdatestack = 0;
-        method117(buffer0, i, (byte)5);
-        method134((byte)2, i, buffer0);
-        method91(buffer0, i, (byte)8);
-        doPlayerUpdateMasks(i, (byte)2, buffer0);
-        for(int k = 0; k < amtplayerremovestack; k++)
+        parseLocalPlayerMovement(buffer, i, (byte)5);
+        parsePlayerUpdates((byte)2, i, buffer);
+        populatePlayerList(buffer, i, (byte)8);
+        handlePlayerUpdateFlags(buffer);
+        for(int k = 0; k < eRmQueuePosition; k++)
         {
-            int l = playerremove_stack[k];
-            if(((Mob) (players[l])).anInt1537 != loopCycle)
-                players[l] = null;
+            int l = eRmQueue[k];
+            if(((Mob) (playerArray[l])).anInt1537 != loopCycle)
+                playerArray[l] = null;
         }
 
-        if(buffer0.offset != i)
+        if(buffer.offset != i)
         {
-            Signlink.reportError("Error packet size mismatch in getplayer pos:" + buffer0.offset + " psize:" + i);
+            Signlink.reportError("Error packet size mismatch in getplayer pos:" + buffer.offset + " psize:" + i);
             throw new RuntimeException("eek");
         }
-        for(int i1 = 0; i1 < anInt891; i1++)
-            if(players[anIntArray892[i1]] == null)
+        for(int i1 = 0; i1 < playerOffset; i1++)
+            if(playerArray[addedPlayers[i1]] == null)
             {
-                Signlink.reportError(username + " null entry in pl list - pos:" + i1 + " size:" + anInt891);
+                Signlink.reportError(username + " null entry in pl list - pos:" + i1 + " size:" + playerOffset);
                 throw new RuntimeException("eek");
             }
 
@@ -10499,7 +10474,7 @@ public class Main extends ApplicationApplet {
             anInt842 = anInt841;
             anInt841 = packetId;
             if(packetId == 81) {
-                method143(packetSize, inbuffer, 9759);
+                parsePlayerUpdate(packetSize, inbuffer, 9759);
                 aBoolean1080 = false;
                 packetId = -1;
                 return true;
@@ -10519,9 +10494,9 @@ public class Main extends ApplicationApplet {
                     aString881 = "";
                     aBoolean1158 = false;
                     for(int k9 = 0; k9 < Widget.widgets.length; k9++) {
-                        if(Widget.widgets[k9] == null || Widget.widgets[k9].actioncode != c)
+                        if(Widget.widgets[k9] == null || Widget.widgets[k9].actionCode != c)
                             continue;
-                        anInt857 = Widget.widgets[k9].parentid;
+                        anInt857 = Widget.widgets[k9].parentId;
                         break;
                     }
                 }
@@ -10533,13 +10508,13 @@ public class Main extends ApplicationApplet {
                 anInt1269 = inbuffer.getUbyteB();
                 for(int j = anInt1268; j < anInt1268 + 8; j++) {
                     for(int l9 = anInt1269; l9 < anInt1269 + 8; l9++)
-                        if(grounditems[cheight][j][l9] != null) {
-                            grounditems[cheight][j][l9] = null;
+                        if(grounditems[currentZ][j][l9] != null) {
+                            grounditems[currentZ][j][l9] = null;
                             method25(j, l9);
                         }
                 }
                 for(SpawnedObject class30_sub1 = (SpawnedObject)aClass19_1179.getFirst(); class30_sub1 != null; class30_sub1 = (SpawnedObject)aClass19_1179.getNextFront())
-                    if(class30_sub1.pallete_x >= anInt1268 && class30_sub1.pallete_x < anInt1268 + 8 && class30_sub1.pallete_y >= anInt1269 && class30_sub1.pallete_y < anInt1269 + 8 && class30_sub1.cheight == cheight)
+                    if(class30_sub1.pallete_x >= anInt1268 && class30_sub1.pallete_x < anInt1268 + 8 && class30_sub1.pallete_y >= anInt1269 && class30_sub1.pallete_y < anInt1269 + 8 && class30_sub1.cheight == currentZ)
                         class30_sub1.anInt1294 = 0;
                 packetId = -1;
                 return true;
@@ -10547,11 +10522,11 @@ public class Main extends ApplicationApplet {
 			/* Mob on interface */
             if(packetId == 185) {
                 int k = inbuffer.getUwordLE128();
-                Widget.widgets[k].anInt233 = 3;
-                if(localplayer.pnpc == null)
-                    Widget.widgets[k].anInt234 = (localplayer.anIntArray1700[0] << 25) + (localplayer.anIntArray1700[4] << 20) + (localplayer.appearances[0] << 15) + (localplayer.appearances[8] << 10) + (localplayer.appearances[11] << 5) + localplayer.appearances[1];
+                Widget.widgets[k].unactiveAnimFetchType = 3;
+                if(localPlayer.npc == null)
+                    Widget.widgets[k].unactiveAnimModelId = (localPlayer.colorIds[0] << 25) + (localPlayer.colorIds[4] << 20) + (localPlayer.appearanceStates[0] << 15) + (localPlayer.appearanceStates[8] << 10) + (localPlayer.appearanceStates[11] << 5) + localPlayer.appearanceStates[1];
                 else
-                    Widget.widgets[k].anInt234 = (int)(0x12345678L + localplayer.pnpc.id);
+                    Widget.widgets[k].unactiveAnimModelId = (int)(0x12345678L + localPlayer.npc.id);
                 packetId = -1;
                 return true;
             }
@@ -10568,10 +10543,10 @@ public class Main extends ApplicationApplet {
             {
                 int i1 = inbuffer.getUwordLE();
                 Widget class9 = Widget.widgets[i1];
-                for(int k15 = 0; k15 < class9.itemarray.length; k15++)
+                for(int k15 = 0; k15 < class9.itemIds.length; k15++)
                 {
-                    class9.itemarray[k15] = -1;
-                    class9.itemarray[k15] = 0;
+                    class9.itemIds[k15] = -1;
+                    class9.itemIds[k15] = 0;
                 }
 
                 packetId = -1;
@@ -10597,7 +10572,7 @@ public class Main extends ApplicationApplet {
                 if(spincam_angle >= 100) {
                     camerax = spincam_x * 128 + 64;
                     cameray = spincam_y * 128 + 64;
-                    cameraz = calculateTileHeight(camerax, cameray, cheight) - spincam_z;
+                    cameraz = calculateTileHeight(camerax, cameray, currentZ) - spincam_z;
                 }
                 packetId = -1;
                 return true;
@@ -10608,8 +10583,8 @@ public class Main extends ApplicationApplet {
                 int k1 = inbuffer.getUbyte();
                 int i10 = inbuffer.getDwordA();
                 int l15 = inbuffer.getUbyte();
-                skillxp[k1] = i10;
-                skilllevels[k1] = l15;
+                skillExperience[k1] = i10;
+                skillLevels[k1] = l15;
                 anIntArray1044[k1] = 1;
                 for(int k20 = 0; k20 < 98; k20++)
                     if(i10 >= XP_TABLE[k20])
@@ -10666,12 +10641,12 @@ public class Main extends ApplicationApplet {
             }
             if(packetId == 70)
             {
-                int k2 = inbuffer.getWord();
-                int l10 = inbuffer.getWordLE();
-                int i16 = inbuffer.getUwordLE();
-                Widget class9_5 = Widget.widgets[i16];
-                class9_5.anInt263 = k2;
-                class9_5.anInt265 = l10;
+                int offsetX = inbuffer.getWord();
+                int offsetY = inbuffer.getWordLE();
+                int widgetid = inbuffer.getUwordLE();
+                Widget class9_5 = Widget.widgets[widgetid];
+                class9_5.offsetX = offsetX;
+                class9_5.offsetY = offsetY;
                 packetId = -1;
                 return true;
             }
@@ -10719,11 +10694,11 @@ public class Main extends ApplicationApplet {
                 if(chunkx_ / 8 == 48 && chunky_ / 8 == 148)
                     isLoadedLandscapes = true;
                 landscape_stage = 1;
-                aLong824 = System.currentTimeMillis();
+                timestamp = System.currentTimeMillis();
                 toplefttext_imagefetcher.initialize(0);
                 p12Font.drawCenteredYText(0, "Loading - please wait.", 23693, 151, 257);
                 p12Font.drawCenteredYText(0xffffff, "Loading - please wait.", 23693, 150, 256);
-                toplefttext_imagefetcher.updateGraphics(4, 23680, super.graphics, 4);
+                toplefttext_imagefetcher.updateGraphics(4, 23680, super.appletGraphics, 4);
                 if(packetId == 73)
                 {
                     int k16 = 0;
@@ -10820,30 +10795,30 @@ public class Main extends ApplicationApplet {
                 anInt1037 = palettey;
                 for(int i10 = 0; i10 < 16384; i10++)
                 {
-                    NPC class30_sub2_sub4_sub1_sub1 = npcs[i10];
+                    Npc class30_sub2_sub4_sub1_sub1 = npcs[i10];
                     if(class30_sub2_sub4_sub1_sub1 != null) {
                         for(int j29 = 0; j29 < 10; j29++)  {
-                            ((Mob) (class30_sub2_sub4_sub1_sub1)).palettex_stack[j29] -= i17;
-                            ((Mob) (class30_sub2_sub4_sub1_sub1)).palettey_stack[j29] -= j21;
+                            ((Mob) (class30_sub2_sub4_sub1_sub1)).xList[j29] -= i17;
+                            ((Mob) (class30_sub2_sub4_sub1_sub1)).yList[j29] -= j21;
                         }
-                        class30_sub2_sub4_sub1_sub1.fineposx -= i17 * 128;
-                        class30_sub2_sub4_sub1_sub1.fineposy -= j21 * 128;
+                        class30_sub2_sub4_sub1_sub1.fineX -= i17 * 128;
+                        class30_sub2_sub4_sub1_sub1.fineY -= j21 * 128;
                     }
                 }
 
                 for(int i27 = 0; i27 < maxplayers; i27++)
                 {
-                    Player class30_sub2_sub4_sub1_sub2 = players[i27];
+                    Player class30_sub2_sub4_sub1_sub2 = playerArray[i27];
                     if(class30_sub2_sub4_sub1_sub2 != null)
                     {
                         for(int i31 = 0; i31 < 10; i31++)
                         {
-                            ((Mob) (class30_sub2_sub4_sub1_sub2)).palettex_stack[i31] -= i17;
-                            ((Mob) (class30_sub2_sub4_sub1_sub2)).palettey_stack[i31] -= j21;
+                            ((Mob) (class30_sub2_sub4_sub1_sub2)).xList[i31] -= i17;
+                            ((Mob) (class30_sub2_sub4_sub1_sub2)).yList[i31] -= j21;
                         }
 
-                        class30_sub2_sub4_sub1_sub2.fineposx -= i17 * 128;
-                        class30_sub2_sub4_sub1_sub2.fineposy -= j21 * 128;
+                        class30_sub2_sub4_sub1_sub2.fineX -= i17 * 128;
+                        class30_sub2_sub4_sub1_sub2.fineY -= j21 * 128;
                     }
                 }
 
@@ -10919,8 +10894,8 @@ public class Main extends ApplicationApplet {
             {
                 int j3 = inbuffer.getUwordLE128();
                 int j11 = inbuffer.getUwordLE128();
-                Widget.widgets[j11].anInt233 = 2;
-                Widget.widgets[j11].anInt234 = j3;
+                Widget.widgets[j11].unactiveAnimFetchType = 2;
+                Widget.widgets[j11].unactiveAnimModelId = j3;
                 packetId = -1;
                 return true;
             }
@@ -11058,9 +11033,9 @@ public class Main extends ApplicationApplet {
             }
             if(packetId == 1)
             {
-                for(int k4 = 0; k4 < players.length; k4++)
-                    if(players[k4] != null)
-                        players[k4].animid_request = -1;
+                for(int k4 = 0; k4 < playerArray.length; k4++)
+                    if(playerArray[k4] != null)
+                        playerArray[k4].animid_request = -1;
 
                 for(int j12 = 0; j12 < npcs.length; j12++)
                     if(npcs[j12] != null)
@@ -11201,12 +11176,12 @@ public class Main extends ApplicationApplet {
                 int j5 = inbuffer.getUwordLE();
                 int l12 = inbuffer.getUword128();
                 Widget class9_3 = Widget.widgets[j5];
-                if(class9_3 != null && class9_3.widgettype == 0)
+                if(class9_3 != null && class9_3.type == 0)
                 {
                     if(l12 < 0)
                         l12 = 0;
-                    if(l12 > class9_3.anInt261 - class9_3.height)
-                        l12 = class9_3.anInt261 - class9_3.height;
+                    if(l12 > class9_3.currentHeight - class9_3.height)
+                        l12 = class9_3.currentHeight - class9_3.height;
                     class9_3.anInt224 = l12;
                 }
                 packetId = -1;
@@ -11301,17 +11276,17 @@ public class Main extends ApplicationApplet {
                 int k18 = inbuffer.getUword();
                 if(k18 == 65535)
                 {
-                    Widget.widgets[i6].anInt233 = 0;
+                    Widget.widgets[i6].unactiveAnimFetchType = 0;
                     packetId = -1;
                     return true;
                 } else
                 {
                     ItemDefinition class8 = ItemDefinition.getItemDefinition(k18);
-                    Widget.widgets[i6].anInt233 = 4;
-                    Widget.widgets[i6].anInt234 = k18;
-                    Widget.widgets[i6].anInt270 = class8.rotation;
-                    Widget.widgets[i6].anInt271 = class8.anInt198;
-                    Widget.widgets[i6].anInt269 = (class8.zoom * 100) / i13;
+                    Widget.widgets[i6].unactiveAnimFetchType = 4;
+                    Widget.widgets[i6].unactiveAnimModelId = k18;
+                    Widget.widgets[i6].rotationAngleX = class8.rotation;
+                    Widget.widgets[i6].rotationAngleY = class8.anInt198;
+                    Widget.widgets[i6].rotationOrigin = (class8.zoom * 100) / i13;
                     packetId = -1;
                     return true;
                 }
@@ -11320,7 +11295,7 @@ public class Main extends ApplicationApplet {
             {
                 boolean flag1 = inbuffer.getUbyte() == 1;
                 int j13 = inbuffer.getUword();
-                Widget.widgets[j13].aBoolean266 = flag1;
+                Widget.widgets[j13].isActive = flag1;
                 packetId = -1;
                 return true;
             }
@@ -11350,8 +11325,8 @@ public class Main extends ApplicationApplet {
             {
                 String s1 = inbuffer.getString();
                 int k13 = inbuffer.getUword128();
-                Widget.widgets[k13].aString248 = s1;
-                if(Widget.widgets[k13].parentid == tab_interfaces[current_tab])
+                Widget.widgets[k13].inactiveText = s1;
+                if(Widget.widgets[k13].parentId == tab_interfaces[current_tab])
                     aBoolean1153 = true;
                 packetId = -1;
                 return true;
@@ -11376,43 +11351,43 @@ public class Main extends ApplicationApplet {
             }
             if(packetId == 8)
             {
-                int k6 = inbuffer.getUwordLE128();
-                int l13 = inbuffer.getUword();
-                Widget.widgets[k6].anInt233 = 1;
-                Widget.widgets[k6].anInt234 = l13;
+                int widgetId = inbuffer.getUwordLE128();
+                int modelId = inbuffer.getUword();
+                Widget.widgets[widgetId].unactiveAnimFetchType = 1;
+                Widget.widgets[widgetId].unactiveAnimModelId = modelId;
                 packetId = -1;
                 return true;
             }
             if(packetId == 122)
             {
-                int l6 = inbuffer.getUwordLE128();
-                int i14 = inbuffer.getUwordLE128();
-                int i19 = i14 >> 10 & 0x1f;
-                int i22 = i14 >> 5 & 0x1f;
-                int l24 = i14 & 0x1f;
-                Widget.widgets[l6].anInt232 = (i19 << 19) + (i22 << 11) + (l24 << 3);
+                int widgetId = inbuffer.getUwordLE128();
+                int color = inbuffer.getUwordLE128();
+                int rChannel = color >> 10 & 0x1f;
+                int gChannel = color >> 5 & 0x1f;
+                int bChannel = color & 0x1f;
+                Widget.widgets[widgetId].inactiveTextColor = (rChannel << 19) + (gChannel << 11) + (bChannel << 3);
                 packetId = -1;
                 return true;
             }
             if(packetId == 53)
             {
                 aBoolean1153 = true;
-                int i7 = inbuffer.getUword();
-                Widget class9_1 = Widget.widgets[i7];
-                int j19 = inbuffer.getUword();
-                for(int j22 = 0; j22 < j19; j22++)
+                int widgetId = inbuffer.getUword();
+                Widget widget = Widget.widgets[widgetId];
+                int len = inbuffer.getUword();
+                for(int j22 = 0; j22 < len; j22++)
                 {
-                    int i25 = inbuffer.getUbyte();
-                    if(i25 == 255)
-                        i25 = inbuffer.getDwordB();
-                    class9_1.itemarray[j22] = inbuffer.getUwordLE128();
-                    class9_1.itemamounts[j22] = i25;
+                    int amount = inbuffer.getUbyte();
+                    if(amount == 255)
+                        amount = inbuffer.getDwordB();
+                    widget.itemIds[j22] = inbuffer.getUwordLE128();
+                    widget.itemAmounts[j22] = amount;
                 }
 
-                for(int j25 = j19; j25 < class9_1.itemarray.length; j25++)
+                for(int j25 = len; j25 < widget.itemIds.length; j25++)
                 {
-                    class9_1.itemarray[j25] = 0;
-                    class9_1.itemamounts[j25] = 0;
+                    widget.itemIds[j25] = 0;
+                    widget.itemAmounts[j25] = 0;
                 }
 
                 packetId = -1;
@@ -11420,13 +11395,13 @@ public class Main extends ApplicationApplet {
             }
             if(packetId == 230)
             {
-                int j7 = inbuffer.getUword128();
-                int j14 = inbuffer.getUword();
-                int k19 = inbuffer.getUword();
-                int k22 = inbuffer.getUwordLE128();
-                Widget.widgets[j14].anInt270 = k19;
-                Widget.widgets[j14].anInt271 = k22;
-                Widget.widgets[j14].anInt269 = j7;
+                int origin = inbuffer.getUword128();
+                int widgetId = inbuffer.getUword();
+                int rotX = inbuffer.getUword();
+                int rotY = inbuffer.getUwordLE128();
+                Widget.widgets[widgetId].rotationAngleX = rotX;
+                Widget.widgets[widgetId].rotationAngleY = rotY;
+                Widget.widgets[widgetId].rotationOrigin = origin;
                 packetId = -1;
                 return true;
             }
@@ -11449,7 +11424,7 @@ public class Main extends ApplicationApplet {
                 {
                     int k7 = normalcam_x * 128 + 64;
                     int k14 = normalcam_y * 128 + 64;
-                    int i20 = calculateTileHeight(k7, k14, cheight) - normalcam_z;
+                    int i20 = calculateTileHeight(k7, k14, currentZ) - normalcam_z;
                     int dy = k7 - camerax;
                     int dy2 = i20 - cameraz;
                     int dx = k14 - cameray;
@@ -11467,8 +11442,8 @@ public class Main extends ApplicationApplet {
             }
             if(packetId == 249)
             {
-                anInt1046 = inbuffer.getByte128();
-                anInt884 = inbuffer.getUwordLE128();
+                isMembers = inbuffer.getByte128();
+                localPlayerId = inbuffer.getUwordLE128();
                 packetId = -1;
                 return true;
             }
@@ -11572,7 +11547,7 @@ public class Main extends ApplicationApplet {
                 int l8 = inbuffer.getUword();
                 int i15 = inbuffer.getWord();
                 Widget class9_4 = Widget.widgets[l8];
-                class9_4.anInt257 = i15;
+                class9_4.inactiveAnimId = i15;
                 if(i15 == -1)
                 {
                     class9_4.anInt246 = 0;
@@ -11616,10 +11591,10 @@ public class Main extends ApplicationApplet {
                     int l25 = inbuffer.getUbyte();
                     if(l25 == 255)
                         l25 = inbuffer.getDword();
-                    if(j20 >= 0 && j20 < class9_2.itemarray.length)
+                    if(j20 >= 0 && j20 < class9_2.itemIds.length)
                     {
-                        class9_2.itemarray[j20] = i23;
-                        class9_2.itemamounts[j20] = l25;
+                        class9_2.itemIds[j20] = i23;
+                        class9_2.itemAmounts[j20] = l25;
                     }
                 }
                 packetId = -1;
@@ -11667,10 +11642,10 @@ public class Main extends ApplicationApplet {
         }
         catch(Exception exception)
         {
-            String s2 = "T2 - " + packetId + "," + anInt842 + "," + anInt843 + " - " + packetSize + "," + (palettex + ((Mob) (localplayer)).palettex_stack[0]) + "," + (palettey + ((Mob) (localplayer)).palettey_stack[0]) + " - ";
+            String s2 = "T2 - " + packetId + "," + anInt842 + "," + anInt843 + " - " + packetSize + "," + (palettex + ((Mob) (localPlayer)).xList[0]) + "," + (palettey + ((Mob) (localPlayer)).yList[0]) + " - ";
             for(int j15 = 0; j15 < packetSize && j15 < 50; j15++)
                 s2 = s2 + inbuffer.payload[j15] + ",";
-
+            exception.printStackTrace();
             Signlink.reportError(s2);
             killToMainscreen(true);
         }
@@ -11688,13 +11663,13 @@ public class Main extends ApplicationApplet {
         processGFXs(true);
         if(!aBoolean1160)
         {
-            int pitch = camerapitch;
+            int pitch = cameraPitch;
             if(anInt984 / 256 > pitch)
                 pitch = anInt984 / 256;
             if(cameramovements[4] && cameratransvars4[4] + 128 > pitch)
                 pitch = cameratransvars4[4] + 128;
-            int yaw = camerayaw + anInt896 & 0x7ff;
-            setCurrentCameraVars(pitch, yaw, 600 + pitch * 3, anInt1014, calculateTileHeight( ((Mob) (localplayer)).fineposx, ((Mob) (localplayer)).fineposy, cheight) - 50, anInt1015);
+            int yaw = cameraYaw + anInt896 & 0x7ff;
+            setCurrentCameraVars(pitch, yaw, 600 + pitch * 3, anInt1014, calculateTileHeight( ((Mob) (localPlayer)).fineX, ((Mob) (localPlayer)).fineY, currentZ) - 50, anInt1015);
         }
         int j;
         if(!aBoolean1160)
@@ -11736,8 +11711,8 @@ public class Main extends ApplicationApplet {
         } else
         {
             Model.anInt1687 = 0;
-            Model.anInt1685 = super.mouse_x - 4;
-            Model.anInt1686 = super.mouse_y - 4;
+            Model.anInt1685 = super.newMouseX - 4;
+            Model.anInt1686 = super.newMouseY - 4;
             BasicRasterizer.resetPixelBuffer();
             pallet.setDimensions(camerax, cameray, camerayaw$, cameraz, j, camerapitch$, false);
             pallet.method288((byte)104);
@@ -11745,7 +11720,7 @@ public class Main extends ApplicationApplet {
             drawMarkerOnLocation(-252);
             method37(854, k2);
             method112(8);
-            toplefttext_imagefetcher.updateGraphics(4, 23680, super.graphics, 4);
+            toplefttext_imagefetcher.updateGraphics(4, 23680, super.appletGraphics, 4);
             camerax = l;
             cameraz = i1;
             cameray = j1;
@@ -11784,14 +11759,14 @@ public class Main extends ApplicationApplet {
         aBoolean830 = true;
         runflamecycle = false;
         aClass30_Sub2_Sub2_834 = new ByteBuffer(new byte[5000]);
-        npcs = new NPC[16384];
-        updatenpcs = new int[16384];
+        npcs = new Npc[16384];
+        localNpcIds = new int[16384];
         anInt838 = 9;
-        playerremove_stack = new int[1000];
+        eRmQueue = new int[1000];
         loginBuffer = ByteBuffer.createBuffer(1);
         aBoolean848 = true;
         anInt857 = -1;
-        skillxp = new int[SkillConstants.amt_skills];
+        skillExperience = new int[SkillConstants.amt_skills];
         useWebJaggrab = true;
         cameratransvars = new int[5];
         anInt874 = -1;
@@ -11802,22 +11777,22 @@ public class Main extends ApplicationApplet {
         aString881 = "";
         anInt882 = -30815;
         anInt883 = 533;
-        anInt884 = -1;
+        localPlayerId = -1;
         aBoolean885 = false;
         aString887 = "";
         maxplayers = 2048;
-        localindex = 2047;
-        players = new Player[maxplayers];
-        anIntArray892 = new int[maxplayers];
-        playerupdate_stack = new int[maxplayers];
-        appearancebuffers = new ByteBuffer[maxplayers];
+        localPlayerIndex = 2047;
+        playerArray = new Player[maxplayers];
+        addedPlayers = new int[maxplayers];
+        pFlagUpdateList = new int[maxplayers];
+        appearanceBuffers = new ByteBuffer[maxplayers];
         anInt897 = 1;
         anIntArrayArray901 = new int[104][104];
         anInt902 = 0x766654;
         aByteArray912 = new byte[16384];
         aByte920 = 14;
         anInt921 = 732;
-        skilllevels = new int[SkillConstants.amt_skills];
+        skillLevels = new int[SkillConstants.amt_skills];
         aByte923 = 25;
         ignore_hashes = new long[100];
         aBoolean926 = false;
@@ -11830,7 +11805,7 @@ public class Main extends ApplicationApplet {
         msgprefix_stack = new String[100];
         msgbody_stack = new String[100];
         sideicons = new IndexedColorSprite[13];
-        aBoolean954 = true;
+        focusPacketToggle = true;
         friend_hashes = new long[200];
         anInt956 = -1;
         aBoolean962 = false;
@@ -11853,7 +11828,7 @@ public class Main extends ApplicationApplet {
         aStringArray983 = new String[anInt975];
         anInt985 = -1;
         hitmarks = new DirectColorSprite[20];
-        anIntArray990 = new int[5];
+        characterColorIds = new int[5];
         aBoolean991 = false;
         aBoolean994 = false;
         anInt1002 = 0x23201b;
@@ -11879,7 +11854,7 @@ public class Main extends ApplicationApplet {
         aClass9_1059 = new Widget();
         mapscene = new IndexedColorSprite[100];
         anInt1063 = 0x4d4233;
-        anIntArray1065 = new int[7];
+        characterModelIds = new int[7];
         anIntArray1072 = new int[1000];
         anIntArray1073 = new int[1000];
         aBoolean1080 = false;
@@ -11920,7 +11895,7 @@ public class Main extends ApplicationApplet {
         aBoolean1176 = false;
         anInt1178 = -1;
         aClass19_1179 = new Deque();
-        camerapitch = 128;
+        cameraPitch = 128;
         anInt1189 = -1;
         gameBuffer = ByteBuffer.createBuffer(1);
         aByte1194 = 5;
@@ -11938,17 +11913,17 @@ public class Main extends ApplicationApplet {
         aBoolean1223 = false;
         aBoolean1228 = true;
         anIntArray1229 = new int[151];
-        collisionmaps = new CollisionMap[4];
+        planeFlags = new PlaneFlags[4];
         updatetoolbar = false;
         anIntArray1240 = new int[100];
         anIntArray1241 = new int[50];
         aBoolean1242 = false;
         anIntArray1250 = new int[50];
         aBoolean1252 = false;
-        aBoolean1255 = false;
+        paintRequested = false;
         aBoolean1256 = false;
-        aString1266 = "";
-        aString1267 = "";
+        loginMessage0 = "";
+        loginMessage1 = "";
         aByte1274 = -13;
         anInt1276 = -1;
         aBoolean1277 = true;
@@ -11961,7 +11936,7 @@ public class Main extends ApplicationApplet {
     public static boolean JAGGRAB_DISABLED;
     public int amt_ignorehashes;
     public static byte aByte823 = 77;
-    public long aLong824;
+    public long timestamp;
     public int distancestrength[][];
     public int anIntArray826[];
     public Deque grounditems[][][];
@@ -11972,12 +11947,12 @@ public class Main extends ApplicationApplet {
     public Socket jaggrabSocket;
     public int titlescreen_tab;
     public ByteBuffer aClass30_Sub2_Sub2_834;
-    public NPC npcs[];
+    public Npc npcs[];
     public int anInt836;
-    public int updatenpcs[];
+    public int localNpcIds[];
     public int anInt838;
-    public int amtplayerremovestack;
-    public int playerremove_stack[];
+    public int eRmQueuePosition;
+    public int eRmQueue[];
     public int anInt841;
     public int anInt842;
     public int anInt843;
@@ -11993,12 +11968,7 @@ public class Main extends ApplicationApplet {
     public int anIntArray853[];
     public static int anInt854;
     public int markertype;
-    public static BigInteger aBigInteger856 = new BigInteger("981012326571499187065184668975404420604104746115327143"
-                       + "425398364023255266034839499203283523268032241887665517"
-                       + "949046293012131920368658499115639817773794790080727109"
-                       + "055979471703170973700925588352736539966824288380022294"
-                       + "088721610229958537960939017309260626929024154250671410"
-                       + "78879053996044981697505716670498887731");
+    public static BigInteger modulus = new BigInteger("94110576314610994718998081678112721707302768097953573382594472711586892647324048387895220267278548668404446455854984542894191923190062621913004110871090621766911511417077647755530435334378014024591274020906279816717181801750245525684733633557077844371661010447566347245316848850605330431469711797488557035631");
     public int anInt857;
     public int camerax;
     public int cameraz;
@@ -12006,7 +11976,7 @@ public class Main extends ApplicationApplet {
     public int camerapitch$;
     public int camerayaw$;
     public int rights;
-    public int skillxp[];
+    public int skillExperience[];
     public IndexedColorSprite redstone1_3;
     public IndexedColorSprite redstone2_3;
     public IndexedColorSprite redstone3_2;
@@ -12021,23 +11991,23 @@ public class Main extends ApplicationApplet {
     public boolean cameramovements[];
     public int anInt877;
     public int anInt878;
-    public Monitor watchdog;
+    public Monitor monitor;
     public volatile boolean runclient;
     public String aString881;
     public int anInt882;
     public int anInt883;
-    public int anInt884;
+    public int localPlayerId;
     public boolean aBoolean885;
-    public int anInt886;
+    public int currentWidgetId;
     public String aString887;
     public int maxplayers;
-    public int localindex;
-    public Player players[];
-    public int anInt891;
-    public int anIntArray892[];
+    public int localPlayerIndex;
+    public Player playerArray[];
+    public int playerOffset;
+    public int addedPlayers[];
     public int amtplayerupdatestack;
-    public int playerupdate_stack[];
-    public ByteBuffer appearancebuffers[];
+    public int pFlagUpdateList[];
+    public ByteBuffer appearanceBuffers[];
     public int anInt896;
     public int anInt897;
     public int anInt898;
@@ -12060,11 +12030,11 @@ public class Main extends ApplicationApplet {
     public int anInt915;
     public int anInt916;
     public int anInt917;
-    public int cheight;
+    public int currentZ;
     public static boolean aBoolean919 = true;
     public byte aByte920;
     public int anInt921;
-    public int skilllevels[];
+    public int skillLevels[];
     public byte aByte923;
     public static int anInt924;
     public long ignore_hashes[];
@@ -12096,7 +12066,7 @@ public class Main extends ApplicationApplet {
     public int anInt951;
     public int anInt952;
     public long aLong953;
-    public boolean aBoolean954;
+    public boolean focusPacketToggle;
     public long friend_hashes[];
     public int anInt956;
     public static int nodeid = 10;
@@ -12134,7 +12104,7 @@ public class Main extends ApplicationApplet {
     public DirectColorSprite hitmarks[];
     public int anInt988;
     public int anInt989;
-    public int anIntArray990[];
+    public int characterColorIds[];
     public boolean aBoolean991;
     public int anInt992;
     public static boolean aBoolean993;
@@ -12191,7 +12161,7 @@ public class Main extends ApplicationApplet {
     public IndexedColorSprite backmid1;
     public int cameratransvars2[];
     public boolean aBoolean1031;
-    public static BigInteger aBigInteger1032 = new BigInteger("65537");
+    public static BigInteger publicKey = new BigInteger("65537");
     public DirectColorSprite mapfunction[];
     public int palettex;
     public int palettey;
@@ -12205,7 +12175,7 @@ public class Main extends ApplicationApplet {
     public boolean aBoolean1043;
     public int anIntArray1044[];
     public int configqueue[];
-    public int anInt1046;
+    public int isMembers;
     public boolean aBoolean1047;
     public int anInt1048;
     public String aString1049;
@@ -12224,7 +12194,7 @@ public class Main extends ApplicationApplet {
     public int anInt1062;
     public int anInt1063;
     public int anInt1064;
-    public int anIntArray1065[];
+    public int characterModelIds[];
     public int moveitem_endslot;
     public int anInt1067;
     public OndemandHandler ondemandhandler;
@@ -12285,7 +12255,7 @@ public class Main extends ApplicationApplet {
     public ImageFetcher toolbartext_imagefetcher;
     public ImageFetcher aClass15_1124;
     public ImageFetcher aClass15_1125;
-    public static Player localplayer;
+    public static Player localPlayer;
     public String aStringArray1127[];
     public boolean aBooleanArray1128[];
     public int custompalette[][][];
@@ -12339,7 +12309,7 @@ public class Main extends ApplicationApplet {
     public String password;
     public static int anInt1175;
     public boolean aBoolean1176;
-    public final int object_types[] = {
+    public final int OBJECT_TYPES[] = {
         0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 
         2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 
         2, 2, 3
@@ -12350,8 +12320,8 @@ public class Main extends ApplicationApplet {
     public int anIntArray1181[];
     public int anIntArray1182[];
     public byte tilebytes[][];
-    public int camerapitch;
-    public int camerayaw;
+    public int cameraPitch;
+    public int cameraYaw;
     public int camerayawrate;
     public int camerayrate;
     public static int anInt1188;
@@ -12383,13 +12353,13 @@ public class Main extends ApplicationApplet {
     public int anInt1211;
     public String aString1212;
     public int anInt1213;
-    public int main_heightmap[][][];
+    public int tileHeightmap[][][];
     public long ssk;
     public int userpass_swtch;
     public byte aByte1217;
     public int anInt1218;
     public IndexedColorSprite mod_icons[];
-    public long lastpressed_t;
+    public long lastPressedTimestamp;
     public int current_tab;
     public int nmarker_id;
     public boolean aBoolean1223;
@@ -12399,7 +12369,7 @@ public class Main extends ApplicationApplet {
     public int anInt1227;
     public boolean aBoolean1228;
     public int anIntArray1229[];
-    public CollisionMap collisionmaps[];
+    public PlaneFlags planeFlags[];
     public static boolean aBoolean1231;
     public static int BIT_MASKS[];
     public boolean updatetoolbar;
@@ -12424,10 +12394,10 @@ public class Main extends ApplicationApplet {
     public boolean aBoolean1252;
     public int anInt1253;
     public int anInt1254;
-    public boolean aBoolean1255;
+    public boolean paintRequested;
     public boolean aBoolean1256;
     public int anInt1257;
-    public byte main_tilesettings[][][];
+    public byte tileFlags[][][];
     public int anInt1259;
     public static int anInt1260;
     public int anInt1261;
@@ -12435,14 +12405,14 @@ public class Main extends ApplicationApplet {
     public DirectColorSprite aClass30_Sub2_Sub1_Sub1_1263;
     public int anInt1264;
     public int anInt1265;
-    public String aString1266;
-    public String aString1267;
+    public String loginMessage0;
+    public String loginMessage1;
     public int anInt1268;
     public int anInt1269;
     public BitmapFont p11Font;
     public BitmapFont p12Font;
     public BitmapFont b12Font;
-    public BitmapFont q8_font;
+    public BitmapFont q8Font;
     public byte aByte1274;
     public int anInt1275;
     public int anInt1276;
@@ -12455,9 +12425,9 @@ public class Main extends ApplicationApplet {
     public int anInt1283;
     public int anInt1284;
     public int anInt1285;
-    public String aString1286;
+    public String usedItemName;
     public int anInt1287;
-    public static int stepcounters;
+    public static int stepCounter;
     public int anInt1289;
     public static int anInt1290;
 

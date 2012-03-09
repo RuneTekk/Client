@@ -110,7 +110,7 @@ public class Model extends Entity {
         rawmodels[j] = null;
     }
 
-    public static Model getModel(int junk, int j)
+    public static Model getModel(int j)
     {
         if(rawmodels == null)
             return null;
@@ -258,7 +258,6 @@ public class Model extends Entity {
             }
             if(opcode == 2)
             {
-                tcurx = tcurx;
                 tcury = tcurz;
                 tcurz = buffer0.getSmartA() + op;
                 op = tcurz;
@@ -362,52 +361,53 @@ public class Model extends Entity {
         numverticies = 0;
         numtriangles = 0;
         int l = 0;
+        numtexedtriangles = 0;
         for(int i1 = 0; i1 < amountmodels; i1++)
         {
-            Model class30_sub2_sub4_sub6_1 = models[i1];
-            if(class30_sub2_sub4_sub6_1 != null)
+            Model model = models[i1];
+            if(model != null)
             {
-                for(int j1 = 0; j1 < class30_sub2_sub4_sub6_1.numtriangles; j1++)
+                for(int j1 = 0; j1 < model.numtriangles; j1++)
                 {
                     if(flag)
-                        if(class30_sub2_sub4_sub6_1.triangleopcodes == null)
+                        if(model.triangleopcodes == null)
                         {
                             triangleopcodes[numtriangles] = 0;
                         } else
                         {
-                            int k1 = class30_sub2_sub4_sub6_1.triangleopcodes[j1];
+                            int k1 = model.triangleopcodes[j1];
                             if((k1 & 2) == 2)
                                 k1 += l << 2;
                             triangleopcodes[numtriangles] = k1;
                         }
                     if(flag1)
-                        if(class30_sub2_sub4_sub6_1.tripriorities == null)
-                            tripriorities[numtriangles] = class30_sub2_sub4_sub6_1.anInt1641;
+                        if(model.tripriorities == null)
+                            tripriorities[numtriangles] = model.anInt1641;
                         else
-                            tripriorities[numtriangles] = class30_sub2_sub4_sub6_1.tripriorities[j1];
+                            tripriorities[numtriangles] = model.tripriorities[j1];
                     if(flag2)
-                        if(class30_sub2_sub4_sub6_1.trianglealphas == null)
+                        if(model.trianglealphas == null)
                             trianglealphas[numtriangles] = 0;
                         else
-                            trianglealphas[numtriangles] = class30_sub2_sub4_sub6_1.trianglealphas[j1];
-                    if(flag3 && class30_sub2_sub4_sub6_1.tgroups != null)
-                        tgroups[numtriangles] = class30_sub2_sub4_sub6_1.tgroups[j1];
-                    trianglecolors[numtriangles] = class30_sub2_sub4_sub6_1.trianglecolors[j1];
-                    trivertex0[numtriangles] = method465(class30_sub2_sub4_sub6_1, class30_sub2_sub4_sub6_1.trivertex0[j1]);
-                    trivertex1[numtriangles] = method465(class30_sub2_sub4_sub6_1, class30_sub2_sub4_sub6_1.trivertex1[j1]);
-                    trivertex2[numtriangles] = method465(class30_sub2_sub4_sub6_1, class30_sub2_sub4_sub6_1.trivertex2[j1]);
+                            trianglealphas[numtriangles] = model.trianglealphas[j1];
+                    if(flag3 && model.tgroups != null)
+                        tgroups[numtriangles] = model.tgroups[j1];
+                    trianglecolors[numtriangles] = model.trianglecolors[j1];
+                    trivertex0[numtriangles] = method465(model, model.trivertex0[j1]);
+                    trivertex1[numtriangles] = method465(model, model.trivertex1[j1]);
+                    trivertex2[numtriangles] = method465(model, model.trivertex2[j1]);
                     numtriangles++;
                 }
-
-                for(int l1 = 0; l1 < class30_sub2_sub4_sub6_1.numtexedtriangles; l1++)
+                
+                for(int l1 = 0; l1 < model.numtexedtriangles; l1++)
                 {
-                    texedtrianglesx[numtexedtriangles] = method465(class30_sub2_sub4_sub6_1, class30_sub2_sub4_sub6_1.texedtrianglesx[l1]);
-                    texedtrianglesy[numtexedtriangles] = method465(class30_sub2_sub4_sub6_1, class30_sub2_sub4_sub6_1.texedtrianglesy[l1]);
-                    texedtrianglesz[numtexedtriangles] = method465(class30_sub2_sub4_sub6_1, class30_sub2_sub4_sub6_1.texedtrianglesz[l1]);
+                    texedtrianglesx[numtexedtriangles] = method465(model, model.texedtrianglesx[l1]);
+                    texedtrianglesy[numtexedtriangles] = method465(model, model.texedtrianglesy[l1]);
+                    texedtrianglesz[numtexedtriangles] = method465(model, model.texedtrianglesz[l1]);
                     numtexedtriangles++;
                 }
 
-                l += class30_sub2_sub4_sub6_1.numtexedtriangles;
+                l += model.numtexedtriangles;
             }
         }
 
@@ -1174,7 +1174,7 @@ public class Model extends Entity {
         }
     }
 
-    public void moveVertices(int amtx, int amty, int junk, int amtz) {
+    public void moveVertices(int amtx, int amty, int amtz) {
         for(int i1 = 0; i1 < numverticies; i1++) {
             verticiesx[i1] += amtx;
             verticiesy[i1] += amty;
@@ -1380,8 +1380,8 @@ public class Model extends Entity {
 
     public void drawModel(int xrotation, int yrotation, int zrotation, int xrotation2, int originx, int originy, int originz)
     {
-        int midwidth = TriangleRasterizer.midwidth;
-        int midheight = TriangleRasterizer.midheight;
+        int midwidth = TriangleRasterizer.centerWidth;
+        int midheight = TriangleRasterizer.centerHeight;
         int sine0 = sinetable[xrotation];
         int cosine0 = cosinetable[xrotation];
         int sine1 = sinetable[yrotation];
@@ -1441,9 +1441,9 @@ public class Model extends Entity {
     }
 
     @Override
-    public void drawModel(int angle, int j, int k, int l, int i1, int originx, int originy, int originz, int i2) {
+    public void drawModel(int angle, int sP, int k, int l, int i1, int originx, int originy, int originz, int i2) {
         int j2 = originz * i1 - originx * l >> 16;
-        int k2 = originy * j + j2 * k >> 16;
+        int k2 = originy * sP + j2 * k >> 16;
         int l2 = maxdistxz * k >> 16;
         int i3 = k2 + l2;
         if(i3 <= 50 || k2 >= 3500)
@@ -1455,8 +1455,8 @@ public class Model extends Entity {
         int l3 = j3 + maxdistxz << 9;
         if(l3 / i3 <= -BasicRasterizer.widthCenter)
             return;
-        int i4 = originy * k - j2 * j >> 16;
-        int j4 = maxdistxz * j >> 16;
+        int i4 = originy * k - j2 * sP >> 16;
+        int j4 = maxdistxz * sP >> 16;
         int k4 = i4 + j4 << 9;
         if(k4 / i3 <= -BasicRasterizer.heightCenter)
             return;
@@ -1464,7 +1464,7 @@ public class Model extends Entity {
         int i5 = i4 - l4 << 9;
         if(i5 / i3 >= BasicRasterizer.heightCenter)
             return;
-        int j5 = l2 + (super.miny * j >> 16);
+        int j5 = l2 + (super.miny * sP >> 16);
         boolean flag = false;
         if(k2 - j5 <= 50)
             flag = true;
@@ -1492,16 +1492,16 @@ public class Model extends Entity {
                 k4 /= i3;
                 i5 /= k5;
             }
-            int i6 = anInt1685 - TriangleRasterizer.midwidth;
-            int k6 = anInt1686 - TriangleRasterizer.midheight;
+            int i6 = anInt1685 - TriangleRasterizer.centerWidth;
+            int k6 = anInt1686 - TriangleRasterizer.centerHeight;
             if(i6 > k3 && i6 < l3 && k6 > i5 && k6 < k4)
                 if(aBoolean1659)
                     anIntArray1688[anInt1687++] = i2;
                 else
                     flag1 = true;
         }
-        int l5 = TriangleRasterizer.midwidth;
-        int j6 = TriangleRasterizer.midheight;
+        int l5 = TriangleRasterizer.centerWidth;
+        int j6 = TriangleRasterizer.centerHeight;
         int l6 = 0;
         int i7 = 0;
         if(angle != 0)
@@ -1526,8 +1526,8 @@ public class Model extends Entity {
             int k8 = posz * l + posx * i1 >> 16;
             posz = posz * i1 - posx * l >> 16;
             posx = k8;
-            k8 = posy * k - posz * j >> 16;
-            posz = posy * j + posz * k >> 16;
+            k8 = posy * k - posz * sP >> 16;
+            posz = posy * sP + posz * k >> 16;
             posy = k8;
             zvertex$[j7] = posz - k2;
             if(posz >= 50)
@@ -1790,8 +1790,8 @@ public class Model extends Entity {
 
     public void drawFineTriangle(int id)
     {
-        int midw = TriangleRasterizer.midwidth;
-        int midh = TriangleRasterizer.midheight;
+        int midw = TriangleRasterizer.centerWidth;
+        int midh = TriangleRasterizer.centerHeight;
         int offset = 0;
         int v0 = trivertex0[id];
         int v1 = trivertex1[id];
