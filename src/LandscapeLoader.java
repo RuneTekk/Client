@@ -403,7 +403,7 @@ public class LandscapeLoader {
 		}
 	}
   
-	public static int generatePerlinNoise(int i, int i_108_) {
+	public static int getPnSeed(int i, int i_108_) {
 		int i_109_ = (interpolatedNoise (i + 45365, i_108_ + 91923, 4) - 128 + (interpolatedNoise (i + 10294, i_108_ + 37821, 2) - 128 >> 1) + (interpolatedNoise (i, i_108_, 1) - 128 >> 2));
 		i_109_ = (int) ((double) i_109_ * 0.3) + 35;
 		if (i_109_ < 10)
@@ -433,7 +433,7 @@ public class LandscapeLoader {
 		}
 	}
   
-	public void method174(int i, int i_113_, int junk, int i_115_, int i_116_) {
+	public void adjustHeightmap(int i, int i_113_, int junk, int i_115_, int i_116_) {
 		for (int i_117_ = i; i_117_ <= i + i_113_; i_117_++) {
 			for (int i_118_ = i_116_; i_118_ <= i_116_ + i_115_; i_118_++) {
 				if (i_118_ >= 0 && i_118_ < ml_sizex && i_117_ >= 0 && i_117_ < ml_sizey) {
@@ -451,7 +451,7 @@ public class LandscapeLoader {
 		}
   }
   
-	public void spawnObject(int spawny, Palette palette, PlaneFlags collisionmap, int objtype, int spwnz, int spwnx, int objid, boolean junk, int objrotation) {
+	public void putGameObject(int spawny, Palette palette, PlaneFlags collisionmap, int objtype, int spwnz, int spwnx, int objid, boolean junk, int objrotation) {
 		if (! lowmemory || (tileFlags[0][spwnx][spawny] & 0x2) != 0 || ((tileFlags[spwnz][spwnx][spawny] & 0x10) == 0 && getHeightFromTilesettings (spawny, spwnz, spwnx, 0) == ml_hieght)) {
 		if (spwnz < anInt145)
 		  anInt145 = spwnz;
@@ -803,72 +803,53 @@ public class LandscapeLoader {
     return class46.method577 (i_159_, true);
   }
   
-  public void method179 (int i, int i_162_, PlaneFlags[] class11s, int i_163_,
-			 int i_164_, int i_165_, byte[] is, int i_166_,
-			 int i_167_, int i_168_)
-  {
-    for (int i_169_ = 0; i_169_ < 8; i_169_++)
-      {
-	for (int i_170_ = 0; i_170_ < 8; i_170_++)
-	  {
-	    if (i_164_ + i_169_ > 0 && i_164_ + i_169_ < 103
-		&& i_168_ + i_170_ > 0 && i_168_ + i_170_ < 103)
-	      class11s[i_167_].flagBuffer[i_164_ + i_169_][(i_168_
-								    + i_170_)]
-		&= ~0x1000000;
-	  }
+      public void loadChunkTiles(byte[] src, int loadX, int loadY, int loadZ, int xOff, int yOff, int rOff, int planeZ, PlaneFlags[] planes) {
+        for (int x = 0; x < 8; x++) {
+            for (int y = 0; y < 8; y++) {
+                if (xOff + x > 0 && xOff + x < 103 && yOff + y > 0 && yOff + y < 103)
+                    planes[planeZ].flagBuffer[xOff + x][(yOff + y)] &= ~0x1000000;
+            }
+        }
+        ByteBuffer buffer0 = new ByteBuffer (src);
+        for (int z = 0; z < 4; z++) {
+            for (int x = 0; x < 64; x++) {
+                for (int y = 0; y < 64; y++) {
+                    if (z == loadZ && x >= loadX && x < loadX + 8 && y >= loadY && y < loadY + 8)
+                        loadTileData (buffer0, xOff + MapUtils.method155(rOff, y & 0x7, x & 0x7, false), yOff + MapUtils.method156 (y & 0x7, rOff, -383, x & 0x7), planeZ, 0, 0, rOff);
+                    else
+                        loadTileData (buffer0, -1, -1, 0, 0, 0, 0);
+                  }
+              }
+          }
       }
-    if (i_163_ < 9 || i_163_ > 9)
-      {
-	for (int i_171_ = 1; i_171_ > 0; i_171_++)
-	  {
-	    /* empty */
-	  }
-      }
-    ByteBuffer buffer0 = new ByteBuffer (is);
-    for (int i_172_ = 0; i_172_ < 4; i_172_++)
-      {
-	for (int i_173_ = 0; i_173_ < 64; i_173_++)
-	  {
-	    for (int i_174_ = 0; i_174_ < 64; i_174_++)
-	      {
-		if (i_172_ == i && i_173_ >= i_165_ && i_173_ < i_165_ + 8 && i_174_ >= i_166_ && i_174_ < i_166_ + 8)
-				loadTiles_ (i_168_ + MapUtils.method156 (i_174_ & 0x7, i_162_, -383, i_173_ & 0x7), 0, buffer0, i_164_ + MapUtils.method155 (i_162_, i_174_ & 0x7, i_173_ & 0x7, false),
-			     i_167_, i_162_, 942, 0);
-			else
-		  loadTiles_ (-1, 0, buffer0, -1, 0, 0, 942, 0);
-	      }
-	  }
-      }
-  }
   
-	public void method180(byte[] is, int i, int i_175_, int i_176_, int i_177_, byte junk, PlaneFlags[] class11s) {
-		for (int i_179_ = 0; i_179_ < 4; i_179_++) {
-			for (int i_180_ = 0; i_180_ < 64; i_180_++) {
-				for (int i_181_ = 0; i_181_ < 64; i_181_++) {
-					if (i_175_ + i_180_ > 0 && i_175_ + i_180_ < 103 && i + i_181_ > 0 && i + i_181_ < 103)
-						class11s[i_179_].flagBuffer[i_175_ + i_180_][i + i_181_] &= ~0x1000000;
-				}
-			}
-		}
-		ByteBuffer buffer0 = new ByteBuffer (is);
-		for (int z = 0; z < 4; z++) {
-			for (int x = 0; x < 64; x++) {
-				for (int y = 0; y < 64; y++)
-					loadTiles_(y + i, i_177_, buffer0, x + i_175_, z, 0, 942, i_176_);
-			}
-		}
+	public void loadRegionTiles(byte[] src, int yOff, int xOff, int pnX, int pnY, PlaneFlags[] planes) {
+            for (int z = 0; z < 4; z++) {
+                    for (int x = 0; x < 64; x++) {
+                            for (int y = 0; y < 64; y++) {
+                                    if (xOff + x > 0 && xOff + x < 103 && yOff + y > 0 && yOff + y < 103)
+                                            planes[z].flagBuffer[xOff + x][yOff + y] &= ~0x1000000;
+                            }
+                    }
+            }
+            ByteBuffer buffer = new ByteBuffer(src);
+            for (int z = 0; z < 4; z++) {
+                for (int x = 0; x < 64; x++) {
+                        for (int y = 0; y < 64; y++)
+                            loadTileData(buffer, x + xOff, y + yOff, z, pnX, pnY, 0);
+                }
+            }
 	}
   
-	public void loadTiles_(int y, int i_185_, ByteBuffer buffer0, int x, int z, int i_188_, int junk, int i_190_) {
+	public void loadTileData(ByteBuffer buffer, int x, int y, int z, int pnX, int pnY, int rOff) {
 		if (x >= 0 && x < 104 && y >= 0 && y < 104) {
 			tileFlags[z][x][y] = (byte) 0;
 			for (;;) {
-				int opcode = buffer0.getUbyte();
+				int opcode = buffer.getUbyte();
 				/* Generate height map from perlin noise */
 				if (opcode == 0) {
 					if (z == 0)
-						heightmap[0][x][y] = -generatePerlinNoise(932731 + x + i_190_, 556238 + y + i_185_) * 8;
+						heightmap[0][x][y] = -getPnSeed(932731 + x + pnX, 556238 + y + pnY) * 8;
 					else {
 						heightmap[z][x][y] = heightmap[z - 1][x][y] - 240;
 						break;
@@ -876,7 +857,7 @@ public class LandscapeLoader {
 					break;
 				}
 				if (opcode == 1) {
-					int i_192_ = buffer0.getUbyte ();
+					int i_192_ = buffer.getUbyte();
 					if (i_192_ == 1)
 						i_192_ = 0;
 					if (z == 0)
@@ -888,9 +869,9 @@ public class LandscapeLoader {
 					break;
 				}
 				if (opcode <= 49) {
-					floormap[z][x][y] = buffer0.getByte();
+					floormap[z][x][y] = buffer.getByte();
 					floorshadingtypes[z][x][y] = (byte) ((opcode - 2) / 4); 
-					floortexturerotation[z][x][y] = (byte) (opcode - 2 + i_188_ & 0x3);
+					floortexturerotation[z][x][y] = (byte) (opcode - 2 + rOff & 0x3);
 				} else if (opcode <= 81)
 					tileFlags[z][x][y] = (byte) (opcode - 49);
 				else
@@ -898,15 +879,15 @@ public class LandscapeLoader {
 			}
       } else {
 			for (;;) {
-				int opcode = buffer0.getUbyte ();
+				int opcode = buffer.getUbyte ();
 				if (opcode == 0)
 					break;
 				if (opcode == 1) {
-					buffer0.getUbyte ();
+					buffer.getUbyte ();
 					break;
 				}
 				if (opcode <= 49)
-					buffer0.getUbyte ();
+					buffer.getUbyte ();
 			}
 		}
 	}
@@ -953,7 +934,7 @@ public class LandscapeLoader {
 						PlaneFlags collisionmap = null;
 						if (i_215_ >= 0)
 							collisionmap = class11s[i_215_];
-						spawnObject(spwny, palette, collisionmap, objtype, h, spwnx, objid, false, objrotation + rotation & 0x3);
+						putGameObject(spwny, palette, collisionmap, objtype, h, spwnx, objid, false, objrotation + rotation & 0x3);
 					}
 				}
 			}
@@ -1334,8 +1315,8 @@ public class LandscapeLoader {
     return bool;
   }
   
-	public void method190(int xOffset, PlaneFlags[] class11s, int yOffset, int junk, Palette class25, byte[] is) {
-			ByteBuffer buffer = new ByteBuffer (is);
+	public void loadRegionGameObjects(byte[] src, Palette palette, PlaneFlags[] planes, int xOffset, int yOffset) {
+			ByteBuffer buffer = new ByteBuffer (src);
 			int i_265_ = -1;
 			for (;;) {
 				int counter = buffer.getSmartB ();
@@ -1362,8 +1343,8 @@ public class LandscapeLoader {
 							z--;
 						PlaneFlags class11 = null;
 						if (z >= 0)
-                                                    class11 = class11s[z];
-						spawnObject(y, class25, class11, type, originZ, x, i_265_, false, rotation);
+                                                    class11 = planes[z];
+						putGameObject(y, palette, class11, type, originZ, x, i_265_, false, rotation);
 					}
 				}
 			}

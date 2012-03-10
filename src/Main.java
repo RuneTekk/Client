@@ -432,36 +432,36 @@ public class Main extends ApplicationApplet {
             System.gc();
             for(int i = 0; i < 4; i++)
                 planeFlags[i].resetFlagBuffer();
-            for(int l = 0; l < 4; l++)
+            for(int z = 0; z < 4; z++)
             {
-                for(int k1 = 0; k1 < 104; k1++)
+                for(int x = 0; x < 104; x++)
                 {
-                    for(int j2 = 0; j2 < 104; j2++)
-                        tileFlags[l][k1][j2] = 0;
+                    for(int y = 0; y < 104; y++)
+                        tileFlags[z][x][y] = 0;
                 }
             }
 
-            LandscapeLoader class7 = new LandscapeLoader(tileFlags, -60, 104, 104, tileHeightmap);
-            int k2 = tilebytes.length;
+            LandscapeLoader loader = new LandscapeLoader(tileFlags, -60, 104, 104, tileHeightmap);
+            int amountRegions = tileSrcs.length;
             gameBuffer.putPacket(0);
             if(!aBoolean1159)
             {
-                for(int i3 = 0; i3 < k2; i3++)
+                for(int i = 0; i < amountRegions; i++)
                 {
-                    int i4 = (regionhashes[i3] >> 8) * 64 - palettex;
-                    int k5 = (regionhashes[i3] & 0xff) * 64 - palettey;
-                    byte abyte0[] = tilebytes[i3];
-                    if(abyte0 != null)
-                        class7.method180(abyte0, k5, i4, (chunkx_ - 6) * 8, (chunky_ - 6) * 8, (byte)4, planeFlags);
+                    int y = (regionHashes[i] >> 8) * 64 - paletteX;
+                    int x = (regionHashes[i] & 0xff) * 64 - paletteY;
+                    byte src[] = tileSrcs[i];
+                    if(src != null)
+                        loader.loadRegionTiles(src, x, y, (chunkx_ - 6) * 8, (chunky_ - 6) * 8, planeFlags);
                 }
 
-                for(int j4 = 0; j4 < k2; j4++)
+                for(int i = 0; i < amountRegions; i++)
                 {
-                    int l5 = (regionhashes[j4] >> 8) * 64 - palettex;
-                    int k7 = (regionhashes[j4] & 0xff) * 64 - palettey;
-                    byte abyte2[] = tilebytes[j4];
-                    if(abyte2 == null && chunky_ < 800)
-                        class7.method174(k7, 64, 0, 64, l5);
+                    int offX = (regionHashes[i] >> 8) * 64 - paletteX;
+                    int offY = (regionHashes[i] & 0xff) * 64 - paletteY;
+                    byte src[] = tileSrcs[i];
+                    if(src == null && chunky_ < 800)
+                        loader.adjustHeightmap(offY, 64, 0, 64, offX);
                 }
 
                 anInt1097++;
@@ -472,14 +472,14 @@ public class Main extends ApplicationApplet {
                     gameBuffer.put(96);
                 }
                 gameBuffer.putPacket(0);
-                for(int i6 = 0; i6 < k2; i6++)
+                for(int i = 0; i < amountRegions; i++)
                 {
-                    byte abyte1[] = regionbytes[i6];
-                    if(abyte1 != null)
+                    byte src[] = regionSrcs[i];
+                    if(src != null)
                     {
-                        int l8 = (regionhashes[i6] >> 8) * 64 - palettex;
-                        int k9 = (regionhashes[i6] & 0xff) * 64 - palettey;
-                        class7.method190(l8, planeFlags, k9, 7, pallet, abyte1);
+                        int xOff = (regionHashes[i] >> 8) * 64 - paletteX;
+                        int yOff = (regionHashes[i] & 0xff) * 64 - paletteY;
+                        loader.loadRegionGameObjects(src, pallet, planeFlags, xOff, yOff);
                     }
                 }
 
@@ -500,11 +500,11 @@ public class Main extends ApplicationApplet {
                                 int j10 = l7 >> 14 & 0x3ff;
                                 int l10 = l7 >> 3 & 0x7ff;
                                 int j11 = (j10 / 8 << 8) + l10 / 8;
-                                for(int l11 = 0; l11 < regionhashes.length; l11++)
+                                for(int l11 = 0; l11 < regionHashes.length; l11++)
                                 {
-                                    if(regionhashes[l11] != j11 || tilebytes[l11] == null)
+                                    if(regionHashes[l11] != j11 || tileSrcs[l11] == null)
                                         continue;
-                                    class7.method179(i9, l9, planeFlags, 9, k4 * 8, (j10 & 7) * 8, tilebytes[l11], (l10 & 7) * 8, j3, j6 * 8);
+                                    loader.loadChunkTiles(tileSrcs[l11], (j10 & 7) * 8, (l10 & 7) * 8, i9, k4 * 8, j6 * 8, l9, j3, planeFlags);
                                     break;
                                 }
 
@@ -521,7 +521,7 @@ public class Main extends ApplicationApplet {
                     {
                         int i8 = custompalette[0][l4][k6];
                         if(i8 == -1)
-                            class7.method174(k6 * 8, 8, 0, 8, l4 * 8);
+                            loader.adjustHeightmap(k6 * 8, 8, 0, 8, l4 * 8);
                     }
 
                 }
@@ -541,11 +541,11 @@ public class Main extends ApplicationApplet {
                                 int chunkx = i10 >> 14 & 0x3ff;
                                 int chunky = i10 >> 3 & 0x7ff;
                                 int regionhash = (chunkx / 8 << 8) + chunky / 8;
-                                for(int k12 = 0; k12 < regionhashes.length; k12++)
+                                for(int k12 = 0; k12 < regionHashes.length; k12++)
                                 {
-                                    if(regionhashes[k12] != regionhash || regionbytes[k12] == null)
+                                    if(regionHashes[k12] != regionhash || regionSrcs[k12] == null)
                                         continue;
-                                    class7.loadChunk(planeFlags, pallet, z, x * 8, (chunky & 7) * 8, true, h, regionbytes[k12], (chunkx & 7) * 8, rotation, y * 8);
+                                    loader.loadChunk(planeFlags, pallet, z, x * 8, (chunky & 7) * 8, true, h, regionSrcs[k12], (chunkx & 7) * 8, rotation, y * 8);
                                     break;
                                 }
 
@@ -558,7 +558,7 @@ public class Main extends ApplicationApplet {
 
             }
             gameBuffer.putPacket(0);
-            class7.method171(planeFlags, pallet, 2);
+            loader.method171(planeFlags, pallet, 2);
             toplefttext_imagefetcher.initialize(0);
             gameBuffer.putPacket(0);
             int k3 = LandscapeLoader.anInt145;
@@ -2499,22 +2499,22 @@ public class Main extends ApplicationApplet {
 
     public int method54()
     {
-        for(int i = 0; i < tilebytes.length; i++)
+        for(int i = 0; i < tileSrcs.length; i++)
         {
-            if(tilebytes[i] == null && anIntArray1235[i] != -1)
+            if(tileSrcs[i] == null && anIntArray1235[i] != -1)
                 return -1;
-            if(regionbytes[i] == null && anIntArray1236[i] != -1)
+            if(regionSrcs[i] == null && anIntArray1236[i] != -1)
                 return -2;
         }
 
         boolean flag = true;
-        for(int j = 0; j < tilebytes.length; j++)
+        for(int j = 0; j < tileSrcs.length; j++)
         {
-            byte abyte0[] = regionbytes[j];
+            byte abyte0[] = regionSrcs[j];
             if(abyte0 != null)
             {
-                int k = (regionhashes[j] >> 8) * 64 - palettex;
-                int l = (regionhashes[j] & 0xff) * 64 - palettey;
+                int k = (regionHashes[j] >> 8) * 64 - paletteX;
+                int l = (regionHashes[j] & 0xff) * 64 - paletteY;
                 if(aBoolean1159)
                 {
                     k = 10;
@@ -2667,18 +2667,18 @@ public class Main extends ApplicationApplet {
                     initMidi(aBoolean1228, 0, class30_sub2_sub3.archiveBuffer);
                 if(class30_sub2_sub3.indexId == 3 && landscape_stage == 1)
                 {
-                    for(int i = 0; i < tilebytes.length; i++)
+                    for(int i = 0; i < tileSrcs.length; i++)
                     {
                         if(anIntArray1235[i] == class30_sub2_sub3.archiveId)
                         {
-                            tilebytes[i] = class30_sub2_sub3.archiveBuffer;
+                            tileSrcs[i] = class30_sub2_sub3.archiveBuffer;
                             if(class30_sub2_sub3.archiveBuffer == null)
                                 anIntArray1235[i] = -1;
                             break;
                         }
                         if(anIntArray1236[i] != class30_sub2_sub3.archiveId)
                             continue;
-                        regionbytes[i] = class30_sub2_sub3.archiveBuffer;
+                        regionSrcs[i] = class30_sub2_sub3.archiveBuffer;
                         if(class30_sub2_sub3.archiveBuffer == null)
                             anIntArray1236[i] = -1;
                         break;
@@ -2788,7 +2788,7 @@ public class Main extends ApplicationApplet {
     {
         if(markertype != 2)
             return;
-        calculateSpriteXY((markerloc_x - palettex << 7) + markeroffset_x, markerheight * 2, anInt875, (markerloc_y - palettey << 7) + markeroffset_y);
+        calculateSpriteXY((markerloc_x - paletteX << 7) + markeroffset_x, markerheight * 2, anInt875, (markerloc_y - paletteY << 7) + markeroffset_y);
         if(i >= 0)
             aBoolean1224 = !aBoolean1224;
         if(spriteX > -1 && loopCycle % 20 < 10)
@@ -3519,9 +3519,9 @@ public class Main extends ApplicationApplet {
             anInt917 = 2;
             anInt916 = 0;
             gameBuffer.putPacket(236);
-            gameBuffer.putWordLE(k + palettey);
+            gameBuffer.putWordLE(k + paletteY);
             gameBuffer.putWord(i1);
-            gameBuffer.putWordLE(j + palettex);
+            gameBuffer.putWordLE(j + paletteX);
         }
 		/* Item on object */
         if(l == 62 && method66(i1, k, j, -770))
@@ -3529,9 +3529,9 @@ public class Main extends ApplicationApplet {
             gameBuffer.putPacket(192);
             gameBuffer.putWord(anInt1284);
             gameBuffer.putWordLE(i1 >> 14 & 0x7fff);
-            gameBuffer.putWordLE128(k + palettey);
+            gameBuffer.putWordLE128(k + paletteY);
             gameBuffer.putWordLE(anInt1283);
-            gameBuffer.putWordLE128(j + palettex);
+            gameBuffer.putWordLE128(j + paletteX);
             gameBuffer.putWord(anInt1285);
         }
 		/* Item on floor */
@@ -3548,9 +3548,9 @@ public class Main extends ApplicationApplet {
             gameBuffer.putWordLE(anInt1284);
             gameBuffer.putWord128(anInt1285);
             gameBuffer.putWord(i1);
-            gameBuffer.putWord128(k + palettey);
+            gameBuffer.putWord128(k + paletteY);
             gameBuffer.putWordLE128(anInt1283);
-            gameBuffer.putWord(j + palettex);
+            gameBuffer.putWord(j + paletteX);
         }
 		/* Item action one */
         if(l == 74)
@@ -3636,7 +3636,7 @@ public class Main extends ApplicationApplet {
                 pallet.method312(false, k - 4, j - 4);
         if(l == 1062)
         {
-            anInt924 += palettex;
+            anInt924 += paletteX;
             if(anInt924 >= 113)
             {
                 gameBuffer.putPacket(183);
@@ -3646,8 +3646,8 @@ public class Main extends ApplicationApplet {
             method66(i1, k, j, -770);
             gameBuffer.putPacket(228);
             gameBuffer.putWord128(i1 >> 14 & 0x7fff);
-            gameBuffer.putWord128(k + palettey);
-            gameBuffer.putWord(j + palettex);
+            gameBuffer.putWord128(k + paletteY);
+            gameBuffer.putWord(j + paletteX);
         }
         if(l == 679 && !aBoolean1149)
         {
@@ -3860,9 +3860,9 @@ public class Main extends ApplicationApplet {
             anInt917 = 2;
             anInt916 = 0;
             gameBuffer.putPacket(79);
-            gameBuffer.putWordLE(k + palettey);
+            gameBuffer.putWordLE(k + paletteY);
             gameBuffer.putWord(i1);
-            gameBuffer.putWord128(j + palettex);
+            gameBuffer.putWord128(j + paletteX);
         }
         if(l == 632)
         {
@@ -3904,8 +3904,8 @@ public class Main extends ApplicationApplet {
             anInt917 = 2;
             anInt916 = 0;
             gameBuffer.putPacket(156);
-            gameBuffer.putWord128(j + palettex);
-            gameBuffer.putWordLE(k + palettey);
+            gameBuffer.putWord128(j + paletteX);
+            gameBuffer.putWordLE(k + paletteY);
             gameBuffer.putWordLE128(i1);
         }
         if(l == 94)
@@ -3918,9 +3918,9 @@ public class Main extends ApplicationApplet {
             anInt917 = 2;
             anInt916 = 0;
             gameBuffer.putPacket(181);
-            gameBuffer.putWordLE(k + palettey);
+            gameBuffer.putWordLE(k + paletteY);
             gameBuffer.putWord(i1);
-            gameBuffer.putWordLE(j + palettex);
+            gameBuffer.putWordLE(j + paletteX);
             gameBuffer.putWord128(anInt1137);
         }
         if(l == 646)
@@ -4022,8 +4022,8 @@ public class Main extends ApplicationApplet {
             method66(i1, k, j, -770);
             gameBuffer.putPacket(252);
             gameBuffer.putWordLE128(i1 >> 14 & 0x7fff);
-            gameBuffer.putWordLE(k + palettey);
-            gameBuffer.putWord128(j + palettex);
+            gameBuffer.putWordLE(k + paletteY);
+            gameBuffer.putWord128(j + paletteX);
         }
         if(l == 412)
         {
@@ -4085,9 +4085,9 @@ public class Main extends ApplicationApplet {
         if(l == 956 && method66(i1, k, j, -770))
         {
             gameBuffer.putPacket(35);
-            gameBuffer.putWordLE(j + palettex);
+            gameBuffer.putWordLE(j + paletteX);
             gameBuffer.putWord128(anInt1137);
-            gameBuffer.putWord128(k + palettey);
+            gameBuffer.putWord128(k + paletteY);
             gameBuffer.putWordLE(i1 >> 14 & 0x7fff);
         }
         if(l == 567)
@@ -4100,9 +4100,9 @@ public class Main extends ApplicationApplet {
             anInt917 = 2;
             anInt916 = 0;
             gameBuffer.putPacket(23);
-            gameBuffer.putWordLE(k + palettey);
+            gameBuffer.putWordLE(k + paletteY);
             gameBuffer.putWordLE(i1);
-            gameBuffer.putWordLE(j + palettex);
+            gameBuffer.putWordLE(j + paletteX);
         }
         if(l == 867)
         {
@@ -4252,25 +4252,25 @@ public class Main extends ApplicationApplet {
         {
             method66(i1, k, j, -770);
             gameBuffer.putPacket(70);
-            gameBuffer.putWordLE(j + palettex);
-            gameBuffer.putWord(k + palettey);
+            gameBuffer.putWordLE(j + paletteX);
+            gameBuffer.putWord(k + paletteY);
             gameBuffer.putWordLE128(i1 >> 14 & 0x7fff);
         }
         if(l == 872)
         {
             method66(i1, k, j, -770);
             gameBuffer.putPacket(234);
-            gameBuffer.putWordLE128(j + palettex);
+            gameBuffer.putWordLE128(j + paletteX);
             gameBuffer.putWord128(i1 >> 14 & 0x7fff);
-            gameBuffer.putWordLE128(k + palettey);
+            gameBuffer.putWordLE128(k + paletteY);
         }
         if(l == 502)
         {
             method66(i1, k, j, -770);
             gameBuffer.putPacket(132);
-            gameBuffer.putWordLE128(j + palettex);
+            gameBuffer.putWordLE128(j + paletteX);
             gameBuffer.putWord(i1 >> 14 & 0x7fff);
-            gameBuffer.putWord128(k + palettey);
+            gameBuffer.putWord128(k + paletteY);
         }
         if(l == 1125)
         {
@@ -4331,8 +4331,8 @@ public class Main extends ApplicationApplet {
             anInt917 = 2;
             anInt916 = 0;
             gameBuffer.putPacket(253);
-            gameBuffer.putWordLE(j + palettex);
-            gameBuffer.putWordLE128(k + palettey);
+            gameBuffer.putWordLE(j + paletteX);
+            gameBuffer.putWordLE128(k + paletteY);
             gameBuffer.putWord128(i1);
         }
         if(l == 1448)
@@ -4360,8 +4360,8 @@ public class Main extends ApplicationApplet {
     public void calculateOntutorialIsland(int junk)
     {
         ontutorial_island = 0;
-        int x = (((Mob) (localPlayer)).fineX >> 7) + palettex;
-        int y = (((Mob) (localPlayer)).fineY >> 7) + palettey;
+        int x = (((Mob) (localPlayer)).fineX >> 7) + paletteX;
+        int y = (((Mob) (localPlayer)).fineY >> 7) + paletteY;
         if(x >= 3053 && x <= 3156 && y >= 3056 && y <= 3136)
             ontutorial_island = 1;
         if(x >= 3072 && x <= 3118 && y >= 9492 && y <= 9535)
@@ -4604,9 +4604,9 @@ public class Main extends ApplicationApplet {
         gameBuffer = null;
         loginBuffer = null;
         inbuffer = null;
-        regionhashes = null;
-        tilebytes = null;
-        regionbytes = null;
+        regionHashes = null;
+        tileSrcs = null;
+        regionSrcs = null;
         anIntArray1235 = null;
         anIntArray1236 = null;
         tileHeightmap = null;
@@ -6278,8 +6278,8 @@ public class Main extends ApplicationApplet {
             if(amtsteps > 25)
                 amtsteps = 25;
             stepoff--;
-            int k6 = walkingstepsx[stepoff];
-            int i7 = walkingstepsy[stepoff];
+            int firstStepX = walkingstepsx[stepoff];
+            int firstStepY = walkingstepsy[stepoff];
             stepCounter += amtsteps;
             if(stepCounter >= 92)
             {
@@ -6302,17 +6302,17 @@ public class Main extends ApplicationApplet {
                 gameBuffer.putPacket(98);
                 gameBuffer.put(amtsteps + amtsteps + 3);
             }
-            gameBuffer.putWordLE128(k6 + palettex);
+            gameBuffer.putWordLE128(firstStepX + paletteX);
             anInt1261 = walkingstepsx[0];
             anInt1262 = walkingstepsy[0];
             for(int j7 = 1; j7 < amtsteps; j7++)
             {
                 stepoff--;
-                gameBuffer.put(walkingstepsx[stepoff] - k6);
-                gameBuffer.put(walkingstepsy[stepoff] - i7);
+                gameBuffer.put(walkingstepsx[stepoff] - firstStepX);
+                gameBuffer.put(walkingstepsy[stepoff] - firstStepY);
             }
 
-            gameBuffer.putWordLE(i7 + palettey);
+            gameBuffer.putWordLE(firstStepY + paletteY);
             gameBuffer.putByteA(super.activeKeycodes[5] != 1 ? 0 : 1);
             return true;
         }
@@ -7542,8 +7542,8 @@ public class Main extends ApplicationApplet {
         }
         if((class30_sub2_sub4_sub1.anInt1538 != 0 || class30_sub2_sub4_sub1.anInt1539 != 0) && (class30_sub2_sub4_sub1.stack_position_mob == 0 || class30_sub2_sub4_sub1.anInt1503 > 0))
         {
-            int k = class30_sub2_sub4_sub1.fineX - (class30_sub2_sub4_sub1.anInt1538 - palettex - palettex) * 64;
-            int j1 = class30_sub2_sub4_sub1.fineY - (class30_sub2_sub4_sub1.anInt1539 - palettey - palettey) * 64;
+            int k = class30_sub2_sub4_sub1.fineX - (class30_sub2_sub4_sub1.anInt1538 - paletteX - paletteX) * 64;
+            int j1 = class30_sub2_sub4_sub1.fineY - (class30_sub2_sub4_sub1.anInt1539 - paletteY - paletteY) * 64;
             if(k != 0 || j1 != 0)
                 class30_sub2_sub4_sub1.anInt1510 = (int)(Math.atan2(k, j1) * 325.94900000000001D) & 0x7ff;
             class30_sub2_sub4_sub1.anInt1538 = 0;
@@ -8509,7 +8509,7 @@ public class Main extends ApplicationApplet {
         }
         catch(Exception _ex)
         {
-            Signlink.reportError("glfc_ex " + ((Mob) (localPlayer)).fineX + "," + ((Mob) (localPlayer)).fineY + "," + anInt1014 + "," + anInt1015 + "," + chunkx_ + "," + chunky_ + "," + palettex + "," + palettey);
+            Signlink.reportError("glfc_ex " + ((Mob) (localPlayer)).fineX + "," + ((Mob) (localPlayer)).fineY + "," + anInt1014 + "," + anInt1015 + "," + chunkx_ + "," + chunky_ + "," + paletteX + "," + paletteY);
             throw new RuntimeException("eek");
         }
     }
@@ -9168,9 +9168,9 @@ public class Main extends ApplicationApplet {
                 if(opcode == 17)
                     byte0 = 3;
                 if(opcode == 18)
-                    value = (((Mob) (localPlayer)).fineX >> 7) + palettex;
+                    value = (((Mob) (localPlayer)).fineX >> 7) + paletteX;
                 if(opcode == 19)
-                    value = (((Mob) (localPlayer)).fineY >> 7) + palettey;
+                    value = (((Mob) (localPlayer)).fineY >> 7) + paletteY;
                 if(opcode == 20)
                     value = ops[opOffset++];
                 if(byte0 == 0)
@@ -9323,8 +9323,8 @@ public class Main extends ApplicationApplet {
             }
             if(markertype == 2)
             {
-                int l1 = ((markerloc_x - palettex) * 4 + 2) - ((Mob) (localPlayer)).fineX / 32;
-                int j4 = ((markerloc_y - palettey) * 4 + 2) - ((Mob) (localPlayer)).fineY / 32;
+                int l1 = ((markerloc_x - paletteX) * 4 + 2) - ((Mob) (localPlayer)).fineX / 32;
+                int j4 = ((markerloc_y - paletteY) * 4 + 2) - ((Mob) (localPlayer)).fineY / 32;
                 method81(mapmarker1, -760, j4, l1);
             }
             if(markertype == 10 && pmarker_id >= 0 && pmarker_id < playerArray.length)
@@ -10684,8 +10684,8 @@ public class Main extends ApplicationApplet {
                 }
                 chunkx_ = l2;
                 chunky_ = i11;
-                palettex = (chunkx_ - 6) * 8;
-                palettey = (chunky_ - 6) * 8;
+                paletteX = (chunkx_ - 6) * 8;
+                paletteY = (chunky_ - 6) * 8;
                 isLoadedLandscapes = false;
 				/* Already loaded */
                 if((chunkx_ / 8 == 48 || chunkx_ / 8 == 49) && chunky_ / 8 == 48)
@@ -10706,9 +10706,9 @@ public class Main extends ApplicationApplet {
                         for(int k23 = (chunky_ - 6) / 8; k23 <= (chunky_ + 6) / 8; k23++)
                             k16++;
                     }
-                    tilebytes = new byte[k16][];
-                    regionbytes = new byte[k16][];
-                    regionhashes = new int[k16];
+                    tileSrcs = new byte[k16][];
+                    regionSrcs = new byte[k16][];
+                    regionHashes = new int[k16];
                     anIntArray1235 = new int[k16];
                     anIntArray1236 = new int[k16];
                     k16 = 0;
@@ -10716,7 +10716,7 @@ public class Main extends ApplicationApplet {
                     {
                         for(int j26 = (chunky_ - 6) / 8; j26 <= (chunky_ + 6) / 8; j26++)
                         {
-                            regionhashes[k16] = (l23 << 8) + j26;
+                            regionHashes[k16] = (l23 << 8) + j26;
                             if(isLoadedLandscapes && (j26 == 49 || j26 == 149 || j26 == 147 || l23 == 50 || l23 == 49 && j26 == 47))
                             {
                                 anIntArray1235[k16] = -1;
@@ -10770,14 +10770,14 @@ public class Main extends ApplicationApplet {
 
                     }
 
-                    tilebytes = new byte[l16][];
-                    regionbytes = new byte[l16][];
-                    regionhashes = new int[l16];
+                    tileSrcs = new byte[l16][];
+                    regionSrcs = new byte[l16][];
+                    regionHashes = new int[l16];
                     anIntArray1235 = new int[l16];
                     anIntArray1236 = new int[l16];
                     for(int l26 = 0; l26 < l16; l26++)
                     {
-                        int i29 = regionhashes[l26] = ai[l26];
+                        int i29 = regionHashes[l26] = ai[l26];
                         int l30 = i29 >> 8 & 0xff;
                         int l31 = i29 & 0xff;
                         int j32 = anIntArray1235[l26] = ondemandhandler.getMapArchive(l30, l31, 0);
@@ -10789,10 +10789,10 @@ public class Main extends ApplicationApplet {
                     }
 
                 }
-                int i17 = palettex - anInt1036;
-                int j21 = palettey - anInt1037;
-                anInt1036 = palettex;
-                anInt1037 = palettey;
+                int i17 = paletteX - anInt1036;
+                int j21 = paletteY - anInt1037;
+                anInt1036 = paletteX;
+                anInt1037 = paletteY;
                 for(int i10 = 0; i10 < 16384; i10++)
                 {
                     Npc class30_sub2_sub4_sub1_sub1 = npcs[i10];
@@ -11642,7 +11642,7 @@ public class Main extends ApplicationApplet {
         }
         catch(Exception exception)
         {
-            String s2 = "T2 - " + packetId + "," + anInt842 + "," + anInt843 + " - " + packetSize + "," + (palettex + ((Mob) (localPlayer)).xList[0]) + "," + (palettey + ((Mob) (localPlayer)).yList[0]) + " - ";
+            String s2 = "T2 - " + packetId + "," + anInt842 + "," + anInt843 + " - " + packetSize + "," + (paletteX + ((Mob) (localPlayer)).xList[0]) + "," + (paletteY + ((Mob) (localPlayer)).yList[0]) + " - ";
             for(int j15 = 0; j15 < packetSize && j15 < 50; j15++)
                 s2 = s2 + inbuffer.payload[j15] + ",";
             exception.printStackTrace();
@@ -12163,8 +12163,8 @@ public class Main extends ApplicationApplet {
     public boolean aBoolean1031;
     public static BigInteger publicKey = new BigInteger("65537");
     public DirectColorSprite mapfunction[];
-    public int palettex;
-    public int palettey;
+    public int paletteX;
+    public int paletteY;
     public int anInt1036;
     public int anInt1037;
     public int loginAttempts;
@@ -12319,7 +12319,7 @@ public class Main extends ApplicationApplet {
     public int anIntArray1180[];
     public int anIntArray1181[];
     public int anIntArray1182[];
-    public byte tilebytes[][];
+    public byte tileSrcs[][];
     public int cameraPitch;
     public int cameraYaw;
     public int camerayawrate;
@@ -12373,7 +12373,7 @@ public class Main extends ApplicationApplet {
     public static boolean aBoolean1231;
     public static int BIT_MASKS[];
     public boolean updatetoolbar;
-    public int regionhashes[];
+    public int regionHashes[];
     public int anIntArray1235[];
     public int anIntArray1236[];
     public int anInt1237;
@@ -12386,7 +12386,7 @@ public class Main extends ApplicationApplet {
     public int anInt1244;
     public int anInt1245;
     public int anInt1246;
-    public byte regionbytes[][];
+    public byte regionSrcs[][];
     public int anInt1248;
     public int anInt1249;
     public int anIntArray1250[];
