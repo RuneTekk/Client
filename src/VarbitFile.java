@@ -19,7 +19,7 @@ public class VarbitFile {
                 varbitArray[j] = new VarbitFile();
             varbitArray[j].method534(buffer0, false, j);
             if(varbitArray[j].aBoolean651)
-                VarpFile.aClass41Array701[varbitArray[j].config_num].aBoolean713 = true;
+                VarpFile.aClass41Array701[varbitArray[j].configId].aBoolean713 = true;
         }
 
         if(buffer0.offset != buffer0.payload.length)
@@ -37,7 +37,7 @@ public class VarbitFile {
                 return;
             if(j == 1)
             {
-                config_num = buffer0.getUword();
+                configId = buffer0.getUword();
                 anInt649 = buffer0.getUbyte();
                 anInt650 = buffer0.getUbyte();
             } else
@@ -67,7 +67,7 @@ public class VarbitFile {
     public static int anInt645;
     public static VarbitFile varbitArray[];
     public String aString647;
-    public int config_num;
+    public int configId;
     public int anInt649;
     public int anInt650;
     public boolean aBoolean651;

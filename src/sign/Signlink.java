@@ -8,6 +8,13 @@ package sign;
 import java.applet.Applet;
 import java.io.*;
 import java.net.*;
+import javax.sound.midi.MidiChannel;
+import javax.sound.midi.MidiSystem;
+import javax.sound.midi.Receiver;
+import javax.sound.midi.Sequence;
+import javax.sound.midi.Sequencer;
+import javax.sound.midi.ShortMessage;
+import javax.sound.midi.Synthesizer;
 
 public class Signlink implements Runnable {
 
@@ -92,6 +99,36 @@ public class Signlink implements Runnable {
                 }
                 if(writeMidiFile) {
                     midiFileName = cacheDir + fileName;
+                    try {
+                        if(midiFade != 0 && synthesizer != null) {
+                            for(int volume = 64; volume > 0; volume--) {
+                                setVolume(volume);
+                                Thread.sleep(25);   
+                            }           
+                            if (sequencer != null) {
+                                if (sequencer.isOpen()) {
+                                    sequencer.stop();
+                                }
+                                sequencer.close();
+                            }
+                            midiFade = 0;
+                        } 
+                        Sequence sequence = MidiSystem.getSequence(new File(midiFileName));
+                        sequencer = MidiSystem.getSequencer();
+                        sequencer.setSequence(sequence);
+                        synthesizer = MidiSystem.getSynthesizer();
+                        synthesizer.open();
+                        if (synthesizer.getDefaultSoundbank() == null) {
+                            sequencer.getTransmitter().setReceiver(MidiSystem.getReceiver());
+                        } else {
+                            sequencer.getTransmitter().setReceiver(synthesizer.getReceiver());
+                        }
+                        sequencer.open();
+                        sequencer.start();
+                    } catch(Exception ex) {
+                        ex.printStackTrace();
+                        throw new RuntimeException("eek");
+                    }
                     writeMidiFile = false;
                 }
                 fileName = null;
@@ -252,6 +289,19 @@ public class Signlink implements Runnable {
             return;
         }
     }
+    
+    public boolean setVolume(int value) {
+        try {
+            for(MidiChannel channel : synthesizer.getChannels()) {
+                channel.controlChange(7, value);
+            }
+            return true;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            throw new RuntimeException("eek");
+        }
+        
+    }
 
     public Signlink() {
     }
@@ -287,5 +337,7 @@ public class Signlink implements Runnable {
     public static int waveVolume;
     public static boolean allowErrorReporting = true;
     public static String errorMessage = "";
+    public static Sequencer sequencer;
+    public static Synthesizer synthesizer;
 
 }

@@ -158,7 +158,7 @@ public class Main extends ApplicationApplet {
                     if(l == 0)
                     {
                         if(i1 > 0 && i1 < 110)
-                            class30_sub2_sub1_sub4.drawText(0, msgbody_stack[k], i1, 822, 4);
+                            class30_sub2_sub1_sub4.drawText2(msgbody_stack[k], 4, i1, 0, false);
                         j++;
                     }
                     if((l == 1 || l == 2) && (l == 1 || anInt1287 == 0 || anInt1287 == 1 && onFriendsList(false, s1)))
@@ -176,9 +176,9 @@ public class Main extends ApplicationApplet {
                                 mod_icons[1].renderImage(j1, 16083, i1 - 12);
                                 j1 += 14;
                             }
-                            class30_sub2_sub1_sub4.drawText(0, s1 + ":", i1, 822, j1);
+                            class30_sub2_sub1_sub4.drawText(j1, i1, s1 + ":", 0);
                             j1 += class30_sub2_sub1_sub4.widthFontMetrics(anInt1116, s1) + 8;
-                            class30_sub2_sub1_sub4.drawText(255, msgbody_stack[k], i1, 822, j1);
+                            class30_sub2_sub1_sub4.drawText(j1, i1, msgbody_stack[k], 255);
                         }
                         j++;
                     }
@@ -187,7 +187,7 @@ public class Main extends ApplicationApplet {
                         if(i1 > 0 && i1 < 110)
                         {
                             int k1 = 4;
-                            class30_sub2_sub1_sub4.drawText(0, "From", i1, 822, k1);
+                            class30_sub2_sub1_sub4.drawText(k1, i1, "From", 0);
                             k1 += class30_sub2_sub1_sub4.widthFontMetrics(anInt1116, "From ");
                             if(byte0 == 1)
                             {
@@ -199,37 +199,37 @@ public class Main extends ApplicationApplet {
                                 mod_icons[1].renderImage(k1, 16083, i1 - 12);
                                 k1 += 14;
                             }
-                            class30_sub2_sub1_sub4.drawText(0, s1 + ":", i1, 822, k1);
+                            class30_sub2_sub1_sub4.drawText(k1, i1, s1 + ":", 0);
                             k1 += class30_sub2_sub1_sub4.widthFontMetrics(anInt1116, s1) + 8;
-                            class30_sub2_sub1_sub4.drawText(0x800000, msgbody_stack[k], i1, 822, k1);
+                            class30_sub2_sub1_sub4.drawText(k1, i1, msgbody_stack[k], 0x800000);
                         }
                         j++;
                     }
                     if(l == 4 && (anInt1248 == 0 || anInt1248 == 1 && onFriendsList(false, s1)))
                     {
                         if(i1 > 0 && i1 < 110)
-                            class30_sub2_sub1_sub4.drawText(0x800080, s1 + " " + msgbody_stack[k], i1, 822, 4);
+                            class30_sub2_sub1_sub4.drawText(4, i1, s1 + " " + msgbody_stack[k], 0x800080);
                         j++;
                     }
                     if(l == 5 && anInt1195 == 0 && anInt845 < 2)
                     {
                         if(i1 > 0 && i1 < 110)
-                            class30_sub2_sub1_sub4.drawText(0x800000, msgbody_stack[k], i1, 822, 4);
+                            class30_sub2_sub1_sub4.drawText(4, i1, msgbody_stack[k], 0x800000);
                         j++;
                     }
                     if(l == 6 && anInt1195 == 0 && anInt845 < 2)
                     {
                         if(i1 > 0 && i1 < 110)
                         {
-                            class30_sub2_sub1_sub4.drawText(0, "To " + s1 + ":", i1, 822, 4);
-                            class30_sub2_sub1_sub4.drawText(0x800000, msgbody_stack[k], i1, 822, 12 + class30_sub2_sub1_sub4.widthFontMetrics(anInt1116, "To " + s1));
+                            class30_sub2_sub1_sub4.drawText(4, i1, "To " + s1 + ":", 0);
+                            class30_sub2_sub1_sub4.drawText(12 + class30_sub2_sub1_sub4.widthFontMetrics(anInt1116, "To " + s1), i1, msgbody_stack[k], 0x800000);
                         }
                         j++;
                     }
                     if(l == 8 && (anInt1248 == 0 || anInt1248 == 1 && onFriendsList(false, s1)))
                     {
                         if(i1 > 0 && i1 < 110)
-                            class30_sub2_sub1_sub4.drawText(0x7e3200, s1 + " " + msgbody_stack[k], i1, 822, 4);
+                            class30_sub2_sub1_sub4.drawText(4, i1, s1 + " " + msgbody_stack[k], 0x7e3200);
                         j++;
                     }
                 }
@@ -244,8 +244,8 @@ public class Main extends ApplicationApplet {
                 s = localPlayer.name;
             else
                 s = TextTools.formatUsername(-45804, username);
-            class30_sub2_sub1_sub4.drawText(0, s + ":", 90, 822, 4);
-            class30_sub2_sub1_sub4.drawText(255, aString887 + "*", 90, 822, 6 + class30_sub2_sub1_sub4.widthFontMetrics(anInt1116, s + ": "));
+            class30_sub2_sub1_sub4.drawText(4, 90, s + ":", 0);
+            class30_sub2_sub1_sub4.drawText( 6 + class30_sub2_sub1_sub4.widthFontMetrics(anInt1116, s + ": "), 90, aString887 + "*", 255);
             BasicRasterizer.drawHorizontalLine(0, 77, 479, 0);
         }
         if(aBoolean885 && clickarea == 2)
@@ -842,8 +842,8 @@ public class Main extends ApplicationApplet {
             if(class9_1.type == 0)
             {
                 handleInterfaceOptions(i2, 13037, class9_1, mousex, j2, mousey, class9_1.anInt224);
-                if(class9_1.currentHeight > class9_1.height)
-                    method65(i2 + class9_1.width, class9_1.height, mousex, mousey, class9_1, j2, true, class9_1.currentHeight, 0);
+                if(class9_1.curHeight > class9_1.height)
+                    method65(i2 + class9_1.width, class9_1.height, mousex, mousey, class9_1, j2, true, class9_1.curHeight, 0);
             } else
             {
                 if(class9_1.fieldType == 1 && mousex >= i2 && mousey >= j2 && mousex < i2 + class9_1.width && mousey < j2 + class9_1.height)
@@ -1191,41 +1191,41 @@ public class Main extends ApplicationApplet {
         }
         if(j == 3)
         {
-            boolean flag1 = aBoolean1151;
+            boolean flag1 = isSoundActive;
             if(k == 0)
             {
-                volumeAdjustMidi((byte)0, aBoolean1151, 0);
-                aBoolean1151 = true;
+                volumeAdjustMidi((byte)0, isSoundActive, 0);
+                isSoundActive = true;
             }
             if(k == 1)
             {
-                volumeAdjustMidi((byte)0, aBoolean1151, -400);
-                aBoolean1151 = true;
+                volumeAdjustMidi((byte)0, isSoundActive, -400);
+                isSoundActive = true;
             }
             if(k == 2)
             {
-                volumeAdjustMidi((byte)0, aBoolean1151, -800);
-                aBoolean1151 = true;
+                volumeAdjustMidi((byte)0, isSoundActive, -800);
+                isSoundActive = true;
             }
             if(k == 3)
             {
-                volumeAdjustMidi((byte)0, aBoolean1151, -1200);
-                aBoolean1151 = true;
+                volumeAdjustMidi((byte)0, isSoundActive, -1200);
+                isSoundActive = true;
             }
             if(k == 4)
-                aBoolean1151 = false;
-            if(aBoolean1151 != flag1 && !lowMemory)
+                isSoundActive = false;
+            if(isSoundActive != flag1 && !lowMemory)
             {
-                if(aBoolean1151)
+                if(isSoundActive)
                 {
-                    anInt1227 = anInt956;
+                    musicArchiveId = lastMusicId;
                     aBoolean1228 = true;
-                    ondemandhandler.requestPriority(2, anInt1227);
+                    ondemandhandler.requestPriority(2, musicArchiveId);
                 } else
                 {
                     stopMidi(860);
                 }
-                anInt1259 = 0;
+                musicDelay = 0;
             }
         }
         if(j == 4)
@@ -1494,8 +1494,8 @@ public class Main extends ApplicationApplet {
                     int i4 = b12Font.heightFontMetrics(s, true);
                     int k4 = ((150 - anIntArray982[k]) * (i4 + 100)) / 150;
                     BasicRasterizer.setDimensions(spriteX + 50, spriteX - 50, 334, 0);
-                    b12Font.drawText(0, s, spriteY + 1, 822, (spriteX + 50) - k4);
-                    b12Font.drawText(i3, s, spriteY, 822, (spriteX + 50) - k4);
+                    b12Font.drawText((spriteX + 50) - k4, spriteY + 1, s, 0);
+                    b12Font.drawText((spriteX + 50) - k4,spriteY, s, i3);
                     BasicRasterizer.reset();
                 }
                 if(anIntArray981[k] == 5)
@@ -1790,7 +1790,7 @@ public class Main extends ApplicationApplet {
             return;
         BasicRasterizer.drawQuad( i + 1, j + 1, k - 2, 16, 0);
         BasicRasterizer.drawQuadrilateralOutline(i + 1, j + 18, k - 2, l - 19, 0);
-        b12Font.drawText(i1, "Choose Option", j + 14, 822, i + 3);
+        b12Font.drawText(i + 3, j + 14, "Choose Option", i1);
         int j1 = super.newMouseX;
         int k1 = super.newMouseY;
         if(clickarea == 0)
@@ -1814,7 +1814,7 @@ public class Main extends ApplicationApplet {
             int j2 = 0xffffff;
             if(j1 > i && j1 < i + k && k1 > i2 - 13 && k1 < i2 + 3)
                 j2 = 0xffff00;
-            b12Font.drawText2(false, true, i + 3, j2, interfacestringstack[l1], i2);
+            b12Font.drawText2(interfacestringstack[l1], i + 3, i2, j2, true);
         }
 
     }
@@ -1922,9 +1922,9 @@ public class Main extends ApplicationApplet {
 
         System.gc();
         stopMidi(860);
-        anInt956 = -1;
-        anInt1227 = -1;
-        anInt1259 = 0;
+        lastMusicId = -1;
+        musicArchiveId = -1;
+        musicDelay = 0;
     }
 
     public void method45(int i)
@@ -2663,7 +2663,7 @@ public class Main extends ApplicationApplet {
                 }
                 if(class30_sub2_sub3.indexId == 1 && class30_sub2_sub3.archiveBuffer != null)
                     AnimFrame.unpackAnimFrames(class30_sub2_sub3.archiveBuffer);
-                if(class30_sub2_sub3.indexId == 2 && class30_sub2_sub3.archiveId == anInt1227 && class30_sub2_sub3.archiveBuffer != null)
+                if(class30_sub2_sub3.indexId == 2 && class30_sub2_sub3.archiveId == musicArchiveId && class30_sub2_sub3.archiveBuffer != null)
                     initMidi(aBoolean1228, 0, class30_sub2_sub3.archiveBuffer);
                 if(class30_sub2_sub3.indexId == 3 && landscape_stage == 1)
                 {
@@ -3930,11 +3930,11 @@ public class Main extends ApplicationApplet {
             Widget class9_2 = Widget.widgets[k];
             if(class9_2.scriptOpcodes != null && class9_2.scriptOpcodes[0][0] == 5)
             {
-                int i2 = class9_2.scriptOpcodes[0][1];
-                if(configstates[i2] != class9_2.scriptConditions[0])
+                int configId = class9_2.scriptOpcodes[0][1];
+                if(configstates[configId] != class9_2.scriptConditions[0])
                 {
-                    configstates[i2] = class9_2.scriptConditions[0];
-                    parseClientVarps(false, i2);
+                    configstates[configId] = class9_2.scriptConditions[0];
+                    parseClientVarps(false, configId);
                     aBoolean1153 = true;
                 }
             }
@@ -4293,9 +4293,9 @@ public class Main extends ApplicationApplet {
             Widget class9_3 = Widget.widgets[k];
             if(class9_3.scriptOpcodes != null && class9_3.scriptOpcodes[0][0] == 5)
             {
-                int l2 = class9_3.scriptOpcodes[0][1];
-                configstates[l2] = 1 - configstates[l2];
-                parseClientVarps(false, l2);
+                int opcode = class9_3.scriptOpcodes[0][1];
+                configstates[opcode] = 1 - configstates[opcode];
+                parseClientVarps(false, opcode);
                 aBoolean1153 = true;
             }
         }
@@ -4919,99 +4919,99 @@ public class Main extends ApplicationApplet {
                     } else
                     {
                         String s = aString887.toLowerCase();
-                        int j2 = 0;
+                        int color = 0;
                         if(s.startsWith("yellow:"))
                         {
-                            j2 = 0;
+                            color = 0;
                             aString887 = aString887.substring(7);
                         } else
                         if(s.startsWith("red:"))
                         {
-                            j2 = 1;
+                            color = 1;
                             aString887 = aString887.substring(4);
                         } else
                         if(s.startsWith("green:"))
                         {
-                            j2 = 2;
+                            color = 2;
                             aString887 = aString887.substring(6);
                         } else
                         if(s.startsWith("cyan:"))
                         {
-                            j2 = 3;
+                            color = 3;
                             aString887 = aString887.substring(5);
                         } else
                         if(s.startsWith("purple:"))
                         {
-                            j2 = 4;
+                            color = 4;
                             aString887 = aString887.substring(7);
                         } else
                         if(s.startsWith("white:"))
                         {
-                            j2 = 5;
+                            color = 5;
                             aString887 = aString887.substring(6);
                         } else
                         if(s.startsWith("flash1:"))
                         {
-                            j2 = 6;
+                            color = 6;
                             aString887 = aString887.substring(7);
                         } else
                         if(s.startsWith("flash2:"))
                         {
-                            j2 = 7;
+                            color = 7;
                             aString887 = aString887.substring(7);
                         } else
                         if(s.startsWith("flash3:"))
                         {
-                            j2 = 8;
+                            color = 8;
                             aString887 = aString887.substring(7);
                         } else
                         if(s.startsWith("glow1:"))
                         {
-                            j2 = 9;
+                            color = 9;
                             aString887 = aString887.substring(6);
                         } else
                         if(s.startsWith("glow2:"))
                         {
-                            j2 = 10;
+                            color = 10;
                             aString887 = aString887.substring(6);
                         } else
                         if(s.startsWith("glow3:"))
                         {
-                            j2 = 11;
+                            color = 11;
                             aString887 = aString887.substring(6);
                         }
                         s = aString887.toLowerCase();
-                        int i3 = 0;
+                        int trans = 0;
                         if(s.startsWith("wave:"))
                         {
-                            i3 = 1;
+                            trans = 1;
                             aString887 = aString887.substring(5);
                         } else
                         if(s.startsWith("wave2:"))
                         {
-                            i3 = 2;
+                            trans = 2;
                             aString887 = aString887.substring(6);
                         } else
                         if(s.startsWith("shake:"))
                         {
-                            i3 = 3;
+                            trans = 3;
                             aString887 = aString887.substring(6);
                         } else
                         if(s.startsWith("scroll:"))
                         {
-                            i3 = 4;
+                            trans = 4;
                             aString887 = aString887.substring(7);
                         } else
                         if(s.startsWith("slide:"))
                         {
-                            i3 = 5;
+                            trans = 5;
                             aString887 = aString887.substring(6);
                         }
                         gameBuffer.putPacket(4);
                         gameBuffer.put(0);
                         int j3 = gameBuffer.offset;
-                        gameBuffer.putByteB(i3);
-                        gameBuffer.putByteB(j2);
+                        gameBuffer.putByteB(trans);
+                        gameBuffer.putByteB(color);
                         aClass30_Sub2_Sub2_834.offset = 0;
                         ChatUtils.method526(aString887, aBoolean1277, aClass30_Sub2_Sub2_834);
                         gameBuffer.putReverse128(aClass30_Sub2_Sub2_834.payload, 0, aClass30_Sub2_Sub2_834.offset);
@@ -5019,8 +5019,8 @@ public class Main extends ApplicationApplet {
                         aString887 = ChatUtils.method527(aString887, 0);
                         aString887 = Censor.censor(aString887, 0);
                         localPlayer.chat_txt = aString887;
-                        localPlayer.anInt1513 = j2;
-                        localPlayer.anInt1531 = i3;
+                        localPlayer.anInt1513 = color;
+                        localPlayer.anInt1531 = trans;
                         localPlayer.anInt1535 = 150;
                         if(rights == 2)
                             pushMessage(((Mob) (localPlayer)).chat_txt, 2, "@cr2@" + localPlayer.name, aBoolean991);
@@ -5209,9 +5209,9 @@ public class Main extends ApplicationApplet {
             int i1 = amt_friendhashes;
             if(anInt900 != 2)
                 i1 = 0;
-            widget.currentHeight = i1 * 15 + 20;
-            if(widget.currentHeight <= widget.height)
-                widget.currentHeight = widget.height + 1;
+            widget.curHeight = i1 * 15 + 20;
+            if(widget.curHeight <= widget.height)
+                widget.curHeight = widget.height + 1;
             return;
         }
         if(actionCode >= 401 && actionCode <= 500)
@@ -5245,9 +5245,9 @@ public class Main extends ApplicationApplet {
         }
         if(actionCode == 503)
         {
-            widget.currentHeight = amt_ignorehashes * 15 + 20;
-            if(widget.currentHeight <= widget.height)
-                widget.currentHeight = widget.height + 1;
+            widget.curHeight = amt_ignorehashes * 15 + 20;
+            if(widget.curHeight <= widget.height)
+                widget.curHeight = widget.height + 1;
             return;
         }
         if(actionCode == 327)
@@ -5473,8 +5473,8 @@ public class Main extends ApplicationApplet {
                 {
                     int l = 329 - i * 13;
                     int k1 = 4;
-                    class30_sub2_sub1_sub4.drawText(0, "From", l, 822, k1);
-                    class30_sub2_sub1_sub4.drawText(65535, "From", l - 1, 822, k1);
+                    class30_sub2_sub1_sub4.drawText(k1, l, "From", 0);
+                    class30_sub2_sub1_sub4.drawText(k1, l - 1, "From", 65535);
                     k1 += class30_sub2_sub1_sub4.widthFontMetrics(anInt1116, "From ");
                     if(byte1 == 1)
                     {
@@ -5486,24 +5486,24 @@ public class Main extends ApplicationApplet {
                         mod_icons[1].renderImage(k1, 16083, l - 12);
                         k1 += 14;
                     }
-                    class30_sub2_sub1_sub4.drawText(0, s + ": " + msgbody_stack[j], l, 822, k1);
-                    class30_sub2_sub1_sub4.drawText(65535, s + ": " + msgbody_stack[j], l - 1, 822, k1);
+                    class30_sub2_sub1_sub4.drawText(k1, l, s + ": " + msgbody_stack[j], 0);
+                    class30_sub2_sub1_sub4.drawText(k1, l - 1, s + ": " + msgbody_stack[j], 65535);
                     if(++i >= 5)
                         return;
                 }
                 if(k == 5 && anInt845 < 2)
                 {
                     int i1 = 329 - i * 13;
-                    class30_sub2_sub1_sub4.drawText(0, msgbody_stack[j], i1, 822, 4);
-                    class30_sub2_sub1_sub4.drawText(65535, msgbody_stack[j], i1 - 1, 822, 4);
+                    class30_sub2_sub1_sub4.drawText(4, i1, msgbody_stack[j], 0);
+                    class30_sub2_sub1_sub4.drawText(4, i1 - 1, msgbody_stack[j], 65535);
                     if(++i >= 5)
                         return;
                 }
                 if(k == 6 && anInt845 < 2)
                 {
                     int j1 = 329 - i * 13;
-                    class30_sub2_sub1_sub4.drawText(0, "To " + s + ": " + msgbody_stack[j], j1, 822, 4);
-                    class30_sub2_sub1_sub4.drawText(65535, "To " + s + ": " + msgbody_stack[j], j1 - 1, 822, 4);
+                    class30_sub2_sub1_sub4.drawText(4, j1, "To " + s + ": " + msgbody_stack[j], 0);
+                    class30_sub2_sub1_sub4.drawText(4, j1 - 1, "To " + s + ": " + msgbody_stack[j], 65535);
                     if(++i >= 5)
                         return;
                 }
@@ -6678,16 +6678,16 @@ public class Main extends ApplicationApplet {
                 anIntArray1250[i]--;
             }
 
-        if(anInt1259 > 0)
+        if(musicDelay > 0)
         {
-            anInt1259 -= 20;
-            if(anInt1259 < 0)
-                anInt1259 = 0;
-            if(anInt1259 == 0 && aBoolean1151 && !lowMemory)
+            musicDelay -= 20;
+            if(musicDelay < 0)
+                musicDelay = 0;
+            if(musicDelay == 0 && isSoundActive && !lowMemory)
             {
-                anInt1227 = anInt956;
+                musicArchiveId = lastMusicId;
                 aBoolean1228 = true;
-                ondemandhandler.requestPriority(2, anInt1227);
+                ondemandhandler.requestPriority(2, musicArchiveId);
             }
         }
     }
@@ -6741,12 +6741,12 @@ public class Main extends ApplicationApplet {
             q8Font = new BitmapFont(true, "q8_full", 0, titlescreen_archive);
             drawTitleBackround(0);
             method51(215);
-            ArchivePackage class44 = getArchivePackage(2, "config", "config", jaggrabArchiveCrcs[2], 30);
-            ArchivePackage class44_1 = getArchivePackage(3, "interface", "interface", jaggrabArchiveCrcs[3], 35);
-            ArchivePackage graphics_archive = getArchivePackage(4, "2d graphics", "media", jaggrabArchiveCrcs[4], 40);
-            ArchivePackage class44_3 = getArchivePackage(6, "textures", "textures", jaggrabArchiveCrcs[6], 45);
-            ArchivePackage class44_4 = getArchivePackage(7, "chat system", "wordenc", jaggrabArchiveCrcs[7], 50);
-            ArchivePackage class44_5 = getArchivePackage(8, "sound effects", "sounds", jaggrabArchiveCrcs[8], 55);
+            ArchivePackage configPack = getArchivePackage(2, "config", "config", jaggrabArchiveCrcs[2], 30);
+            ArchivePackage interfacePack = getArchivePackage(3, "interface", "interface", jaggrabArchiveCrcs[3], 35);
+            ArchivePackage graphicsPack = getArchivePackage(4, "2d graphics", "media", jaggrabArchiveCrcs[4], 40);
+            ArchivePackage texturePack = getArchivePackage(6, "textures", "textures", jaggrabArchiveCrcs[6], 45);
+            ArchivePackage chatPack = getArchivePackage(7, "chat system", "wordenc", jaggrabArchiveCrcs[7], 50);
+            ArchivePackage soundPack = getArchivePackage(8, "sound effects", "sounds", jaggrabArchiveCrcs[8], 55);
             tileFlags = new byte[4][104][104];
             tileHeightmap = new int[4][105][105];
             pallet = new Palette(104, 104, 4, tileHeightmap);
@@ -6760,13 +6760,13 @@ public class Main extends ApplicationApplet {
             AnimFrame.initialize(ondemandhandler.getAmountAnims());
             Model.initialize(ondemandhandler.getAmountArchives(0), ondemandhandler);
             if(!lowMemory) {
-                anInt1227 = 0;
+                musicArchiveId = 0;
                 try {
-                    anInt1227 = Integer.parseInt(getParameter("music"));
+                    musicArchiveId = Integer.parseInt(getParameter("music"));
                 }
                 catch(Exception _ex) { }
                 aBoolean1228 = true;
-                ondemandhandler.requestPriority(2, anInt1227);
+                ondemandhandler.requestPriority(2, musicArchiveId);
                 while(ondemandhandler.amount() > 0) {
                     loadFinalizedRequest(false);
                     try {
@@ -6891,111 +6891,111 @@ public class Main extends ApplicationApplet {
 
             }
             drawLoadingBar("Unpacking media", 80);
-            invback = new IndexedColorSprite(graphics_archive, "invback", 0);
-            chatback = new IndexedColorSprite(graphics_archive, "chatback", 0);
-            mapback = new IndexedColorSprite(graphics_archive, "mapback", 0);
-            backbase1 = new IndexedColorSprite(graphics_archive, "backbase1", 0);
-            backbase2 = new IndexedColorSprite(graphics_archive, "backbase2", 0);
-            backmid1 = new IndexedColorSprite(graphics_archive, "backhmid1", 0);
+            invback = new IndexedColorSprite(graphicsPack, "invback", 0);
+            chatback = new IndexedColorSprite(graphicsPack, "chatback", 0);
+            mapback = new IndexedColorSprite(graphicsPack, "mapback", 0);
+            backbase1 = new IndexedColorSprite(graphicsPack, "backbase1", 0);
+            backbase2 = new IndexedColorSprite(graphicsPack, "backbase2", 0);
+            backmid1 = new IndexedColorSprite(graphicsPack, "backhmid1", 0);
             for(int j3 = 0; j3 < 13; j3++)
-                sideicons[j3] = new IndexedColorSprite(graphics_archive, "sideicons", j3);
-            compass = new DirectColorSprite(graphics_archive, "compass", 0);
-            mapedge = new DirectColorSprite(graphics_archive, "mapedge", 0);
+                sideicons[j3] = new IndexedColorSprite(graphicsPack, "sideicons", j3);
+            compass = new DirectColorSprite(graphicsPack, "compass", 0);
+            mapedge = new DirectColorSprite(graphicsPack, "mapedge", 0);
             mapedge.unpack();
             try
             {
                 for(int k3 = 0; k3 < 100; k3++)
-                    mapscene[k3] = new IndexedColorSprite(graphics_archive, "mapscene", k3);
+                    mapscene[k3] = new IndexedColorSprite(graphicsPack, "mapscene", k3);
 
             }
             catch(Exception _ex) { }
             try
             {
                 for(int l3 = 0; l3 < 100; l3++)
-                    mapfunction[l3] = new DirectColorSprite(graphics_archive, "mapfunction", l3);
+                    mapfunction[l3] = new DirectColorSprite(graphicsPack, "mapfunction", l3);
 
             }
             catch(Exception _ex) { }
             try
             {
                 for(int i4 = 0; i4 < 5; i4++)
-                    hitmarks[i4] = new DirectColorSprite(graphics_archive, "hitmarks", i4);
+                    hitmarks[i4] = new DirectColorSprite(graphicsPack, "hitmarks", i4);
 
             }
             catch(Exception _ex) { }
             try
             {
                 for(int j4 = 0; j4 < 20; j4++)
-                    headicons[j4] = new DirectColorSprite(graphics_archive, "headicons", j4);
+                    headicons[j4] = new DirectColorSprite(graphicsPack, "headicons", j4);
 
             }
             catch(Exception _ex) { }
-            mapmarker0 = new DirectColorSprite(graphics_archive, "mapmarker", 0);
-            mapmarker1 = new DirectColorSprite(graphics_archive, "mapmarker", 1);
+            mapmarker0 = new DirectColorSprite(graphicsPack, "mapmarker", 0);
+            mapmarker1 = new DirectColorSprite(graphicsPack, "mapmarker", 1);
             for(int k4 = 0; k4 < 8; k4++)
-                cross_sprites[k4] = new DirectColorSprite(graphics_archive, "cross", k4);
-            grounditem_mapdotsprite = new DirectColorSprite(graphics_archive, "mapdots", 0);
-            mapdots1 = new DirectColorSprite(graphics_archive, "mapdots", 1);
-            mapdots2 = new DirectColorSprite(graphics_archive, "mapdots", 2);
-            mapdots3 = new DirectColorSprite(graphics_archive, "mapdots", 3);
-            mapdots4 = new DirectColorSprite(graphics_archive, "mapdots", 4);
-            scrollbar0 = new IndexedColorSprite(graphics_archive, "scrollbar", 0);
-            scrollbar1 = new IndexedColorSprite(graphics_archive, "scrollbar", 1);
-            redstone1 = new IndexedColorSprite(graphics_archive, "redstone1", 0);
-            redstone2 = new IndexedColorSprite(graphics_archive, "redstone2", 0);
-            redstone3 = new IndexedColorSprite(graphics_archive, "redstone3", 0);
-            redstone1_2 = new IndexedColorSprite(graphics_archive, "redstone1", 0);
+                cross_sprites[k4] = new DirectColorSprite(graphicsPack, "cross", k4);
+            grounditem_mapdotsprite = new DirectColorSprite(graphicsPack, "mapdots", 0);
+            mapdots1 = new DirectColorSprite(graphicsPack, "mapdots", 1);
+            mapdots2 = new DirectColorSprite(graphicsPack, "mapdots", 2);
+            mapdots3 = new DirectColorSprite(graphicsPack, "mapdots", 3);
+            mapdots4 = new DirectColorSprite(graphicsPack, "mapdots", 4);
+            scrollbar0 = new IndexedColorSprite(graphicsPack, "scrollbar", 0);
+            scrollbar1 = new IndexedColorSprite(graphicsPack, "scrollbar", 1);
+            redstone1 = new IndexedColorSprite(graphicsPack, "redstone1", 0);
+            redstone2 = new IndexedColorSprite(graphicsPack, "redstone2", 0);
+            redstone3 = new IndexedColorSprite(graphicsPack, "redstone3", 0);
+            redstone1_2 = new IndexedColorSprite(graphicsPack, "redstone1", 0);
             redstone1_2.indexReflectX();
-            redstone2_2 = new IndexedColorSprite(graphics_archive, "redstone2", 0);
+            redstone2_2 = new IndexedColorSprite(graphicsPack, "redstone2", 0);
             redstone2_2.indexReflectX();
-            redstone1_3 = new IndexedColorSprite(graphics_archive, "redstone1", 0);
+            redstone1_3 = new IndexedColorSprite(graphicsPack, "redstone1", 0);
             redstone1_3.indexReflectY();
-            redstone2_3 = new IndexedColorSprite(graphics_archive, "redstone2", 0);
+            redstone2_3 = new IndexedColorSprite(graphicsPack, "redstone2", 0);
             redstone2_3.indexReflectY();
-            redstone3_2 = new IndexedColorSprite(graphics_archive, "redstone3", 0);
+            redstone3_2 = new IndexedColorSprite(graphicsPack, "redstone3", 0);
             redstone3_2.indexReflectY();
-            redstone1_4 = new IndexedColorSprite(graphics_archive, "redstone1", 0);
+            redstone1_4 = new IndexedColorSprite(graphicsPack, "redstone1", 0);
             redstone1_4.indexReflectX();
             redstone1_4.indexReflectY();
-            redstone2_4 = new IndexedColorSprite(graphics_archive, "redstone2", 0);
+            redstone2_4 = new IndexedColorSprite(graphicsPack, "redstone2", 0);
             redstone2_4.indexReflectX();
             redstone2_4.indexReflectY();
             for(int l4 = 0; l4 < 2; l4++)
-                mod_icons[l4] = new IndexedColorSprite(graphics_archive, "mod_icons", l4);
+                mod_icons[l4] = new IndexedColorSprite(graphicsPack, "mod_icons", l4);
 			/* */
-            DirectColorSprite class30_sub2_sub1_sub1 = new DirectColorSprite(graphics_archive, "backleft1", 0);
+            DirectColorSprite class30_sub2_sub1_sub1 = new DirectColorSprite(graphicsPack, "backleft1", 0);
             backleft1_imagefetcher = new ImageFetcher(class30_sub2_sub1_sub1.indexWidth, class30_sub2_sub1_sub1.indexHeight, getDrawableComponent(), 0);
             class30_sub2_sub1_sub1.draw(0, 0);
 			/* */
-            class30_sub2_sub1_sub1 = new DirectColorSprite(graphics_archive, "backleft2", 0);
+            class30_sub2_sub1_sub1 = new DirectColorSprite(graphicsPack, "backleft2", 0);
             backleft2_imagefetcher = new ImageFetcher(class30_sub2_sub1_sub1.indexWidth, class30_sub2_sub1_sub1.indexHeight, getDrawableComponent(), 0);
             class30_sub2_sub1_sub1.draw(0, 0);
 			/* */
-            class30_sub2_sub1_sub1 = new DirectColorSprite(graphics_archive, "backright1", 0);
+            class30_sub2_sub1_sub1 = new DirectColorSprite(graphicsPack, "backright1", 0);
             backright1_imagefetcher = new ImageFetcher(class30_sub2_sub1_sub1.indexWidth, class30_sub2_sub1_sub1.indexHeight, getDrawableComponent(), 0);
             class30_sub2_sub1_sub1.draw(0, 0);
 			/* */
-            class30_sub2_sub1_sub1 = new DirectColorSprite(graphics_archive, "backright2", 0);
+            class30_sub2_sub1_sub1 = new DirectColorSprite(graphicsPack, "backright2", 0);
             backright2_imagefetcher = new ImageFetcher(class30_sub2_sub1_sub1.indexWidth, class30_sub2_sub1_sub1.indexHeight, getDrawableComponent(), 0);
             class30_sub2_sub1_sub1.draw(0, 0);
 			/* */
-            class30_sub2_sub1_sub1 = new DirectColorSprite(graphics_archive, "backtop1", 0);
+            class30_sub2_sub1_sub1 = new DirectColorSprite(graphicsPack, "backtop1", 0);
             backtop1_imagefetcher = new ImageFetcher(class30_sub2_sub1_sub1.indexWidth, class30_sub2_sub1_sub1.indexHeight, getDrawableComponent(), 0);
             class30_sub2_sub1_sub1.draw(0, 0);
 			/* */
-            class30_sub2_sub1_sub1 = new DirectColorSprite(graphics_archive, "backvmid1", 0);
+            class30_sub2_sub1_sub1 = new DirectColorSprite(graphicsPack, "backvmid1", 0);
             backvmid1_imagefetcher = new ImageFetcher(class30_sub2_sub1_sub1.indexWidth, class30_sub2_sub1_sub1.indexHeight, getDrawableComponent(), 0);
             class30_sub2_sub1_sub1.draw(0, 0);
 			/* */
-            class30_sub2_sub1_sub1 = new DirectColorSprite(graphics_archive, "backvmid2", 0);
+            class30_sub2_sub1_sub1 = new DirectColorSprite(graphicsPack, "backvmid2", 0);
             backvmid2_imagefetcher = new ImageFetcher(class30_sub2_sub1_sub1.indexWidth, class30_sub2_sub1_sub1.indexHeight, getDrawableComponent(), 0);
             class30_sub2_sub1_sub1.draw(0, 0);
 			/* */
-            class30_sub2_sub1_sub1 = new DirectColorSprite(graphics_archive, "backvmid3", 0);
+            class30_sub2_sub1_sub1 = new DirectColorSprite(graphicsPack, "backvmid3", 0);
             backvmid3_imagefetcher = new ImageFetcher(class30_sub2_sub1_sub1.indexWidth, class30_sub2_sub1_sub1.indexHeight, getDrawableComponent(), 0);
             class30_sub2_sub1_sub1.draw(0, 0);
 			/* */
-            class30_sub2_sub1_sub1 = new DirectColorSprite(graphics_archive, "backhmid2", 0);
+            class30_sub2_sub1_sub1 = new DirectColorSprite(graphicsPack, "backhmid2", 0);
             backhmid2_imagefetcher = new ImageFetcher(class30_sub2_sub1_sub1.indexWidth, class30_sub2_sub1_sub1.indexHeight, getDrawableComponent(), 0);
             class30_sub2_sub1_sub1.draw(0, 0);
             int i5 = (int)(Math.random() * 21D) - 10;
@@ -7011,32 +7011,32 @@ public class Main extends ApplicationApplet {
             }
 
             drawLoadingBar("Unpacking textures", 83);
-            TriangleRasterizer.unpackTextures(class44_3);
+            TriangleRasterizer.unpackTextures(texturePack);
             TriangleRasterizer.method372(0.80000000000000004D, aByte1200);
             TriangleRasterizer.initialize(20, true);
             drawLoadingBar("Unpacking config", 86);
-            AnimSequence.unpackAnimSequences(class44);
-            ObjectDefinition.initialize(class44);
-            FloorDefinition.unpackDefinitions(class44);
-            ItemDefinition.amountitems(class44);
-            NpcDefinition.unpackNpcDefs(class44);
-            IdentityKit.method535(0, class44);
-            SpotAnim.method264(0, class44);
-            VarpFile.method546(0, class44);
-            VarbitFile.unpackArchives(0, class44);
+            AnimSequence.unpackAnimSequences(configPack);
+            ObjectDefinition.initialize(configPack);
+            FloorDefinition.unpackDefinitions(configPack);
+            ItemDefinition.amountitems(configPack);
+            NpcDefinition.unpackNpcDefs(configPack);
+            IdentityKit.method535(0, configPack);
+            SpotAnim.method264(0, configPack);
+            VarpFile.method546(0, configPack);
+            VarbitFile.unpackArchives(0, configPack);
             ItemDefinition.aBoolean182 = members;
             if(!lowMemory)
             {
                 drawLoadingBar("Unpacking sounds", 90);
-                byte abyte0[] = class44_5.getArchive("sounds.dat", null);
+                byte abyte0[] = soundPack.getArchive("sounds.dat", null);
                 ByteBuffer buffer0 = new ByteBuffer(abyte0);
                 Sound.method240(0, buffer0);
             }
             drawLoadingBar("Unpacking interfaces", 95);
-            BitmapFont aclass30_sub2_sub1_sub4[] = {
+            BitmapFont fonts[] = {
                 p11Font, p12Font, b12Font, q8Font
             };
-            Widget.loadWidgets(class44_1, aclass30_sub2_sub1_sub4, graphics_archive);
+            Widget.loadWidgets(interfacePack, fonts, graphicsPack);
             drawLoadingBar("Preparing game engine", 100);
             for(int j6 = 0; j6 < 33; j6++)
             {
@@ -7098,7 +7098,7 @@ public class Main extends ApplicationApplet {
             }
 
             Palette.method310(500, 800, 512, 334, ai, aBoolean1231);
-            Censor.unpackCensor(class44_4);
+            Censor.unpackCensor(chatPack);
             monitor = new Monitor(this, anInt1096);
             createThread(monitor, 10);
             GameObject.main = this;
@@ -7917,13 +7917,13 @@ public class Main extends ApplicationApplet {
                 handleWidgetActionCode(childWidget);
             if(childWidget.type == 0)
             {
-                if(childWidget.anInt224 > childWidget.currentHeight - childWidget.height)
-                    childWidget.anInt224 = childWidget.currentHeight - childWidget.height;
+                if(childWidget.anInt224 > childWidget.curHeight - childWidget.height)
+                    childWidget.anInt224 = childWidget.curHeight - childWidget.height;
                 if(childWidget.anInt224 < 0)
                     childWidget.anInt224 = 0;
                 drawWidget(childWidget, x, y, childWidget.anInt224);
-                if(childWidget.currentHeight > childWidget.height)
-                    drawScrollBar(519, childWidget.height, childWidget.anInt224, y, x + childWidget.width, childWidget.currentHeight);
+                if(childWidget.curHeight > childWidget.height)
+                    drawScrollBar(519, childWidget.height, childWidget.anInt224, y, x + childWidget.width, childWidget.curHeight);
             } else
             if(childWidget.type != 1)
                 if(childWidget.type == 2)
@@ -7977,13 +7977,13 @@ public class Main extends ApplicationApplet {
                                                 childWidget.anInt224 -= i10;
                                                 anInt1088 += i10;
                                             }
-                                            if(drawY + j7 + 32 > BasicRasterizer.height && childWidget.anInt224 < childWidget.currentHeight - childWidget.height)
+                                            if(drawY + j7 + 32 > BasicRasterizer.height && childWidget.anInt224 < childWidget.curHeight - childWidget.height)
                                             {
                                                 int j10 = (anInt945 * ((drawY + j7 + 32) - BasicRasterizer.height)) / 3;
                                                 if(j10 > anInt945 * 10)
                                                     j10 = anInt945 * 10;
-                                                if(j10 > childWidget.currentHeight - childWidget.height - childWidget.anInt224)
-                                                    j10 = childWidget.currentHeight - childWidget.height - childWidget.anInt224;
+                                                if(j10 > childWidget.curHeight - childWidget.height - childWidget.anInt224)
+                                                    j10 = childWidget.curHeight - childWidget.height - childWidget.anInt224;
                                                 childWidget.anInt224 += j10;
                                                 anInt1088 -= j10;
                                             }
@@ -7995,8 +7995,8 @@ public class Main extends ApplicationApplet {
                                         if(sprite.spriteWidth == 33 || childWidget.itemAmounts[spriteOffset] != 1)
                                         {
                                             int k10 = childWidget.itemAmounts[spriteOffset];
-                                            p11Font.drawText(0, amountToAmountStr(-33245, k10), drawY + 10 + j7, 822, drawX + 1 + k6);
-                                            p11Font.drawText(0xffff00, amountToAmountStr(-33245, k10), drawY + 9 + j7, 822, drawX + k6);
+                                            p11Font.drawText(drawX + 1 + k6, drawY + 10 + j7, amountToAmountStr(-33245, k10), 0);
+                                            p11Font.drawText(drawX + k6, drawY + 9 + j7, amountToAmountStr(-33245, k10), 0xffff00);
                                         }
                                     }
                                 }
@@ -8129,7 +8129,7 @@ public class Main extends ApplicationApplet {
                         if(childWidget.isTextCentered)
                             font.drawCenteredXText(color, x + childWidget.width / 2, anInt939, text, l6, childWidget.drawTextShadow);
                         else
-                            font.drawText2(false, childWidget.drawTextShadow, x, color, text, l6);
+                            font.drawText2(text, x, l6, color, childWidget.drawTextShadow);
                     }
 
                 } else
@@ -8190,7 +8190,7 @@ public class Main extends ApplicationApplet {
                                 if(childWidget.isTextCentered)
                                     class30_sub2_sub1_sub4_1.drawCenteredXText(childWidget.inactiveTextColor, i9 + childWidget.width / 2, anInt939, s2, k9, childWidget.drawTextShadow);
                                 else
-                                    class30_sub2_sub1_sub4_1.drawText2(false, childWidget.drawTextShadow, i9, childWidget.inactiveTextColor, s2, k9);
+                                    class30_sub2_sub1_sub4_1.drawText2(s2, i9, k9, childWidget.inactiveTextColor, childWidget.drawTextShadow);
                             }
                             k4++;
                         }
@@ -8323,19 +8323,19 @@ public class Main extends ApplicationApplet {
         }
         if((flags & 0x80) != 0)
         {
-            int i1 = buffer.getUwordLE();
-            int j2 = buffer.getUbyte();
-            int j3 = buffer.getUbyteA();
-            int k3 = buffer.offset;
-            if(player.name != null && player.updated)
+            int effectFlags = buffer.getUwordLE();
+            int rights = buffer.getUbyte();
+            int len = buffer.getUbyteA();
+            int off = buffer.offset;
+            if(player.name != null && player.updated && player != localPlayer)
             {
-                long l3 = TextTools.stringToLong(player.name);
+                long usernameHash = TextTools.stringToLong(player.name);
                 boolean flag = false;
-                if(j2 <= 1)
+                if(rights <= 1)
                 {
                     for(int i4 = 0; i4 < amt_ignorehashes; i4++)
                     {
-                        if(ignore_hashes[i4] != l3)
+                        if(ignore_hashes[i4] != usernameHash)
                             continue;
                         flag = true;
                         break;
@@ -8346,18 +8346,18 @@ public class Main extends ApplicationApplet {
                     try
                     {
                         aClass30_Sub2_Sub2_834.offset = 0;
-                        buffer.getReverse(aClass30_Sub2_Sub2_834.payload, 0, j3);
+                        buffer.getReverse(aClass30_Sub2_Sub2_834.payload, 0, len);
                         aClass30_Sub2_Sub2_834.offset = 0;
-                        String s = ChatUtils.method525(j3, true, aClass30_Sub2_Sub2_834);
+                        String s = ChatUtils.method525(len, true, aClass30_Sub2_Sub2_834);
                         s = Censor.censor(s, 0);
                         player.chat_txt = s;
-                        player.anInt1513 = i1 >> 8;
-                        player.anInt1531 = i1 & 0xff;
+                        player.anInt1513 = effectFlags >> 8;
+                        player.anInt1531 = effectFlags & 0xff;
                         player.anInt1535 = 150;
-                        if(j2 == 2 || j2 == 3)
+                        if(rights == 2 || rights == 3)
                             pushMessage(s, 1, "@cr2@" + player.name, aBoolean991);
                         else
-                        if(j2 == 1)
+                        if(rights == 1)
                             pushMessage(s, 1, "@cr1@" + player.name, aBoolean991);
                         else
                             pushMessage(s, 2, player.name, aBoolean991);
@@ -8367,7 +8367,7 @@ public class Main extends ApplicationApplet {
                         Signlink.reportError("cde2");
                     }
             }
-            buffer.offset = k3 + j3;
+            buffer.offset = off + len;
         }
         if((flags & 1) != 0)
         {
@@ -8634,9 +8634,9 @@ public class Main extends ApplicationApplet {
             int l = j / 60;
             j %= 60;
             if(j < 10)
-                p12Font.drawText(0xffff00, "System update in: " + l + ":0" + j, 329, 822, 4);
+                p12Font.drawText(4, 329, "System update in: " + l + ":0" + j, 0xffff00);
             else
-                p12Font.drawText(0xffff00, "System update in: " + l + ":" + j, 329, 822, 4);
+                p12Font.drawText(4, 329, "System update in: " + l + ":" + j, 0xffff00);
             anInt849++;
             if(anInt849 > 75)
             {
@@ -9083,27 +9083,27 @@ public class Main extends ApplicationApplet {
             return -2;
         try
         {
-            int ops[] = widget.scriptOpcodes[script];
-            int k = 0;
-            int opOffset = 0;
-            int i1 = 0;
+            int opcodes[] = widget.scriptOpcodes[script];
+            int returnValue = 0;
+            int offset = 0;
+            int logicValue = 0;
             do
             {
-                int opcode = ops[opOffset++];
+                int op = opcodes[offset++];
                 int value = 0;
                 byte byte0 = 0;
-                if(opcode == 0)
-                    return k;
-                if(opcode == 1)
-                    value = skillLevels[ops[opOffset++]];
-                if(opcode == 2)
-                    value = anIntArray1044[ops[opOffset++]];
-                if(opcode == 3)
-                    value = skillExperience[ops[opOffset++]];
-                if(opcode == 4)
+                if(op == 0)
+                    return returnValue;
+                if(op == 1)
+                    value = currentLevels[opcodes[offset++]];
+                if(op == 2)
+                    value = levelsForXp[opcodes[offset++]];
+                if(op == 3)
+                    value = skillExperience[opcodes[offset++]];
+                if(op == 4)
                 {
-                    Widget widget_ = Widget.widgets[ops[opOffset++]];
-                    int itemid = ops[opOffset++];
+                    Widget widget_ = Widget.widgets[opcodes[offset++]];
+                    int itemid = opcodes[offset++];
                     if(itemid >= 0 && itemid < ItemDefinition.maximumId && (!ItemDefinition.getItemDefinition(itemid).aBoolean161 || members))
                     {
                         for(int j3 = 0; j3 < widget_.itemIds.length; j3++)
@@ -9111,29 +9111,29 @@ public class Main extends ApplicationApplet {
                                 value += widget_.itemAmounts[j3];
                     }
                 }
-                if(opcode == 5)
-                    value = configstates[ops[opOffset++]];
-                if(opcode == 6)
-                    value = XP_TABLE[anIntArray1044[ops[opOffset++]] - 1];
-                if(opcode == 7)
-                    value = (configstates[ops[opOffset++]] * 100) / 46875;
-                if(opcode == 8)
+                if(op == 5)
+                    value = configstates[opcodes[offset++]];
+                if(op == 6)
+                    value = XP_TABLE[levelsForXp[opcodes[offset++]] - 1];
+                if(op == 7)
+                    value = (configstates[opcodes[offset++]] * 100) / 46875;
+                if(op == 8)
                     value = localPlayer.combatLevel;
-                if(opcode == 9)
+                if(op == 9)
                 {
                     for(int l1 = 0; l1 < SkillConstants.amt_skills; l1++)
                         if(SkillConstants.skill_active[l1])
-                            value += anIntArray1044[l1];
+                            value += levelsForXp[l1];
                 }
-                if(opcode == 10)
+                if(op == 10)
                 {
-                    Widget class9_2 = Widget.widgets[ops[opOffset++]];
-                    int l2 = ops[opOffset++] + 1;
-                    if(l2 >= 0 && l2 < ItemDefinition.maximumId && (!ItemDefinition.getItemDefinition(l2).aBoolean161 || members))
+                    Widget class9_2 = Widget.widgets[opcodes[offset++]];
+                    int amount = opcodes[offset++] + 1;
+                    if(amount >= 0 && amount < ItemDefinition.maximumId && (!ItemDefinition.getItemDefinition(amount).aBoolean161 || members))
                     {
                         for(int k3 = 0; k3 < class9_2.itemIds.length; k3++)
                         {
-                            if(class9_2.itemIds[k3] != l2)
+                            if(class9_2.itemIds[k3] != amount)
                                 continue;
                             value = 0x3b9ac9ff;
                             break;
@@ -9141,52 +9141,52 @@ public class Main extends ApplicationApplet {
 
                     }
                 }
-                if(opcode == 11)
+                if(op == 11)
                     value = anInt1148;
-                if(opcode == 12)
+                if(op == 12)
                     value = anInt878;
-                if(opcode == 13)
+                if(op == 13)
                 {
-                    int i2 = configstates[ops[opOffset++]];
-                    int i3 = ops[opOffset++];
-                    value = (i2 & 1 << i3) == 0 ? 0 : 1;
+                    int bitOff = configstates[opcodes[offset++]];
+                    int i3 = opcodes[offset++];
+                    value = (bitOff & 1 << i3) == 0 ? 0 : 1;
                 }
-                if(opcode == 14)
+                if(op == 14)
                 {
-                    int j2 = ops[opOffset++];
-                    VarbitFile class37 = VarbitFile.varbitArray[j2];
-                    int l3 = class37.config_num;
+                    int varbitId = opcodes[offset++];
+                    VarbitFile class37 = VarbitFile.varbitArray[varbitId];
+                    int l3 = class37.configId;
                     int i4 = class37.anInt649;
                     int j4 = class37.anInt650;
                     int k4 = BIT_MASKS[j4 - i4];
                     value = configstates[l3] >> i4 & k4;
                 }
-                if(opcode == 15)
+                if(op == 15)
                     byte0 = 1;
-                if(opcode == 16)
+                if(op == 16)
                     byte0 = 2;
-                if(opcode == 17)
+                if(op == 17)
                     byte0 = 3;
-                if(opcode == 18)
+                if(op == 18)
                     value = (((Mob) (localPlayer)).fineX >> 7) + paletteX;
-                if(opcode == 19)
+                if(op == 19)
                     value = (((Mob) (localPlayer)).fineY >> 7) + paletteY;
-                if(opcode == 20)
-                    value = ops[opOffset++];
+                if(op == 20)
+                    value = opcodes[offset++];
                 if(byte0 == 0)
                 {
-                    if(i1 == 0)
-                        k += value;
-                    if(i1 == 1)
-                        k -= value;
-                    if(i1 == 2 && value != 0)
-                        k /= value;
-                    if(i1 == 3)
-                        k *= value;
-                    i1 = 0;
+                    if(logicValue == 0)
+                        returnValue += value;
+                    if(logicValue == 1)
+                        returnValue -= value;
+                    if(logicValue == 2 && value != 0)
+                        returnValue /= value;
+                    if(logicValue == 3)
+                        returnValue *= value;
+                    logicValue = 0;
                 } else
                 {
-                    i1 = byte0;
+                    logicValue = byte0;
                 }
             } while(true);
         }
@@ -9722,9 +9722,9 @@ public class Main extends ApplicationApplet {
                 b12Font.drawCenteredXText(0xffff00, c / 2, anInt939, loginMessage1, j - 7, true);
                 j += 30;
             }
-            b12Font.drawText2(false, true, c / 2 - 90, 0xffffff, "Username: " + username + ((userpass_swtch == 0) & (loopCycle % 40 < 20) ? "@yel@|" : ""), j);
+            b12Font.drawText2("Username: " + username + ((userpass_swtch == 0) & (loopCycle % 40 < 20) ? "@yel@|" : ""), c / 2 - 90, j, 0xffffff, true);
             j += 15;
-            b12Font.drawText2(false, true, c / 2 - 88, 0xffffff, "Password: " + TextTools.asteriskicide(password, 0) + ((userpass_swtch == 1) & (loopCycle % 40 < 20) ? "@yel@|" : ""), j);
+            b12Font.drawText2("Password: " + TextTools.asteriskicide(password, 0) + ((userpass_swtch == 1) & (loopCycle % 40 < 20) ? "@yel@|" : ""), c / 2 - 88, j, 0xffffff, true);
             j += 15;
             if(!flag)
             {
@@ -10580,15 +10580,15 @@ public class Main extends ApplicationApplet {
             if(packetId == 134)
             {
                 aBoolean1153 = true;
-                int k1 = inbuffer.getUbyte();
-                int i10 = inbuffer.getDwordA();
+                int skillId = inbuffer.getUbyte();
+                int exAmount = inbuffer.getDwordA();
                 int l15 = inbuffer.getUbyte();
-                skillExperience[k1] = i10;
-                skillLevels[k1] = l15;
-                anIntArray1044[k1] = 1;
-                for(int k20 = 0; k20 < 98; k20++)
-                    if(i10 >= XP_TABLE[k20])
-                        anIntArray1044[k1] = k20 + 2;
+                skillExperience[skillId] = exAmount;
+                currentLevels[skillId] = l15;
+                levelsForXp[skillId] = 1;
+                for(int lv = 0; lv < 98; lv++)
+                    if(exAmount >= XP_TABLE[lv])
+                        levelsForXp[skillId] = lv + 2;
                 packetId = -1;
                 return true;
             }
@@ -10606,29 +10606,29 @@ public class Main extends ApplicationApplet {
             }
             if(packetId == 74)
             {
-                int i2 = inbuffer.getUwordLE();
-                if(i2 == 65535)
-                    i2 = -1;
-                if(i2 != anInt956 && aBoolean1151 && !lowMemory && anInt1259 == 0)
+                int musicId = inbuffer.getUwordLE();
+                if(musicId == 65535)
+                    musicId = -1;
+                if(musicId != lastMusicId && isSoundActive && !lowMemory && musicDelay == 0)
                 {
-                    anInt1227 = i2;
+                    musicArchiveId = musicId;
                     aBoolean1228 = true;
-                    ondemandhandler.requestPriority(2, anInt1227);
+                    ondemandhandler.requestPriority(2, musicArchiveId);
                 }
-                anInt956 = i2;
+                lastMusicId = musicId;
                 packetId = -1;
                 return true;
             }
             if(packetId == 121)
             {
-                int j2 = inbuffer.getUwordLE128();
-                int k10 = inbuffer.getUword128();
-                if(aBoolean1151 && !lowMemory)
+                int musicId = inbuffer.getUwordLE128();
+                int delay = inbuffer.getUword128();
+                if(isSoundActive && !lowMemory)
                 {
-                    anInt1227 = j2;
+                    musicArchiveId = musicId;
                     aBoolean1228 = false;
-                    ondemandhandler.requestPriority(2, anInt1227);
-                    anInt1259 = k10;
+                    ondemandhandler.requestPriority(2, musicArchiveId);
+                    musicDelay = delay;
                 }
                 packetId = -1;
                 return true;
@@ -11180,8 +11180,8 @@ public class Main extends ApplicationApplet {
                 {
                     if(l12 < 0)
                         l12 = 0;
-                    if(l12 > class9_3.currentHeight - class9_3.height)
-                        l12 = class9_3.currentHeight - class9_3.height;
+                    if(l12 > class9_3.curHeight - class9_3.height)
+                        l12 = class9_3.curHeight - class9_3.height;
                     class9_3.anInt224 = l12;
                 }
                 packetId = -1;
@@ -11792,7 +11792,7 @@ public class Main extends ApplicationApplet {
         aByteArray912 = new byte[16384];
         aByte920 = 14;
         anInt921 = 732;
-        skillLevels = new int[SkillConstants.amt_skills];
+        currentLevels = new int[SkillConstants.amt_skills];
         aByte923 = 25;
         ignore_hashes = new long[100];
         aBoolean926 = false;
@@ -11807,7 +11807,7 @@ public class Main extends ApplicationApplet {
         sideicons = new IndexedColorSprite[13];
         focusPacketToggle = true;
         friend_hashes = new long[200];
-        anInt956 = -1;
+        lastMusicId = -1;
         aBoolean962 = false;
         spriteX = -1;
         spriteY = -1;
@@ -11842,7 +11842,7 @@ public class Main extends ApplicationApplet {
         mapfunction = new DirectColorSprite[100];
         anInt1042 = -1;
         aBoolean1043 = false;
-        anIntArray1044 = new int[SkillConstants.amt_skills];
+        levelsForXp = new int[SkillConstants.amt_skills];
         configqueue = new int[2000];
         aBoolean1047 = true;
         anInt1050 = 111;
@@ -11883,7 +11883,7 @@ public class Main extends ApplicationApplet {
         isLoadedLandscapes = false;
         aBoolean1149 = false;
         cross_sprites = new DirectColorSprite[8];
-        aBoolean1151 = true;
+        isSoundActive = true;
         aBoolean1153 = false;
         isOnlineGame = false;
         aBoolean1158 = false;
@@ -12034,7 +12034,7 @@ public class Main extends ApplicationApplet {
     public static boolean aBoolean919 = true;
     public byte aByte920;
     public int anInt921;
-    public int skillLevels[];
+    public int currentLevels[];
     public byte aByte923;
     public static int anInt924;
     public long ignore_hashes[];
@@ -12068,7 +12068,7 @@ public class Main extends ApplicationApplet {
     public long aLong953;
     public boolean focusPacketToggle;
     public long friend_hashes[];
-    public int anInt956;
+    public int lastMusicId;
     public static int nodeid = 10;
     public static int portOffset;
     public static boolean members = true;
@@ -12173,7 +12173,7 @@ public class Main extends ApplicationApplet {
     public int anInt1041;
     public int anInt1042;
     public boolean aBoolean1043;
-    public int anIntArray1044[];
+    public int levelsForXp[];
     public int configqueue[];
     public int isMembers;
     public boolean aBoolean1047;
@@ -12283,7 +12283,7 @@ public class Main extends ApplicationApplet {
     public int anInt1148;
     public boolean aBoolean1149;
     public DirectColorSprite cross_sprites[];
-    public boolean aBoolean1151;
+    public boolean isSoundActive;
     public IndexedColorSprite titlescreen_sprites[];
     public boolean aBoolean1153;
     public int anInt1154;
@@ -12366,7 +12366,7 @@ public class Main extends ApplicationApplet {
     public static boolean aBoolean1224 = true;
     public int anInt1225;
     public static int anInt1226;
-    public int anInt1227;
+    public int musicArchiveId;
     public boolean aBoolean1228;
     public int anIntArray1229[];
     public PlaneFlags planeFlags[];
@@ -12398,7 +12398,7 @@ public class Main extends ApplicationApplet {
     public boolean aBoolean1256;
     public int anInt1257;
     public byte tileFlags[][][];
-    public int anInt1259;
+    public int musicDelay;
     public static int anInt1260;
     public int anInt1261;
     public int anInt1262;

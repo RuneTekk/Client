@@ -53,7 +53,7 @@ public class ObjectDefinition {
         aBoolean736 = false;
         aBoolean766 = false;
         anInt760 = -1;
-        anInt774 = -1;
+        varbitFileId = -1;
         anInt749 = -1;
         anIntArray759 = null;
     }
@@ -158,14 +158,14 @@ public class ObjectDefinition {
         if(!flag)
             throw new NullPointerException();
         int i = -1;
-        if(anInt774 != -1)
+        if(varbitFileId != -1)
         {
-            VarbitFile class37 = VarbitFile.varbitArray[anInt774];
-            int j = class37.config_num;
-            int k = class37.anInt649;
-            int l = class37.anInt650;
-            int i1 = Main.BIT_MASKS[l - k];
-            i = main.configstates[j] >> k & i1;
+            VarbitFile class37 = VarbitFile.varbitArray[varbitFileId];
+            int configId = class37.configId;
+            int shift = class37.anInt649;
+            int amountBits = class37.anInt650;
+            int i1 = Main.BIT_MASKS[amountBits - shift];
+            i = main.configstates[configId] >> shift & i1;
         } else
         if(anInt749 != -1)
             i = main.configstates[anInt749];
@@ -447,9 +447,9 @@ label0:
                 }
                 continue label0;
             } while(j != 77);
-            anInt774 = buffer0.getUword();
-            if(anInt774 == 65535)
-                anInt774 = -1;
+            varbitFileId = buffer0.getUword();
+            if(varbitFileId == 65535)
+                varbitFileId = -1;
             anInt749 = buffer0.getUword();
             if(anInt749 == 65535)
                 anInt749 = -1;
@@ -526,7 +526,7 @@ label0:
     public static int stack_offset;
     public int anInt772;
     public int anIntArray773[];
-    public int anInt774;
+    public int varbitFileId;
     public int anInt775;
     public int anIntArray776[];
     public byte aByteArray777[];

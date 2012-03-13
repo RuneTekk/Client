@@ -86,17 +86,17 @@ public class BitmapFont extends BasicRasterizer {
 
     public void drawHeightAlignedText(String s, int i, int j, byte junk, int k)
     {
-        drawText(j, s, k, 822, i - heightFontMetrics(s, true));
+        drawText(i - heightFontMetrics(s, true),k, s, j);
     }
 
     public void drawCenteredYText(int i, String s, int junk, int k, int l)
     {
-        drawText(i, s, k, 822, l - heightFontMetrics(s, true) / 2);
+        drawText(l - heightFontMetrics(s, true) / 2,k, s, i);
     }
 
     public void drawCenteredXText(int color, int posx, int junk, String text, int posy, boolean flag)
     {
-        drawText2(false, flag, posx - widthFontMetrics(anInt1485, text)/2, color, text, posy);
+        drawText2(text, posx - widthFontMetrics(anInt1485, text)/2, posy, color, flag);
     }
 
     public int widthFontMetrics(int junk, String s) {
@@ -120,16 +120,16 @@ public class BitmapFont extends BasicRasterizer {
         return j;
     }
 
-    public void drawText(int color, String s, int j, int junk, int l)
+    public void drawText(int x, int y, String s, int color)
     {
         if(s == null)
             return;
-        j -= maxh;
+        y -= maxh;
         for(int i1 = 0; i1 < s.length(); i1++) {
             char c = s.charAt(i1);
             if(c != ' ')
-                draw(cindices[c], l + transx[c], j + transy[c], indexw[c], indexh[c], color);
-            l += cwidth[c];
+                draw(cindices[c], x + transx[c], y + transy[c], indexw[c], indexh[c], color);
+            x += cwidth[c];
         }
     }
 
@@ -169,7 +169,7 @@ public class BitmapFont extends BasicRasterizer {
 
     }
 
-    public void drawWaveyText3(int i, String s, boolean flag, int j, int k, int l, int i1)
+    public void drawWaveyText3(int i, String s, boolean flag, int j, int y, int x, int i1)
     {
         if(!flag)
         {
@@ -180,25 +180,25 @@ public class BitmapFont extends BasicRasterizer {
         double d = 7D - (double)i / 8D;
         if(d < 0.0D)
             d = 0.0D;
-        l -= heightFontMetrics(s, true) / 2;
-        k -= maxh;
+        x -= heightFontMetrics(s, true) / 2;
+        y -= maxh;
         for(int k1 = 0; k1 < s.length(); k1++)
         {
             char c = s.charAt(k1);
             if(c != ' ')
-                draw(cindices[c], l + transx[c], k + transy[c] + (int)(Math.sin((double)k1 / 1.5D + (double)j) * d), indexw[c], indexh[c], i1);
-            l += cwidth[c];
+                draw(cindices[c], x + transx[c], y + transy[c] + (int)(Math.sin((double)k1 / 1.5D + (double)j) * d), indexw[c], indexh[c], i1);
+            x += cwidth[c];
         }
 
     }
 
-    public void drawText2(boolean junk, boolean shadow, int i, int color, String s, int k)
+    public void drawText2(String s, int x, int y, int color, boolean shadow)
     {
         strike = false;
-        int l = i;
+        int l = x;
         if(s == null)
             return;
-        k -= maxh;
+        y -= maxh;
         for(int i1 = 0; i1 < s.length(); i1++)
 			/* Parse color prefix */
             if(s.charAt(i1) == '@' && i1 + 4 < s.length() && s.charAt(i1 + 4) == '@')
@@ -212,13 +212,13 @@ public class BitmapFont extends BasicRasterizer {
                 if(c != ' ') {
 					/* Shadow */
                     if(shadow)
-                        draw(cindices[c], i + transx[c] + 1, k + transy[c] + 1, indexw[c], indexh[c], 0);
-                    draw(cindices[c], i + transx[c], k + transy[c], indexw[c], indexh[c], color);
+                        draw(cindices[c], x + transx[c] + 1, y + transy[c] + 1, indexw[c], indexh[c], 0);
+                    draw(cindices[c], x + transx[c], y + transy[c], indexw[c], indexh[c], color);
                 }
-                i += cwidth[c];
+                x += cwidth[c];
             }
         if(strike)
-            BasicRasterizer.drawHorizontalLine(l,k + (int)((double)maxh * 0.69999999999999996D), i - l, 0x800000);
+            BasicRasterizer.drawHorizontalLine(l,y + (int)((double)maxh * 0.69999999999999996D), x - l, 0x800000);
     }
 
     public void method390(boolean flag, int i, int j, String text, int k, int l, int i1)

@@ -54,7 +54,7 @@ public class GameObject extends Entity {
         if(anInt1601 != -1)
         {
             VarbitFile class37 = VarbitFile.varbitArray[anInt1601];
-            int k = class37.config_num;
+            int k = class37.configId;
             int l = class37.anInt649;
             int i1 = class37.anInt650;
             int j1 = Main.BIT_MASKS[i1 - l];
@@ -88,7 +88,7 @@ public class GameObject extends Entity {
             }
         }
         ObjectDefinition class46 = ObjectDefinition.getObjectDefinition(rso_objid);
-        anInt1601 = class46.anInt774;
+        anInt1601 = class46.varbitFileId;
         anInt1602 = class46.anInt749;
         anIntArray1600 = class46.anIntArray759;
     }

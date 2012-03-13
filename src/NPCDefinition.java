@@ -61,7 +61,7 @@ public class NpcDefinition {
             aBoolean81 = !aBoolean81;
         if(varbitid != -1) {
             VarbitFile class37 = VarbitFile.varbitArray[varbitid];
-            int k = class37.config_num;
+            int k = class37.configId;
             int l = class37.anInt649;
             int i1 = class37.anInt650;
             int j1 = Main.BIT_MASKS[i1 - l];

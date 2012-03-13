@@ -62,7 +62,7 @@ public class Widget {
             }
             if(widget.type == 0)
             {
-                widget.currentHeight = dataBuffer.getUword();
+                widget.curHeight = dataBuffer.getUword();
                 widget.isActive = dataBuffer.getUbyte() == 1;
                 int amountchildren = dataBuffer.getUword();
                 widget.childrenIds = new int[amountchildren];
@@ -360,7 +360,7 @@ public class Widget {
     public int activeAnimId;
     public boolean aBoolean259;
     public DirectColorSprite activeSprite;
-    public int currentHeight;
+    public int curHeight;
     public int type;
     public int offsetX;
     public static Cache modelCache = new Cache(30);
